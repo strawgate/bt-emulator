@@ -1,0 +1,102 @@
+{
+ "cassette": "py/src/braintrust/integrations/pipecat/cassettes/latest/test_voice_session_traces_turns_speech_recognition_generation_and_playback.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/attachment",
+   "request": {
+    "body": {
+     "content_type": "audio/wav",
+     "filename": "part-0.wav",
+     "key": "7fb73b3e-8b55-4d16-b251-aecac5a7b97d",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "headers": {
+      "Content-Type": "audio/wav",
+      "If-None-Match": "*"
+     },
+     "signedUrl": "https://bt3subnets-3-codebundlebucket-lvt2jm5istw6.s3.us-east-1.amazonaws.com/attachments/5abfae3a-7aa7-4653-a9c8-b3efcb18f584/7f/7fb73b3e-8b55-4d16-b251-aecac5a7b97d"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/attachment/status",
+   "request": {
+    "body": {
+     "key": "7fb73b3e-8b55-4d16-b251-aecac5a7b97d",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "status": {
+      "upload_status": "done"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "status": "success"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

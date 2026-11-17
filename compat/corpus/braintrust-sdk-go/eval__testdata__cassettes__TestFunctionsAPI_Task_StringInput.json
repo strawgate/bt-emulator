@@ -1,0 +1,237 @@
+{
+ "cassette": "eval/testdata/cassettes/TestFunctionsAPI_Task_StringInput.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Task_StringInput-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "String Echo Task",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Echo this text: {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Task_StringInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073869995958",
+     "created": "2026-10-22T00:00:13.917Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "ce8e1e91-6b2c-414f-b377-972c686832ab",
+     "log_id": "p",
+     "name": "String Echo Task",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Echo this text: {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Task_StringInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Task_StringInput-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073869995958",
+       "created": "2026-10-22T00:00:13.917Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "ce8e1e91-6b2c-414f-b377-972c686832ab",
+       "log_id": "p",
+       "metadata": null,
+       "name": "String Echo Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Echo this text: {{input}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_Task_StringInput-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/ce8e1e91-6b2c-414f-b377-972c686832ab/invoke",
+   "request": {
+    "body": {
+     "input": "hello world"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "hello world",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "9d676372-433a-4653-a8e4-fc0aeb24b14d",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/ce8e1e91-6b2c-414f-b377-972c686832ab",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073870126781",
+     "created": "2026-10-22T00:00:15.928Z",
+     "id": "ce8e1e91-6b2c-414f-b377-972c686832ab",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestFunctionsAPI_Task_StringInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

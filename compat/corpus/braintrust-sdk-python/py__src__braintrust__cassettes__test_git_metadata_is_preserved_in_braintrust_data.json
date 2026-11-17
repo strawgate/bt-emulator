@@ -1,0 +1,482 @@
+{
+ "cassette": "py/src/braintrust/cassettes/test_git_metadata_is_preserved_in_braintrust_data.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-vcr-tests",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-10T15:11:32.568Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "name": "python-sdk-vcr-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ancestor_commits": [
+      "af25aa5dc6b2f7daf031f1f1d26d98ae70871c45"
+     ],
+     "ensure_new": false,
+     "name": "test-git-metadata-base-v2",
+     "project_id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "public": false,
+     "repo_info": {
+      "author_email": "git-regression@braintrust.dev",
+      "author_name": "Braintrust Git Regression",
+      "branch": "main",
+      "commit": "e3feac8b65efbdfc911e83cf3e6204853b6a2d8c",
+      "commit_message": "Deterministic base commit",
+      "commit_time": "2024-02-01T12:00:00+00:00",
+      "dirty": false,
+      "git_diff": null,
+      "tag": "git-regression-base"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": "e3feac8b65efbdfc911e83cf3e6204853b6a2d8c",
+     "created": "2026-08-10T15:12:33.800Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "21a09505-aa26-44f3-b233-fe7ee9f38add",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "test-git-metadata-base-v2",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "public": false,
+     "repo_info": {
+      "author_email": "git-regression@braintrust.dev",
+      "author_name": "Braintrust Git Regression",
+      "branch": "main",
+      "commit": "e3feac8b65efbdfc911e83cf3e6204853b6a2d8c",
+      "commit_message": "Deterministic base commit",
+      "commit_time": "2024-02-01T12:00:00+00:00",
+      "dirty": false,
+      "tag": "git-regression-base"
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/version",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "brainstore_can_contain_row_refs": true,
+     "brainstore_default": "force",
+     "brainstore_export_enabled": true,
+     "brainstore_wal_footer_version": "v3",
+     "brainstore_wal_use_efficient_format": true,
+     "code_execution": true,
+     "commit": "e27b14341914e26f128098670df73d3dd05169bf",
+     "control_plane_telemetry": [
+      "status",
+      "memprof",
+      "usage"
+     ],
+     "date_version": "20260819",
+     "deployment_mode": "lambda",
+     "deployment_type": "custom",
+     "ff_version": 46,
+     "has_logs2": true,
+     "has_realtime_wal_bucket": true,
+     "js": true,
+     "logs3_payload_max_bytes": 5242880,
+     "loop_runtime_enabled": true,
+     "skip_pg_config": "all",
+     "universal": true,
+     "version": "2.11.0"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "experiment_id": "21a09505-aa26-44f3-b233-fe7ee9f38add",
+       "id": "10000000-0000-4000-8000-000000000001",
+       "input": {
+        "case": "base"
+       },
+       "metadata": {
+        "git_regression_case": "base"
+       },
+       "metrics": {},
+       "output": {
+        "status": "recorded"
+       },
+       "span_attributes": {
+        "exec_counter": 1,
+        "name": "git-metadata-regression",
+        "type": "eval"
+       },
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "10000000-0000-4000-8000-000000000001"
+     ],
+     "xact_id": "1000197715924384030"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-vcr-tests",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-10T15:11:32.568Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "name": "python-sdk-vcr-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ancestor_commits": [
+      "e3feac8b65efbdfc911e83cf3e6204853b6a2d8c",
+      "af25aa5dc6b2f7daf031f1f1d26d98ae70871c45"
+     ],
+     "ensure_new": false,
+     "name": "test-git-metadata-feature-v2",
+     "project_id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "public": false,
+     "repo_info": {
+      "author_email": "git-regression@braintrust.dev",
+      "author_name": "Braintrust Git Regression",
+      "branch": "feature/git-metadata-regression",
+      "commit": "52fc9a56dafc7af027641fb796d9a888e012066b",
+      "commit_message": "Deterministic feature commit",
+      "commit_time": "2024-02-02T12:00:00+00:00",
+      "dirty": true,
+      "git_diff": null,
+      "tag": "git-regression-feature"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": "21a09505-aa26-44f3-b233-fe7ee9f38add",
+     "commit": "52fc9a56dafc7af027641fb796d9a888e012066b",
+     "created": "2026-08-10T15:12:35.019Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "7b05ec26-59e6-431d-b6d9-6909482a35ab",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "test-git-metadata-feature-v2",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+     "public": false,
+     "repo_info": {
+      "author_email": "git-regression@braintrust.dev",
+      "author_name": "Braintrust Git Regression",
+      "branch": "feature/git-metadata-regression",
+      "commit": "52fc9a56dafc7af027641fb796d9a888e012066b",
+      "commit_message": "Deterministic feature commit",
+      "commit_time": "2024-02-02T12:00:00+00:00",
+      "dirty": true,
+      "tag": "git-regression-feature"
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "experiment_id": "7b05ec26-59e6-431d-b6d9-6909482a35ab",
+       "id": "10000000-0000-4000-8000-000000000002",
+       "input": {
+        "case": "feature-dirty"
+       },
+       "metadata": {
+        "git_regression_case": "feature-dirty"
+       },
+       "metrics": {},
+       "output": {
+        "status": "recorded"
+       },
+       "span_attributes": {
+        "exec_counter": 2,
+        "name": "git-metadata-regression",
+        "type": "eval"
+       },
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "10000000-0000-4000-8000-000000000002"
+     ],
+     "xact_id": "1000197715924456829"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/7b05ec26-59e6-431d-b6d9-6909482a35ab/fetch",
+   "request": {
+    "body": {
+     "limit": 1000
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "aoX61ZV9AAA",
+     "events": [
+      {
+       "_pagination_key": "p07675816935165853696",
+       "_xact_id": "1000197715924456829",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715924456829",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "/Users/abhijeetprasad/workspace/braintrust-sdk-python/py/.nox/test_core/lib/python3.14/site-packages/_pytest/python.py",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust-python-logger"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:49:56.279Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7b05ec26-59e6-431d-b6d9-6909482a35ab",
+       "facets": null,
+       "id": "10000000-0000-4000-8000-000000000002",
+       "input": {
+        "case": "feature-dirty"
+       },
+       "is_root": true,
+       "metadata": {
+        "git_regression_case": "feature-dirty"
+       },
+       "metrics": {
+        "end": 1787165396.279626,
+        "start": 1787165396.279052
+       },
+       "origin": null,
+       "output": {
+        "status": "recorded"
+       },
+       "project_id": "8b2277cd-df50-4245-b4a0-057a6ce318a9",
+       "root_span_id": "6a9f68d36277a53e62f594fa9eaa7641",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 2,
+        "name": "git-metadata-regression",
+        "type": "eval"
+       },
+       "span_id": "aab6ec7ea66f9729",
+       "span_parents": null,
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoX61ZV9AAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/7b05ec26-59e6-431d-b6d9-6909482a35ab/fetch",
+   "request": {
+    "body": {
+     "cursor": "aoX61ZV9AAA",
+     "limit": 1000
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

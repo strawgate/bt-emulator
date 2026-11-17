@@ -1,0 +1,432 @@
+{
+ "cassette": "eval/testdata/cassettes/TestEval_Integration.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestEval_Integration-task",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "Test Echo Task",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestEval_Integration-task"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073871241303",
+     "created": "2026-10-22T00:00:32.968Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "66f502ad-6879-434c-a172-b49e135b1ede",
+     "log_id": "p",
+     "name": "Test Echo Task",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestEval_Integration-task"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestEval_Integration-task",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073871241303",
+       "created": "2026-10-22T00:00:32.968Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "66f502ad-6879-434c-a172-b49e135b1ede",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Test Echo Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Say hello to {{input}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestEval_Integration-task",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestEval_Integration-task",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073871241303",
+       "created": "2026-10-22T00:00:32.968Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "66f502ad-6879-434c-a172-b49e135b1ede",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Test Echo Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Say hello to {{input}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestEval_Integration-task",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-experiment",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-22T00:00:33.901Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "a2f92309-2ec8-4145-8736-cd83e9e63cd7",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "test-experiment-852053cc",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/66f502ad-6879-434c-a172-b49e135b1ede/invoke",
+   "request": {
+    "body": {
+     "input": "hello"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "Hello, hello! How can I assist you today?",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "d862e8e6-4fdb-4419-a522-089bf3b3fa93",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/66f502ad-6879-434c-a172-b49e135b1ede/invoke",
+   "request": {
+    "body": {
+     "input": "world"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "Hello, world! \ud83c\udf0d How can I assist you today?",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "44f709d9-2add-4bfd-8717-ea64f2518d9a",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/66f502ad-6879-434c-a172-b49e135b1ede",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073871500026",
+     "created": "2026-10-22T00:00:36.170Z",
+     "id": "66f502ad-6879-434c-a172-b49e135b1ede",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestEval_Integration-task"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

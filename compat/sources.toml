@@ -1,0 +1,19 @@
+# Upstream sources of recorded Braintrust API traffic, pinned by commit.
+# `just compat-harvest` regenerates compat/corpus/ from these.
+# Only permissively licensed sources may be listed here (their LICENSE is vendored).
+
+[[source]]
+name = "braintrust-sdk-python"
+repo = "https://github.com/braintrustdata/braintrust-sdk-python"
+commit = "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8"
+license = "Apache-2.0"
+format = "vcrpy"
+globs = ["**/cassettes/**/*.yaml", "**/cassettes/**/*.yml"]
+
+[[source]]
+name = "braintrust-sdk-go"
+repo = "https://github.com/braintrustdata/braintrust-sdk-go"
+commit = "31a87dafd05438bdf81aabdb8b548d58af21ee52"
+license = "Apache-2.0"
+format = "go-vcr"
+globs = ["**/testdata/cassettes/**/*.yaml"]

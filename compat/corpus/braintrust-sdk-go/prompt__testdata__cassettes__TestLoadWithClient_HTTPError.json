@@ -1,0 +1,26 @@
+{
+ "cassette": "prompt/testdata/cassettes/TestLoadWithClient_HTTPError.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/prompt/00000000-0000-0000-0000-000000000000",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "Code": "BadRequestError",
+     "Message": "Prompt does not exist or you do not have access [user_email=user@example.com] [user_org=REDACTED] [timestamp=1792627287.37]"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

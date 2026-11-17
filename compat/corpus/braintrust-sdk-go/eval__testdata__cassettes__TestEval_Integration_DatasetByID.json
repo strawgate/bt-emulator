@@ -1,0 +1,351 @@
+{
+ "cassette": "eval/testdata/cassettes/TestEval_Integration_DatasetByID.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "Test dataset for eval integration",
+     "name": "test-dataset",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:00:26.634Z",
+     "deleted_at": null,
+     "description": "Test dataset for eval integration",
+     "id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+     "metadata": null,
+     "name": "test-dataset",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": 4,
+       "input": 2
+      },
+      {
+       "expected": 10,
+       "input": 5
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "74a1aeae-d5c4-41ec-83b7-4d853f3faf2a",
+      "48f4dc3b-55df-4d77-aa5c-b274643b4e98"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "dataset_id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+     "ensure_new": true,
+     "name": "test-experiment",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-22T00:00:27.279Z",
+     "dataset_id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "78f36930-f76e-4d1c-a65b-e870100e35cc",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "test-experiment-3c0204a9",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSGhBiAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275309864058881",
+       "_xact_id": "1000198073870848098",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073870848098",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:26.758Z",
+       "dataset_id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+       "expected": 10,
+       "facets": null,
+       "id": "48f4dc3b-55df-4d77-aa5c-b274643b4e98",
+       "input": 5,
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "dfcf1179-0510-47c0-a364-70f02f2cb4f1",
+       "span_id": "dfcf1179-0510-47c0-a364-70f02f2cb4f1",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699275309864058880",
+       "_xact_id": "1000198073870848098",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073870848098",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:26.758Z",
+       "dataset_id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+       "expected": 4,
+       "facets": null,
+       "id": "74a1aeae-d5c4-41ec-83b7-4d853f3faf2a",
+       "input": 2,
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "86a19bbf-3e9c-460f-8603-7da30be4eec5",
+       "span_id": "86a19bbf-3e9c-460f-8603-7da30be4eec5",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSGhBiAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159/fetch",
+   "request": {
+    "body": {
+     "cursor": "atlSGhBiAAA",
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "0"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:00:26.634Z",
+     "deleted_at": "2026-10-22T00:00:27.899Z",
+     "description": "Test dataset for eval integration",
+     "id": "dd3a730b-cdbe-49c7-b55c-bc0dc3bdf159",
+     "metadata": null,
+     "name": "test-dataset",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

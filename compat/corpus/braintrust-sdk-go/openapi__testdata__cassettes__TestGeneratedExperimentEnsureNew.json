@@ -1,0 +1,118 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedExperimentEnsureNew.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "name": "ensure-new-test",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-21T21:43:47.132Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "baa37b7a-e05a-4c5a-bf15-a0cb639297a2",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "ensure-new-test",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "ensure-new-test",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-22T00:01:09.348Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "0bb6eb5e-ee04-43c0-88bd-c5148dcf7078",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "ensure-new-test-8f33f3db",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,295 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedDatasetFetchPagination.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "name": "test-dataset-pagination",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T21:43:52.992Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "77629658-117b-4fdd-af87-e7bf3c1719b9",
+     "metadata": null,
+     "name": "test-dataset-pagination",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-pagination",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/77629658-117b-4fdd-af87-e7bf3c1719b9/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "input": {
+        "n": 1
+       }
+      },
+      {
+       "input": {
+        "n": 2
+       }
+      },
+      {
+       "input": {
+        "n": 3
+       }
+      },
+      {
+       "input": {
+        "n": 4
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "f04f316c-d98c-4660-ad54-2c1abb862900",
+      "76fc6d22-81b8-4eec-bcb4-45f5672c6220",
+      "d317c587-db67-4efc-844f-d0e0062a783f",
+      "caa9ed96-9663-4bef-a997-49e6a3183c85"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/77629658-117b-4fdd-af87-e7bf3c1719b9/fetch",
+   "request": {
+    "body": {
+     "limit": 2
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSSwPMAAI",
+     "events": [
+      {
+       "_pagination_key": "p07699275520106299395",
+       "_xact_id": "1000198073874056140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073874056140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:15.128Z",
+       "dataset_id": "77629658-117b-4fdd-af87-e7bf3c1719b9",
+       "expected": null,
+       "facets": null,
+       "id": "caa9ed96-9663-4bef-a997-49e6a3183c85",
+       "input": {
+        "n": 4
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "f4c53cbf-5734-4b28-8535-73d319a271e4",
+       "span_id": "f4c53cbf-5734-4b28-8535-73d319a271e4",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699275520106299394",
+       "_xact_id": "1000198073874056140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073874056140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:15.128Z",
+       "dataset_id": "77629658-117b-4fdd-af87-e7bf3c1719b9",
+       "expected": null,
+       "facets": null,
+       "id": "d317c587-db67-4efc-844f-d0e0062a783f",
+       "input": {
+        "n": 3
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "c8305996-cea5-44c1-b508-728ebc12a5c8",
+       "span_id": "c8305996-cea5-44c1-b508-728ebc12a5c8",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSSwPMAAI"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/77629658-117b-4fdd-af87-e7bf3c1719b9/fetch",
+   "request": {
+    "body": {
+     "cursor": "atlSSwPMAAI",
+     "limit": 2
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSSwPMAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275520106299393",
+       "_xact_id": "1000198073874056140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073874056140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:15.127Z",
+       "dataset_id": "77629658-117b-4fdd-af87-e7bf3c1719b9",
+       "expected": null,
+       "facets": null,
+       "id": "76fc6d22-81b8-4eec-bcb4-45f5672c6220",
+       "input": {
+        "n": 2
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "facefa4b-b1c4-4369-bd0f-a88e6ed92cbb",
+       "span_id": "facefa4b-b1c4-4369-bd0f-a88e6ed92cbb",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699275520106299392",
+       "_xact_id": "1000198073874056140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073874056140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:15.127Z",
+       "dataset_id": "77629658-117b-4fdd-af87-e7bf3c1719b9",
+       "expected": null,
+       "facets": null,
+       "id": "f04f316c-d98c-4660-ad54-2c1abb862900",
+       "input": {
+        "n": 1
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "855bef09-2d5a-4796-91e7-ac86698425cb",
+       "span_id": "855bef09-2d5a-4796-91e7-ac86698425cb",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSSwPMAAA"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

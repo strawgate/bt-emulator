@@ -75,3 +75,11 @@ e2e-pg: pg-start
     db="bt_e2e_$(date +%s)"
     psql -h 127.0.0.1 -p {{pg_port}} -U postgres -qc "CREATE DATABASE $db"
     BT_EMULATOR_DATABASE_URL="postgres://postgres@127.0.0.1:{{pg_port}}/$db" just e2e
+
+# Re-harvest recorded Braintrust traffic from upstream repos (compat/sources.toml).
+compat-harvest *args:
+    uv run -q --with pyyaml python -I compat/harvest.py {{args}}
+
+# Rewrite compat/expected-failures.txt from the current replay results.
+compat-bless:
+    BT_COMPAT_BLESS=1 cargo test --test compat -- --nocapture

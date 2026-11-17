@@ -1,0 +1,254 @@
+{
+ "cassette": "eval/testdata/cassettes/TestNewEvaluatorCompatibility.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "name": "test-new-evaluator-compatibility",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T23:59:48.032Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "199780e7-e29b-45fa-9537-4fe89230441c",
+     "metadata": null,
+     "name": "test-new-evaluator-compatibility",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-new-evaluator-compatibility",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/199780e7-e29b-45fa-9537-4fe89230441c/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "4"
+       },
+       "input": {
+        "question": "What is 2+2?"
+       }
+      },
+      {
+       "expected": {
+        "answer": "Paris"
+       },
+       "input": {
+        "question": "What is the capital of France?"
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "2b048a6a-bc8f-4e1d-8e24-2a3a0ea15136",
+      "75dfeeba-3c99-4d51-ae20-7b42e5260e57"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/199780e7-e29b-45fa-9537-4fe89230441c/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlR9ATJAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275146460725249",
+       "_xact_id": "1000198073868354761",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073868354761",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-21T23:59:48.227Z",
+       "dataset_id": "199780e7-e29b-45fa-9537-4fe89230441c",
+       "expected": {
+        "answer": "Paris"
+       },
+       "facets": null,
+       "id": "75dfeeba-3c99-4d51-ae20-7b42e5260e57",
+       "input": {
+        "question": "What is the capital of France?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "ccdabeb0-86b2-4205-af5f-e776f53b4cde",
+       "span_id": "ccdabeb0-86b2-4205-af5f-e776f53b4cde",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699275146460725248",
+       "_xact_id": "1000198073868354761",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073868354761",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-21T23:59:48.227Z",
+       "dataset_id": "199780e7-e29b-45fa-9537-4fe89230441c",
+       "expected": {
+        "answer": "4"
+       },
+       "facets": null,
+       "id": "2b048a6a-bc8f-4e1d-8e24-2a3a0ea15136",
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "1786b1f6-4ca5-4fb8-987b-2b0a4527fc17",
+       "span_id": "1786b1f6-4ca5-4fb8-987b-2b0a4527fc17",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlR9ATJAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/199780e7-e29b-45fa-9537-4fe89230441c/fetch",
+   "request": {
+    "body": {
+     "cursor": "atlR9ATJAAA",
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "0"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/199780e7-e29b-45fa-9537-4fe89230441c",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T23:59:48.032Z",
+     "deleted_at": "2026-10-21T23:59:49.170Z",
+     "description": null,
+     "id": "199780e7-e29b-45fa-9537-4fe89230441c",
+     "metadata": null,
+     "name": "test-new-evaluator-compatibility",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-new-evaluator-compatibility",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,385 @@
+{
+ "cassette": "eval/testdata/cassettes/TestWorkflowExperimentIntegration.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "TestWorkflowExperimentIntegration",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-21T23:59:49.506Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "d7c64978-9e41-40b2-8a7b-724a76658e49",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "TestWorkflowExperimentIntegration",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/d7c64978-9e41-40b2-8a7b-724a76658e49/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "_is_merge": true,
+       "expected": "hello!",
+       "id": "c3a36404-d9f9-4630-939a-990b1b133200",
+       "input": "hello",
+       "metadata": {
+        "workflow_eval": {
+         "case_id": "greeting",
+         "run_id": "ed8bcbdb-2a59-4c6c-9be4-3dc3590c0a4d",
+         "trial_index": 0
+        }
+       },
+       "metrics": {
+        "start": 1792627189.5707588
+       },
+       "root_span_id": "36bef700a6f87fbe54aaadfa13686a19",
+       "span_attributes": {
+        "name": "eval",
+        "type": "eval"
+       },
+       "span_id": "6fa47ac6e976cb22"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "c3a36404-d9f9-4630-939a-990b1b133200"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/d7c64978-9e41-40b2-8a7b-724a76658e49/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlR9QpZAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275150849015808",
+       "_xact_id": "1000198073868421721",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073868421721",
+         "audit_data": {
+          "action": "merge",
+          "from": null,
+          "path": [
+           "expected"
+          ],
+          "to": "hello!"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": null,
+       "created": "2026-10-21T23:59:49.696Z",
+       "error": null,
+       "expected": "hello!",
+       "experiment_id": "d7c64978-9e41-40b2-8a7b-724a76658e49",
+       "facets": null,
+       "id": "c3a36404-d9f9-4630-939a-990b1b133200",
+       "input": "hello",
+       "is_root": true,
+       "metadata": {
+        "workflow_eval": {
+         "case_id": "greeting",
+         "run_id": "ed8bcbdb-2a59-4c6c-9be4-3dc3590c0a4d",
+         "trial_index": 0
+        }
+       },
+       "metrics": {
+        "start": 1792627189.5707588
+       },
+       "origin": null,
+       "output": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "36bef700a6f87fbe54aaadfa13686a19",
+       "scores": null,
+       "span_attributes": {
+        "name": "eval",
+        "type": "eval"
+       },
+       "span_id": "6fa47ac6e976cb22",
+       "span_parents": null,
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "1",
+     "x-bt-cursor": "atlR9QpZAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/d7c64978-9e41-40b2-8a7b-724a76658e49/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "_is_merge": true,
+       "expected": "hello!",
+       "id": "c3a36404-d9f9-4630-939a-990b1b133200",
+       "input": "hello",
+       "metadata": {
+        "workflow_eval": {
+         "case_id": "greeting",
+         "run_id": "ed8bcbdb-2a59-4c6c-9be4-3dc3590c0a4d",
+         "trial_index": 0
+        }
+       },
+       "metrics": {
+        "end": 1792627190.503649,
+        "start": 1792627189.5707588
+       },
+       "output": "hello!",
+       "root_span_id": "36bef700a6f87fbe54aaadfa13686a19",
+       "scores": {
+        "correct": 1
+       },
+       "span_attributes": {
+        "name": "eval",
+        "type": "eval"
+       },
+       "span_id": "6fa47ac6e976cb22"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "c3a36404-d9f9-4630-939a-990b1b133200"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/d7c64978-9e41-40b2-8a7b-724a76658e49/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlR9QpZAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275150849015808",
+       "_xact_id": "1000198073868486414",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073868421721",
+         "audit_data": {
+          "action": "merge",
+          "from": null,
+          "path": [
+           "expected"
+          ],
+          "to": "hello!"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000198073868486414",
+         "audit_data": {
+          "action": "merge",
+          "from": null,
+          "path": [
+           "output"
+          ],
+          "to": "hello!"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": null,
+       "created": "2026-10-21T23:59:49.696Z",
+       "error": null,
+       "expected": "hello!",
+       "experiment_id": "d7c64978-9e41-40b2-8a7b-724a76658e49",
+       "facets": null,
+       "id": "c3a36404-d9f9-4630-939a-990b1b133200",
+       "input": "hello",
+       "is_root": true,
+       "metadata": {
+        "workflow_eval": {
+         "case_id": "greeting",
+         "run_id": "ed8bcbdb-2a59-4c6c-9be4-3dc3590c0a4d",
+         "trial_index": 0
+        }
+       },
+       "metrics": {
+        "duration": 0.9328901767730713,
+        "end": 1792627190.503649,
+        "start": 1792627189.5707588
+       },
+       "origin": null,
+       "output": "hello!",
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "36bef700a6f87fbe54aaadfa13686a19",
+       "scores": {
+        "correct": 1
+       },
+       "span_attributes": {
+        "name": "eval",
+        "type": "eval"
+       },
+       "span_id": "6fa47ac6e976cb22",
+       "span_parents": null,
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "1",
+     "x-bt-cursor": "atlR9QpZAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/experiment/d7c64978-9e41-40b2-8a7b-724a76658e49",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-21T23:59:49.506Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": "2026-10-21T23:59:50.998Z",
+     "description": null,
+     "id": "d7c64978-9e41-40b2-8a7b-724a76658e49",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "TestWorkflowExperimentIntegration",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

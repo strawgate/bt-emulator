@@ -1,0 +1,156 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedClientInvoke.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PUT",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-prompt",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 50,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant. Respond with valid JSON in the format: {\"answer\": \"your answer here\"}",
+         "role": "system"
+        },
+        {
+         "content": "{{input.question}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073873401416",
+     "created": "2026-10-22T00:01:05.360Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "cb5da809-bd4a-436b-8bc8-b5339b2e5f9e",
+     "log_id": "p",
+     "name": "test-prompt",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 50,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant. Respond with valid JSON in the format: {\"answer\": \"your answer here\"}",
+         "role": "system"
+        },
+        {
+         "content": "{{input.question}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/cb5da809-bd4a-436b-8bc8-b5339b2e5f9e/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "question": "What is 2+2?"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "answer": "4"
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "38d8cd25-8c42-4f4d-b31d-534997c492dd",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

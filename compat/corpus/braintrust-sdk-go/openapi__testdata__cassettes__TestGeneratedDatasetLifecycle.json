@@ -1,0 +1,294 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedDatasetLifecycle.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "Full lifecycle test dataset",
+     "name": "lifecycle-test",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:01:12.773Z",
+     "deleted_at": null,
+     "description": "Full lifecycle test dataset",
+     "id": "a73da3a7-889f-4f8c-b6bb-53120c214547",
+     "metadata": null,
+     "name": "lifecycle-test",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "lifecycle-test",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset?id=a73da3a7-889f-4f8c-b6bb-53120c214547&limit=1",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2026-10-22T00:01:12.773Z",
+       "deleted_at": null,
+       "description": "Full lifecycle test dataset",
+       "id": "a73da3a7-889f-4f8c-b6bb-53120c214547",
+       "metadata": null,
+       "name": "lifecycle-test",
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "tags": null,
+       "url_slug": "lifecycle-test",
+       "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/a73da3a7-889f-4f8c-b6bb-53120c214547/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "4"
+       },
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "tags": [
+        "math",
+        "easy"
+       ]
+      },
+      {
+       "expected": {
+        "answer": "Paris"
+       },
+       "input": {
+        "question": "What is the capital of France?"
+       },
+       "tags": [
+        "geography",
+        "easy"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "d51dbf91-fa74-4eaf-b8ac-5c80ecdf25b9",
+      "a63e67a9-77e7-41e6-b29d-7c1cfb373728"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/a73da3a7-889f-4f8c-b6bb-53120c214547/fetch",
+   "request": {
+    "body": {
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSSQQUAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275511521083393",
+       "_xact_id": "1000198073873925140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073873925140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:13.088Z",
+       "dataset_id": "a73da3a7-889f-4f8c-b6bb-53120c214547",
+       "expected": {
+        "answer": "Paris"
+       },
+       "facets": null,
+       "id": "a63e67a9-77e7-41e6-b29d-7c1cfb373728",
+       "input": {
+        "question": "What is the capital of France?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "27f6531d-2562-4985-be4c-eea806b1365e",
+       "span_id": "27f6531d-2562-4985-be4c-eea806b1365e",
+       "tags": [
+        "geography",
+        "easy"
+       ]
+      },
+      {
+       "_pagination_key": "p07699275511521083392",
+       "_xact_id": "1000198073873925140",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073873925140",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:13.088Z",
+       "dataset_id": "a73da3a7-889f-4f8c-b6bb-53120c214547",
+       "expected": {
+        "answer": "4"
+       },
+       "facets": null,
+       "id": "d51dbf91-fa74-4eaf-b8ac-5c80ecdf25b9",
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "8fc2bebf-525c-4bad-a30a-c7508e964f06",
+       "span_id": "8fc2bebf-525c-4bad-a30a-c7508e964f06",
+       "tags": [
+        "math",
+        "easy"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSSQQUAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/a73da3a7-889f-4f8c-b6bb-53120c214547",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:01:12.773Z",
+     "deleted_at": "2026-10-22T00:01:13.729Z",
+     "description": "Full lifecycle test dataset",
+     "id": "a73da3a7-889f-4f8c-b6bb-53120c214547",
+     "metadata": null,
+     "name": "lifecycle-test",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "lifecycle-test",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset?id=a73da3a7-889f-4f8c-b6bb-53120c214547&limit=1",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,267 @@
+{
+ "cassette": "eval/testdata/cassettes/TestTaskAPI_Get.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestTaskAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "prompt": {
+       "messages": [
+        {
+         "content": "Test prompt",
+         "role": "user"
+        }
+       ],
+       "type": "completion"
+      },
+      "type": "prompt"
+     },
+     "function_type": "prompt",
+     "name": "Test Task",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestTaskAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073871829899",
+     "created": "2026-10-22T00:00:41.625Z",
+     "function_data": {
+      "prompt": {
+       "messages": [
+        {
+         "content": "Test prompt",
+         "role": "user"
+        }
+       ],
+       "type": "completion"
+      },
+      "type": "prompt"
+     },
+     "function_type": "prompt",
+     "id": "9db49227-2a33-4745-b5d3-b64f9a50af4a",
+     "log_id": "p",
+     "name": "Test Task",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestTaskAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestTaskAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073871829899",
+       "created": "2026-10-22T00:00:41.625Z",
+       "description": null,
+       "function_data": {
+        "prompt": {
+         "messages": [
+          {
+           "content": "Test prompt",
+           "role": "user"
+          }
+         ],
+         "type": "completion"
+        },
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "prompt",
+       "id": "9db49227-2a33-4745-b5d3-b64f9a50af4a",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Test Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": null,
+       "slug": "TestTaskAPI_Get-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=go-sdk-tests&slug=TestTaskAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073871829899",
+       "created": "2026-10-22T00:00:41.625Z",
+       "description": null,
+       "function_data": {
+        "prompt": {
+         "messages": [
+          {
+           "content": "Test prompt",
+           "role": "user"
+          }
+         ],
+         "type": "completion"
+        },
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "prompt",
+       "id": "9db49227-2a33-4745-b5d3-b64f9a50af4a",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Test Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": null,
+       "slug": "TestTaskAPI_Get-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/9db49227-2a33-4745-b5d3-b64f9a50af4a",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073871895316",
+     "created": "2026-10-22T00:00:42.649Z",
+     "id": "9db49227-2a33-4745-b5d3-b64f9a50af4a",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestTaskAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestTaskAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/9db49227-2a33-4745-b5d3-b64f9a50af4a",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Missing delete access to prompt id 9db49227-2a33-4745-b5d3-b64f9a50af4a, or the prompt does not exist [user_email=user@example.com] [user_org=REDACTED] [timestamp=1792627243.076] [request_id=iad1::d7p79-1792627243017-1738345259cc]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

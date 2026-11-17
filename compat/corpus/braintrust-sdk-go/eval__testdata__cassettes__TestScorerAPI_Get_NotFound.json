@@ -1,0 +1,25 @@
+{
+ "cassette": "eval/testdata/cassettes/TestScorerAPI_Get_NotFound.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=nonexistent-scorer-slug-12345",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,707 @@
+{
+ "cassette": "eval/testdata/cassettes/TestFunctionsAPI_EndToEnd_MixedTypes.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_EndToEnd_MixedTypes-task",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "E2E Task",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 100,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You answer questions with JSON. Return ONLY the JSON object, no markdown, no code blocks, no backticks.",
+         "role": "system"
+        },
+        {
+         "content": "Question: {{input.question}}. Return ONLY JSON like {\"answer\": \"your answer\", \"confidence\": 0.9}. No markdown formatting.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-task"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073868812354",
+     "created": "2026-10-21T23:59:55.002Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "ad4158eb-444d-4f67-bd47-e8dc34b731f3",
+     "log_id": "p",
+     "name": "E2E Task",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 100,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You answer questions with JSON. Return ONLY the JSON object, no markdown, no code blocks, no backticks.",
+         "role": "system"
+        },
+        {
+         "content": "Question: {{input.question}}. Return ONLY JSON like {\"answer\": \"your answer\", \"confidence\": 0.9}. No markdown formatting.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-task"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_EndToEnd_MixedTypes-scorer",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "name": "E2E Scorer",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "correct": 1,
+        "incorrect": 0
+       },
+       "type": "llm_classifier",
+       "use_cot": false
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer.",
+         "role": "system"
+        },
+        {
+         "content": "Is the output.answer field non-empty? Choose 'correct' if yes, 'incorrect' if no.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-scorer"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073868879357",
+     "created": "2026-10-21T23:59:56.362Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "id": "3b83f6a5-a469-4449-9180-fb501f22ae17",
+     "log_id": "p",
+     "name": "E2E Scorer",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "correct": 1,
+        "incorrect": 0
+       },
+       "type": "llm_classifier",
+       "use_cot": false
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer.",
+         "role": "system"
+        },
+        {
+         "content": "Is the output.answer field non-empty? Choose 'correct' if yes, 'incorrect' if no.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-scorer"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_EndToEnd_MixedTypes-task",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073868812354",
+       "created": "2026-10-21T23:59:55.002Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "ad4158eb-444d-4f67-bd47-e8dc34b731f3",
+       "log_id": "p",
+       "metadata": null,
+       "name": "E2E Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "max_tokens": 100,
+          "response_format": {
+           "type": "json_object"
+          },
+          "temperature": 0
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You answer questions with JSON. Return ONLY the JSON object, no markdown, no code blocks, no backticks.",
+           "role": "system"
+          },
+          {
+           "content": "Question: {{input.question}}. Return ONLY JSON like {\"answer\": \"your answer\", \"confidence\": 0.9}. No markdown formatting.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-task",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_EndToEnd_MixedTypes-scorer",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073868879357",
+       "created": "2026-10-21T23:59:56.362Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "scorer",
+       "id": "3b83f6a5-a469-4449-9180-fb501f22ae17",
+       "log_id": "p",
+       "metadata": null,
+       "name": "E2E Scorer",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0
+         }
+        },
+        "parser": {
+         "choice_scores": {
+          "correct": 1,
+          "incorrect": 0
+         },
+         "type": "llm_classifier",
+         "use_cot": false
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer.",
+           "role": "system"
+          },
+          {
+           "content": "Is the output.answer field non-empty? Choose 'correct' if yes, 'incorrect' if no.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-scorer",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-e2e-exp",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-10-21T23:59:57.797Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "b0c616c5-c208-420e-b05e-a67ba453fbeb",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "test-e2e-exp-cee560c0",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/ad4158eb-444d-4f67-bd47-e8dc34b731f3/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "question": "What is the capital of France?"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "answer": "Paris",
+     "confidence": 0.95
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "5724a2a8-6f50-4456-aa12-9fc408a26421",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/3b83f6a5-a469-4449-9180-fb501f22ae17/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": {
+       "answer": "Paris",
+       "confidence": 1
+      },
+      "input": {
+       "question": "What is the capital of France?"
+      },
+      "output": {
+       "answer": "Paris",
+       "confidence": 0.95
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "incorrect"
+     },
+     "name": "E2E Scorer",
+     "score": 0
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "5f792a65-060c-4b80-8018-e21c0e12c699",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/ad4158eb-444d-4f67-bd47-e8dc34b731f3/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "question": "What is 2+2?"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "answer": "4",
+     "confidence": 0.9
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "a7bf8681-6213-4ac0-8339-48529fa3a7b2",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/3b83f6a5-a469-4449-9180-fb501f22ae17/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": {
+       "answer": "4",
+       "confidence": 1
+      },
+      "input": {
+       "question": "What is 2+2?"
+      },
+      "output": {
+       "answer": "4",
+       "confidence": 0.9
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "incorrect"
+     },
+     "name": "E2E Scorer",
+     "score": 0
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cache-ttl": "43200",
+     "x-bt-cached": "HIT",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "5172d935-274c-495d-831d-2439bd8431df",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/3b83f6a5-a469-4449-9180-fb501f22ae17",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073869206878",
+     "created": "2026-10-22T00:00:01.430Z",
+     "id": "3b83f6a5-a469-4449-9180-fb501f22ae17",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-scorer"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/ad4158eb-444d-4f67-bd47-e8dc34b731f3",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073869207985",
+     "created": "2026-10-22T00:00:01.806Z",
+     "id": "ad4158eb-444d-4f67-bd47-e8dc34b731f3",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestFunctionsAPI_EndToEnd_MixedTypes-task"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

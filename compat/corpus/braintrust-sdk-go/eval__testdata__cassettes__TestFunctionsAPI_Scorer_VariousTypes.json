@@ -1,0 +1,512 @@
+{
+ "cassette": "eval/testdata/cassettes/TestFunctionsAPI_Scorer_VariousTypes.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Scorer_VariousTypes-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "name": "Type Flexible Scorer",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "bad": 0,
+        "good": 1
+       },
+       "type": "llm_classifier",
+       "use_cot": true
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate quality.",
+         "role": "system"
+        },
+        {
+         "content": "Input: {{input}}, Output: {{output}}. Choose 'good' or 'bad'.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073869273168",
+     "created": "2026-10-22T00:00:02.572Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "id": "644a40ee-8447-470c-996f-60b92622bdc0",
+     "log_id": "p",
+     "name": "Type Flexible Scorer",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "bad": 0,
+        "good": 1
+       },
+       "type": "llm_classifier",
+       "use_cot": true
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate quality.",
+         "role": "system"
+        },
+        {
+         "content": "Input: {{input}}, Output: {{output}}. Choose 'good' or 'bad'.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Scorer_VariousTypes-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073869273168",
+       "created": "2026-10-22T00:00:02.572Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "scorer",
+       "id": "644a40ee-8447-470c-996f-60b92622bdc0",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Type Flexible Scorer",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "parser": {
+         "choice_scores": {
+          "bad": 0,
+          "good": 1
+         },
+         "type": "llm_classifier",
+         "use_cot": true
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer. Evaluate quality.",
+           "role": "system"
+          },
+          {
+           "content": "Input: {{input}}, Output: {{output}}. Choose 'good' or 'bad'.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/644a40ee-8447-470c-996f-60b92622bdc0/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": "expected",
+      "input": "test input",
+      "output": "test output"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "bad",
+      "rationale": "The input and output provided are too vague and do not provide any specific context or criteria for evaluation. Without additional information about what constitutes a 'good' or 'bad' output, it is impossible to assess the quality accurately. Therefore, I conclude that this example is not a good representation of quality."
+     },
+     "name": "Type Flexible Scorer",
+     "score": 0
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "c8dc4bc3-81a2-4210-a392-2700965f364e",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Scorer_VariousTypes-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073869273168",
+       "created": "2026-10-22T00:00:02.572Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "scorer",
+       "id": "644a40ee-8447-470c-996f-60b92622bdc0",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Type Flexible Scorer",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "parser": {
+         "choice_scores": {
+          "bad": 0,
+          "good": 1
+         },
+         "type": "llm_classifier",
+         "use_cot": true
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer. Evaluate quality.",
+           "role": "system"
+          },
+          {
+           "content": "Input: {{input}}, Output: {{output}}. Choose 'good' or 'bad'.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/644a40ee-8447-470c-996f-60b92622bdc0/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": {
+       "answer": "4"
+      },
+      "input": {
+       "question": "What is 2+2?"
+      },
+      "output": {
+       "answer": "4"
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "good",
+      "rationale": "1. The question asks for a simple arithmetic calculation, specifically the sum of 2 and 2.\n2. The output provided is '4', which is the correct answer to the question.\n3. There are no errors or misunderstandings in the response, and it directly addresses the question asked.\n4. Therefore, the quality of the answer is good."
+     },
+     "name": "Type Flexible Scorer",
+     "score": 1
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "d19c3ba1-a6fb-4a38-99c1-b3558eea4111",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Scorer_VariousTypes-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073869273168",
+       "created": "2026-10-22T00:00:02.572Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "scorer",
+       "id": "644a40ee-8447-470c-996f-60b92622bdc0",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Type Flexible Scorer",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "parser": {
+         "choice_scores": {
+          "bad": 0,
+          "good": 1
+         },
+         "type": "llm_classifier",
+         "use_cot": true
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer. Evaluate quality.",
+           "role": "system"
+          },
+          {
+           "content": "Input: {{input}}, Output: {{output}}. Choose 'good' or 'bad'.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/644a40ee-8447-470c-996f-60b92622bdc0/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": {
+       "result": "success"
+      },
+      "input": {
+       "key": "value"
+      },
+      "output": {
+       "result": "success"
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "good",
+      "rationale": "The input is a valid JSON object with a key-value pair, and the output is also a valid JSON object indicating a successful result. Both the input and output conform to the expected structure and format, which suggests that the operation was performed correctly."
+     },
+     "name": "Type Flexible Scorer",
+     "score": 1
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "d1100d4d-4f57-4af0-a97e-f78faaa3999d",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/644a40ee-8447-470c-996f-60b92622bdc0",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073869666155",
+     "created": "2026-10-22T00:00:08.524Z",
+     "id": "644a40ee-8447-470c-996f-60b92622bdc0",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestFunctionsAPI_Scorer_VariousTypes-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

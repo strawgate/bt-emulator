@@ -1,0 +1,408 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_prompts_end_to_end_with_real_backend.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-generated-prompts-vcr",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-09-03T16:16:15.478Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "name": "python-sdk-generated-prompts-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/prompt",
+   "request": {
+    "body": {
+     "description": "created by the Python SDK VCR test",
+     "name": "Generated prompts API",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197800254768533",
+     "created": "2026-09-03T16:16:16.158Z",
+     "description": "created by the Python SDK VCR test",
+     "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+     "log_id": "p",
+     "name": "Generated prompts API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/prompt?limit=1&project_id=278bef0f-7815-4f7f-804e-7ed91f30f9f5&slug=generated-prompts-api",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000197800254768533",
+       "created": "2026-09-03T16:16:16.158Z",
+       "description": "created by the Python SDK VCR test",
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_type": null,
+       "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Generated prompts API",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-5-mini"
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Hello {{name}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "generated-prompts-api",
+       "tags": [
+        "python-sdk-vcr"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/prompt/cff6c2ab-4828-47d4-ba6a-5c866d2016dd?version=1000197800254768533",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197800254768533",
+     "created": "2026-09-03T16:16:16.158Z",
+     "description": "created by the Python SDK VCR test",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": null,
+     "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+     "log_id": "p",
+     "metadata": null,
+     "name": "Generated prompts API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PATCH",
+   "path": "/v1/prompt/cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+   "request": {
+    "body": {
+     "description": "updated by the Python SDK VCR test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197800255029966",
+     "created": "2026-09-03T16:16:16.158Z",
+     "description": "updated by the Python SDK VCR test",
+     "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+     "log_id": "p",
+     "name": "Generated prompts API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PUT",
+   "path": "/v1/prompt",
+   "request": {
+    "body": {
+     "description": "replaced by the Python SDK VCR test",
+     "name": "Generated prompts API",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197800255035082",
+     "created": "2026-09-03T16:16:20.784Z",
+     "description": "replaced by the Python SDK VCR test",
+     "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+     "log_id": "p",
+     "name": "Generated prompts API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-5-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "generated-prompts-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/prompt/cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000197800255098093",
+     "created": "2026-09-03T16:16:21.456Z",
+     "id": "cff6c2ab-4828-47d4-ba6a-5c866d2016dd",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "slug": "generated-prompts-api"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-09-03T16:16:15.478Z",
+     "deleted_at": "2026-09-03T16:16:22.059Z",
+     "description": null,
+     "id": "278bef0f-7815-4f7f-804e-7ed91f30f9f5",
+     "name": "python-sdk-generated-prompts-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

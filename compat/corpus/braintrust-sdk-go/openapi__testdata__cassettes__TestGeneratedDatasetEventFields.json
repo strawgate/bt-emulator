@@ -1,0 +1,181 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedDatasetEventFields.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "name": "test-dataset-fields",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:01:14.159Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "06850513-f449-4aa5-8ef4-df126d4a84f4",
+     "metadata": null,
+     "name": "test-dataset-fields",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-fields",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/06850513-f449-4aa5-8ef4-df126d4a84f4/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "42",
+        "confidence": 0.95
+       },
+       "input": {
+        "context": "philosophical",
+        "question": "What is the meaning of life?"
+       },
+       "metadata": {
+        "model": "test-model",
+        "source": "test"
+       },
+       "tags": [
+        "philosophy",
+        "test",
+        "integration"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "2ee7db76-bae5-4dab-a2ef-e8f6be4b85ad"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/06850513-f449-4aa5-8ef4-df126d4a84f4/fetch",
+   "request": {
+    "body": {
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSSgaUAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275515857993728",
+       "_xact_id": "1000198073873991316",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073873991316",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:01:14.290Z",
+       "dataset_id": "06850513-f449-4aa5-8ef4-df126d4a84f4",
+       "expected": {
+        "answer": "42",
+        "confidence": 0.95
+       },
+       "facets": null,
+       "id": "2ee7db76-bae5-4dab-a2ef-e8f6be4b85ad",
+       "input": {
+        "context": "philosophical",
+        "question": "What is the meaning of life?"
+       },
+       "is_root": true,
+       "metadata": {
+        "model": "test-model",
+        "source": "test"
+       },
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "bd777657-459d-4dce-be67-f44edceefc65",
+       "span_id": "bd777657-459d-4dce-be67-f44edceefc65",
+       "tags": [
+        "philosophy",
+        "test",
+        "integration"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "1",
+     "x-bt-cursor": "atlSSgaUAAA"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

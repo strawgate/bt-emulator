@@ -1,0 +1,241 @@
+{
+ "cassette": "eval/testdata/cassettes/TestDatasetAPI_Query_Integration.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "Test dataset for DatasetAPI.Query",
+     "name": "test-dataset-query",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T22:56:30.542Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "96e96a88-dcdd-4fa7-ac4b-1207107f1ff1",
+     "metadata": null,
+     "name": "test-dataset-query",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-query",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/96e96a88-dcdd-4fa7-ac4b-1207107f1ff1/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "Test answer 1"
+       },
+       "input": {
+        "question": "Test question 1"
+       }
+      },
+      {
+       "expected": {
+        "answer": "Test answer 2"
+       },
+       "input": {
+        "question": "Test question 2"
+       }
+      },
+      {
+       "expected": {
+        "answer": "Test answer 3"
+       },
+       "input": {
+        "question": "Test question 3"
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "ed469366-5148-464d-a72b-138aa8070c39",
+      "24093802-14e7-4268-8ad7-bfe807715059",
+      "5c17c2d9-5580-4fc5-9efe-8ba5c382bbcb"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/96e96a88-dcdd-4fa7-ac4b-1207107f1ff1/fetch",
+   "request": {
+    "body": {
+     "limit": 2
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSGQyvAAE",
+     "events": [
+      {
+       "_pagination_key": "p07699275305507028994",
+       "_xact_id": "1000198073870781615",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073870781615",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:24.025Z",
+       "dataset_id": "96e96a88-dcdd-4fa7-ac4b-1207107f1ff1",
+       "expected": {
+        "answer": "Test answer 3"
+       },
+       "facets": null,
+       "id": "5c17c2d9-5580-4fc5-9efe-8ba5c382bbcb",
+       "input": {
+        "question": "Test question 3"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "07dd88f9-3120-416c-b75f-2873dc2782cd",
+       "span_id": "07dd88f9-3120-416c-b75f-2873dc2782cd",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699275305507028993",
+       "_xact_id": "1000198073870781615",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073870781615",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:24.025Z",
+       "dataset_id": "96e96a88-dcdd-4fa7-ac4b-1207107f1ff1",
+       "expected": {
+        "answer": "Test answer 2"
+       },
+       "facets": null,
+       "id": "24093802-14e7-4268-8ad7-bfe807715059",
+       "input": {
+        "question": "Test question 2"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "ec64d6ef-c718-4e99-9b71-c8c284af9c2e",
+       "span_id": "ec64d6ef-c718-4e99-9b71-c8c284af9c2e",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSGQyvAAE"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/96e96a88-dcdd-4fa7-ac4b-1207107f1ff1",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T22:56:30.542Z",
+     "deleted_at": "2026-10-22T00:00:26.308Z",
+     "description": null,
+     "id": "96e96a88-dcdd-4fa7-ac4b-1207107f1ff1",
+     "metadata": null,
+     "name": "test-dataset-query",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-query",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,321 @@
+{
+ "cassette": "openapi/testdata/cassettes/TestGeneratedAutomationLifecycle.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project_automation",
+   "request": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "description": "Paused SDK integration test",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "Paused SDK integration test",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "Paused SDK integration test",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PATCH",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "description": "Updated paused SDK integration test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "Updated paused SDK integration test",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "Updated paused SDK integration test",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PATCH",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": {
+     "description": ""
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "config": {
+      "action": {
+       "type": "webhook",
+       "url": "https://example.com/braintrust-hook"
+      },
+      "btql_filter": "error IS NOT NULL AND metadata.environment = 'production'",
+      "event_type": "logs",
+      "interval_seconds": 3600,
+      "status": "paused"
+     },
+     "created": "2026-10-22T00:01:18.658Z",
+     "description": "",
+     "id": "2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+     "name": "go-sdk-automation-test-WIMSQSWJFIJM5WKZMEUGWHQU3E",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project_automation/2b508da9-1f1b-47c6-94f2-e0221e45fe3d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "Code": "ForbiddenError",
+     "Message": "Missing read access to project_automation id 2b508da9-1f1b-47c6-94f2-e0221e45fe3d, or the project_automation does not exist [user_email=user@example.com] [user_org=REDACTED] [timestamp=1792627285.691]"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 403
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

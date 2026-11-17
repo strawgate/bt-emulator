@@ -1,0 +1,612 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_datasets_end_to_end_with_real_backend.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "f5883013-b5c1-438d-9044-5182b4682337",
+       "is_universal_api": null,
+       "name": "abhi-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-generated-datasets-vcr",
+     "org_name": "abhi-test-org"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.545Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "name": "python-sdk-generated-datasets-vcr",
+     "org_id": "f5883013-b5c1-438d-9044-5182b4682337",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "created by the Python SDK VCR test",
+     "name": "generated-datasets-api",
+     "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.914Z",
+     "deleted_at": null,
+     "description": "created by the Python SDK VCR test",
+     "id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+     "metadata": null,
+     "name": "generated-datasets-api",
+     "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "tags": null,
+     "url_slug": "generated-datasets-api",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset?dataset_name=generated-datasets-api&project_id=6becfeb2-3373-4c68-abe2-c214f032ee92",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2026-08-18T19:16:50.914Z",
+       "deleted_at": null,
+       "description": "created by the Python SDK VCR test",
+       "id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+       "metadata": null,
+       "name": "generated-datasets-api",
+       "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+       "tags": null,
+       "url_slug": "generated-datasets-api",
+       "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.914Z",
+     "deleted_at": null,
+     "description": "created by the Python SDK VCR test",
+     "id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+     "metadata": null,
+     "name": "generated-datasets-api",
+     "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "tags": null,
+     "url_slug": "generated-datasets-api",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PATCH",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d",
+   "request": {
+    "body": {
+     "description": "updated by the Python SDK VCR test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.914Z",
+     "deleted_at": null,
+     "description": "updated by the Python SDK VCR test",
+     "id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+     "metadata": null,
+     "name": "generated-datasets-api",
+     "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "tags": null,
+     "url_slug": "generated-datasets-api",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": "42",
+       "id": "generated-datasets-row",
+       "input": {
+        "context": {
+         "preserved": true
+        },
+        "question": "What is the answer?",
+        "replace_me": {
+         "old": true
+        }
+       },
+       "tags": [
+        "keep",
+        "remove"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "generated-datasets-row"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "_array_delete": [
+        {
+         "delete": [
+          "remove"
+         ],
+         "path": [
+          "tags"
+         ]
+        }
+       ],
+       "_is_merge": true,
+       "_merge_paths": [
+        [
+         "input",
+         "replace_me"
+        ]
+       ],
+       "id": "generated-datasets-row",
+       "input": {
+        "question": "What is the updated answer?",
+        "replace_me": {
+         "new": true
+        }
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "generated-datasets-row"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/fetch",
+   "request": {
+    "body": {
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "aoSvpOXwAAA",
+     "events": [
+      {
+       "_pagination_key": "p07675452787713376256",
+       "_xact_id": "1000197710368010024",
+       "audit_data": [
+        {
+         "_xact_id": "1000197710368007664",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000197710368010024",
+         "audit_data": {
+          "action": "merge",
+          "deleted_tags": [
+           "remove"
+          ],
+          "from": null,
+          "path": [
+           "input"
+          ],
+          "to": {
+           "question": "What is the updated answer?",
+           "replace_me": {
+            "new": true
+           }
+          }
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-08-18T19:16:52.005Z",
+       "dataset_id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+       "expected": "42",
+       "facets": null,
+       "id": "generated-datasets-row",
+       "input": {
+        "context": {
+         "preserved": true
+        },
+        "question": "What is the updated answer?",
+        "replace_me": {
+         "new": true
+        }
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+       "root_span_id": "76c1479f-745e-495d-9e5f-746b1cc37f6b",
+       "span_id": "76c1479f-745e-495d-9e5f-746b1cc37f6b",
+       "tags": [
+        "keep"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoSvpOXwAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/fetch?limit=10",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "cursor": "aoSvpOXwAAA",
+     "events": [
+      {
+       "_pagination_key": "p07675452787713376256",
+       "_xact_id": "1000197710368010024",
+       "audit_data": [
+        {
+         "_xact_id": "1000197710368007664",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000197710368010024",
+         "audit_data": {
+          "action": "merge",
+          "deleted_tags": [
+           "remove"
+          ],
+          "from": null,
+          "path": [
+           "input"
+          ],
+          "to": {
+           "question": "What is the updated answer?",
+           "replace_me": {
+            "new": true
+           }
+          }
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-08-18T19:16:52.005Z",
+       "dataset_id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+       "expected": "42",
+       "facets": null,
+       "id": "generated-datasets-row",
+       "input": {
+        "context": {
+         "preserved": true
+        },
+        "question": "What is the updated answer?",
+        "replace_me": {
+         "new": true
+        }
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+       "root_span_id": "76c1479f-745e-495d-9e5f-746b1cc37f6b",
+       "span_id": "76c1479f-745e-495d-9e5f-746b1cc37f6b",
+       "tags": [
+        "keep"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoSvpOXwAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/feedback",
+   "request": {
+    "body": {
+     "feedback": [
+      {
+       "comment": "useful example",
+       "id": "generated-datasets-row"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "status": "success"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/summarize?summarize_data=true",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "data_summary": {
+      "total_records": 1
+     },
+     "dataset_name": "generated-datasets-api",
+     "dataset_url": "https://www.braintrust.dev/app/abhi-test-org/p/python-sdk-generated-datasets-vcr/datasets/generated-datasets-api",
+     "project_name": "python-sdk-generated-datasets-vcr",
+     "project_url": "https://www.braintrust.dev/app/abhi-test-org/p/python-sdk-generated-datasets-vcr"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "_object_delete": true,
+       "id": "generated-datasets-row"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "generated-datasets-row"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d/fetch",
+   "request": {
+    "body": {
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/89cb25ac-eb76-4412-b07a-63f515b8d27d",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.914Z",
+     "deleted_at": "2026-08-18T19:16:54.899Z",
+     "description": "updated by the Python SDK VCR test",
+     "id": "89cb25ac-eb76-4412-b07a-63f515b8d27d",
+     "metadata": null,
+     "name": "generated-datasets-api",
+     "project_id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "tags": null,
+     "url_slug": "generated-datasets-api",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/6becfeb2-3373-4c68-abe2-c214f032ee92",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T19:16:50.545Z",
+     "deleted_at": "2026-08-18T19:16:55.150Z",
+     "description": null,
+     "id": "6becfeb2-3373-4c68-abe2-c214f032ee92",
+     "name": "python-sdk-generated-datasets-vcr",
+     "org_id": "f5883013-b5c1-438d-9044-5182b4682337",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

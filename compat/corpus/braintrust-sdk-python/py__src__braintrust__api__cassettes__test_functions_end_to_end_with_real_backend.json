@@ -1,0 +1,410 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_functions_end_to_end_with_real_backend.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-generated-functions-vcr",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-09-10T14:03:19.036Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "08507b0c-d606-4609-aab2-935137072001",
+     "name": "python-sdk-generated-functions-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "created"
+      },
+      "type": "parameters"
+     },
+     "function_type": "parameters",
+     "name": "Generated parameters API",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197839368165794",
+     "created": "2026-09-10T14:03:19.646Z",
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "created"
+      },
+      "type": "parameters"
+     },
+     "function_type": "parameters",
+     "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+     "log_id": "p",
+     "name": "Generated parameters API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_id=08507b0c-d606-4609-aab2-935137072001&slug=generated-parameters-api",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000197839368165794",
+       "created": "2026-09-10T14:03:19.646Z",
+       "description": null,
+       "function_data": {
+        "__schema": {
+         "properties": {
+          "prefix": {
+           "type": "string"
+          }
+         },
+         "type": "object"
+        },
+        "data": {
+         "prefix": "created"
+        },
+        "type": "parameters"
+       },
+       "function_schema": null,
+       "function_type": "parameters",
+       "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Generated parameters API",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "08507b0c-d606-4609-aab2-935137072001",
+       "prompt_data": null,
+       "slug": "generated-parameters-api",
+       "tags": [
+        "python-sdk-vcr"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function/a1105df5-e620-4879-8639-6d0e88064b7e?version=1000197839368165794",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197839368165794",
+     "created": "2026-09-10T14:03:19.646Z",
+     "description": null,
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "created"
+      },
+      "type": "parameters"
+     },
+     "function_schema": null,
+     "function_type": "parameters",
+     "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+     "log_id": "p",
+     "metadata": null,
+     "name": "Generated parameters API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "origin": null,
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "prompt_data": null,
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PATCH",
+   "path": "/v1/function/a1105df5-e620-4879-8639-6d0e88064b7e",
+   "request": {
+    "body": {
+     "description": "updated by the Python SDK VCR test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197839368292659",
+     "created": "2026-09-10T14:03:19.646Z",
+     "description": "updated by the Python SDK VCR test",
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "created"
+      },
+      "type": "parameters"
+     },
+     "function_type": "parameters",
+     "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+     "log_id": "p",
+     "name": "Generated parameters API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "PUT",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "replaced"
+      },
+      "type": "parameters"
+     },
+     "function_type": "parameters",
+     "name": "Generated parameters API",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000197839368294460",
+     "created": "2026-09-10T14:03:21.493Z",
+     "function_data": {
+      "__schema": {
+       "properties": {
+        "prefix": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "data": {
+       "prefix": "replaced"
+      },
+      "type": "parameters"
+     },
+     "function_type": "parameters",
+     "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+     "log_id": "p",
+     "name": "Generated parameters API",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api",
+     "tags": [
+      "python-sdk-vcr"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/a1105df5-e620-4879-8639-6d0e88064b7e",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000197839368296140",
+     "created": "2026-09-10T14:03:21.720Z",
+     "id": "a1105df5-e620-4879-8639-6d0e88064b7e",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "08507b0c-d606-4609-aab2-935137072001",
+     "slug": "generated-parameters-api"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/08507b0c-d606-4609-aab2-935137072001",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-09-10T14:03:19.036Z",
+     "deleted_at": "2026-09-10T14:03:21.935Z",
+     "description": null,
+     "id": "08507b0c-d606-4609-aab2-935137072001",
+     "name": "python-sdk-generated-functions-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

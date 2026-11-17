@@ -1,0 +1,27 @@
+{
+ "cassette": "py/src/braintrust/cassettes/test_scorer_spans_have_purpose_attribute.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/base_experiment/get_id",
+   "request": {
+    "body": {
+     "id": "test-scorer-purpose"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "[\n  {\n    \"validation\": \"uuid\",\n    \"code\": \"invalid_string\",\n    \"message\": \"Invalid uuid\",\n    \"path\": [\n      \"id\"\n    ]\n  }\n] [user_email=___braintrust_anon_user___@braintrustdata.com] [timestamp=1768425457.184] [request_id=iad1::6csht-1768425457143-aa189dce84b1]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

@@ -1,0 +1,27 @@
+{
+ "cassette": "py/src/braintrust/cassettes/test_classifier_spans_are_logged.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/base_experiment/get_id",
+   "request": {
+    "body": {
+     "id": "test-classifier-span"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "[\n  {\n    \"validation\": \"uuid\",\n    \"code\": \"invalid_string\",\n    \"message\": \"Invalid uuid\",\n    \"path\": [\n      \"id\"\n    ]\n  }\n] [user_email=___braintrust_anon_user___@braintrustdata.com] [timestamp=1776185951.284] [request_id=yul1::rlkb8-1776185950926-a394af342bfa]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

@@ -1,0 +1,547 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_experiment_summarize_with_real_backend[True].yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-generated-experiments-vcr",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T01:12:52.122Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "name": "python-sdk-generated-experiments-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": false,
+     "name": "generated-experiments-base",
+     "project_id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "git_diff": null,
+      "tag": null
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-08-18T01:12:52.122Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "067c3728-da43-4dac-9d9e-555ae9873dde",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "generated-experiments-base",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "tag": null
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/version",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "brainstore_can_contain_row_refs": true,
+     "brainstore_default": "force",
+     "brainstore_export_enabled": true,
+     "brainstore_wal_footer_version": "v3",
+     "brainstore_wal_use_efficient_format": true,
+     "code_execution": true,
+     "commit": "e27b14341914e26f128098670df73d3dd05169bf",
+     "control_plane_telemetry": [
+      "status",
+      "memprof",
+      "usage"
+     ],
+     "date_version": "20260819",
+     "deployment_mode": "lambda",
+     "deployment_type": "custom",
+     "ff_version": 46,
+     "has_logs2": true,
+     "has_realtime_wal_bucket": true,
+     "js": true,
+     "logs3_payload_max_bytes": 5242880,
+     "loop_runtime_enabled": true,
+     "skip_pg_config": "all",
+     "universal": true,
+     "version": "2.11.0"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "context": {
+        "caller_filename": "/Users/abhijeetprasad/workspace/braintrust-sdk-python/py/.nox/test_core/lib/python3.14/site-packages/_pytest/python.py",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust-python-logger"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:46:04.995548+00:00",
+       "expected": "correct",
+       "experiment_id": "067c3728-da43-4dac-9d9e-555ae9873dde",
+       "id": "generated-experiments-base-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "metrics": {
+        "completion_tokens": 20,
+        "end": 1787165164.996043,
+        "start": 1787165164.174062
+       },
+       "output": "incorrect",
+       "root_span_id": "63ce0a8234c72ba2d79ff36cdcf1086c",
+       "scores": {
+        "accuracy": 0
+       },
+       "span_attributes": {
+        "exec_counter": 3,
+        "name": "root",
+        "type": "eval"
+       },
+       "span_id": "a777acc9785f5c88",
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "generated-experiments-base-row"
+     ],
+     "xact_id": "1000197715909279737"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-generated-experiments-vcr",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T01:12:52.122Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "name": "python-sdk-generated-experiments-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "base_exp_id": "067c3728-da43-4dac-9d9e-555ae9873dde",
+     "ensure_new": false,
+     "name": "generated-experiments-candidate",
+     "project_id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "git_diff": null,
+      "tag": null
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": "067c3728-da43-4dac-9d9e-555ae9873dde",
+     "commit": null,
+     "created": "2026-08-18T01:12:52.485Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "b28b747b-63bb-4e5f-b65b-d40e1970f213",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "generated-experiments-candidate",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "c70d5397-daab-4085-b722-3693fd8126c3",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "tag": null
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "context": {
+        "caller_filename": "/Users/abhijeetprasad/workspace/braintrust-sdk-python/py/.nox/test_core/lib/python3.14/site-packages/_pytest/python.py",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust-python-logger"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:46:04.996084+00:00",
+       "expected": "correct",
+       "experiment_id": "b28b747b-63bb-4e5f-b65b-d40e1970f213",
+       "id": "generated-experiments-candidate-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "metrics": {
+        "completion_tokens": 10,
+        "end": 1787165164.996673,
+        "start": 1787165164.995522
+       },
+       "output": "correct",
+       "root_span_id": "b4009b5cf5a2884619885a6467e93204",
+       "scores": {
+        "accuracy": 1
+       },
+       "span_attributes": {
+        "exec_counter": 4,
+        "name": "root",
+        "type": "eval"
+       },
+       "span_id": "2f4c4a510964b778",
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "generated-experiments-candidate-row"
+     ],
+     "xact_id": "1000197715909285231"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/experiment/b28b747b-63bb-4e5f-b65b-d40e1970f213/summarize?summarize_scores=true&comparison_experiment_id=067c3728-da43-4dac-9d9e-555ae9873dde",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "comparison_experiment_name": "generated-experiments-base",
+     "experiment_name": "generated-experiments-candidate",
+     "experiment_url": "https://www.braintrust.dev/app/Braintrust%20SDKs/p/python-sdk-generated-experiments-vcr/experiments/generated-experiments-candidate",
+     "metrics": {
+      "completion_reasoning_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "completion_reasoning_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "completion_tokens": {
+       "diff": -10,
+       "improvements": 1,
+       "metric": 10,
+       "name": "completion_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "duration": {
+       "diff": -0.8208298683166504,
+       "improvements": 1,
+       "metric": 0.0011510848999023438,
+       "name": "duration",
+       "regressions": 0,
+       "unit": "s"
+      },
+      "errors": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "errors",
+       "regressions": 0,
+       "unit": ""
+      },
+      "llm_calls": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "llm_calls",
+       "regressions": 0,
+       "unit": ""
+      },
+      "llm_errors": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "llm_errors",
+       "regressions": 0,
+       "unit": ""
+      },
+      "prompt_cache_creation_1h_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "prompt_cache_creation_1h_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "prompt_cache_creation_5m_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "prompt_cache_creation_5m_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "prompt_cache_creation_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "prompt_cache_creation_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "prompt_cached_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "prompt_cached_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "prompt_tokens": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "prompt_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      },
+      "tool_calls": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "tool_calls",
+       "regressions": 0,
+       "unit": ""
+      },
+      "tool_errors": {
+       "diff": 0,
+       "improvements": 0,
+       "metric": 0,
+       "name": "tool_errors",
+       "regressions": 0,
+       "unit": ""
+      },
+      "total_tokens": {
+       "diff": -10,
+       "improvements": 1,
+       "metric": 10,
+       "name": "total_tokens",
+       "regressions": 0,
+       "unit": "tok"
+      }
+     },
+     "project_name": "python-sdk-generated-experiments-vcr",
+     "project_url": "https://www.braintrust.dev/app/Braintrust%20SDKs/p/python-sdk-generated-experiments-vcr",
+     "scores": {
+      "accuracy": {
+       "diff": 1,
+       "improvements": 1,
+       "name": "accuracy",
+       "regressions": 0,
+       "score": 1
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

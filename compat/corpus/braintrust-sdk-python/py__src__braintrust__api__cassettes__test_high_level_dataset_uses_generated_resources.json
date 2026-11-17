@@ -1,0 +1,297 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_high_level_dataset_uses_generated_resources.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "f5883013-b5c1-438d-9044-5182b4682337",
+       "is_universal_api": null,
+       "name": "abhi-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-high-level-datasets-vcr",
+     "org_name": "abhi-test-org"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T17:43:49.805Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "8bc899ea-301c-43a4-afce-6b7e381f72df",
+     "name": "python-sdk-high-level-datasets-vcr",
+     "org_id": "f5883013-b5c1-438d-9044-5182b4682337",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "created through braintrust.init_dataset",
+     "name": "logs",
+     "project_id": "8bc899ea-301c-43a4-afce-6b7e381f72df"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T17:43:50.112Z",
+     "deleted_at": null,
+     "description": "created through braintrust.init_dataset",
+     "id": "e0753a78-8202-4f97-9b70-8555cca01f24",
+     "metadata": null,
+     "name": "logs",
+     "project_id": "8bc899ea-301c-43a4-afce-6b7e381f72df",
+     "tags": null,
+     "url_slug": "logs",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/e0753a78-8202-4f97-9b70-8555cca01f24/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": "42",
+       "id": "high-level-generated-row",
+       "input": {
+        "question": "What is the answer?"
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "high-level-generated-row"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/e0753a78-8202-4f97-9b70-8555cca01f24/fetch",
+   "request": {
+    "body": {
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "aoSZ1pNdAAA",
+     "events": [
+      {
+       "_pagination_key": "p07675428811820564480",
+       "_xact_id": "1000197710002164573",
+       "audit_data": [
+        {
+         "_xact_id": "1000197710002164573",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-08-18T17:43:50.515Z",
+       "dataset_id": "e0753a78-8202-4f97-9b70-8555cca01f24",
+       "expected": "42",
+       "facets": null,
+       "id": "high-level-generated-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "8bc899ea-301c-43a4-afce-6b7e381f72df",
+       "root_span_id": "876464a7-1f60-4802-9935-17437b873c37",
+       "span_id": "876464a7-1f60-4802-9935-17437b873c37",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoSZ1pNdAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/e0753a78-8202-4f97-9b70-8555cca01f24/fetch",
+   "request": {
+    "body": {
+     "cursor": "aoSZ1pNdAAA",
+     "limit": 10
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset/e0753a78-8202-4f97-9b70-8555cca01f24/summarize?summarize_data=true",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "data_summary": {
+      "total_records": 1
+     },
+     "dataset_name": "logs",
+     "dataset_url": "https://www.braintrust.dev/app/abhi-test-org/p/python-sdk-high-level-datasets-vcr/datasets/logs",
+     "project_name": "python-sdk-high-level-datasets-vcr",
+     "project_url": "https://www.braintrust.dev/app/abhi-test-org/p/python-sdk-high-level-datasets-vcr"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/e0753a78-8202-4f97-9b70-8555cca01f24",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T17:43:50.112Z",
+     "deleted_at": "2026-08-18T17:43:51.863Z",
+     "description": "created through braintrust.init_dataset",
+     "id": "e0753a78-8202-4f97-9b70-8555cca01f24",
+     "metadata": null,
+     "name": "logs",
+     "project_id": "8bc899ea-301c-43a4-afce-6b7e381f72df",
+     "tags": null,
+     "url_slug": "logs",
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/8bc899ea-301c-43a4-afce-6b7e381f72df",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-18T17:43:49.805Z",
+     "deleted_at": "2026-08-18T17:43:52.132Z",
+     "description": null,
+     "id": "8bc899ea-301c-43a4-afce-6b7e381f72df",
+     "name": "python-sdk-high-level-datasets-vcr",
+     "org_id": "f5883013-b5c1-438d-9044-5182b4682337",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

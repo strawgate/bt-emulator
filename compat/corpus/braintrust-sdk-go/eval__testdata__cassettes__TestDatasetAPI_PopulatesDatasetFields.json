@@ -1,0 +1,232 @@
+{
+ "cassette": "eval/testdata/cassettes/TestDatasetAPI_PopulatesDatasetFields.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "Test dataset for verifying ID, XactID, Created fields",
+     "name": "test-dataset-fields",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T22:56:27.728Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "6f6898c5-89df-4a3f-bb6e-3ef1f43a5992",
+     "metadata": null,
+     "name": "test-dataset-fields",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-fields",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/6f6898c5-89df-4a3f-bb6e-3ef1f43a5992/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "4"
+       },
+       "input": {
+        "question": "What is 2+2?"
+       }
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "8ed00bb7-ff95-48b5-83fd-e3ee656bcdb6"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/6f6898c5-89df-4a3f-bb6e-3ef1f43a5992/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlDHAMLAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275352770347008",
+       "_xact_id": "1000198073871502796",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073871502796",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:36.764Z",
+       "dataset_id": "6f6898c5-89df-4a3f-bb6e-3ef1f43a5992",
+       "expected": {
+        "answer": "4"
+       },
+       "facets": null,
+       "id": "8ed00bb7-ff95-48b5-83fd-e3ee656bcdb6",
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "515837b6-05a9-4c48-8d6a-4822fbf91df6",
+       "span_id": "515837b6-05a9-4c48-8d6a-4822fbf91df6",
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07699258825555771392",
+       "_xact_id": "1000198073619317515",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073619317515",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-21T22:56:28.027Z",
+       "dataset_id": "6f6898c5-89df-4a3f-bb6e-3ef1f43a5992",
+       "expected": {
+        "answer": "42",
+        "confidence": 0.95
+       },
+       "facets": null,
+       "id": "23c48310-1ab2-4327-945a-843645e203a2",
+       "input": {
+        "context": "philosophical",
+        "question": "What is the meaning of life?"
+       },
+       "is_root": true,
+       "metadata": {
+        "model": "test-model",
+        "source": "test"
+       },
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "16c36af5-01a6-470d-8606-704a0cdac1fe",
+       "span_id": "16c36af5-01a6-470d-8606-704a0cdac1fe",
+       "tags": [
+        "philosophy",
+        "test",
+        "integration"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlDHAMLAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/6f6898c5-89df-4a3f-bb6e-3ef1f43a5992",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T22:56:27.728Z",
+     "deleted_at": "2026-10-22T00:00:37.661Z",
+     "description": null,
+     "id": "6f6898c5-89df-4a3f-bb6e-3ef1f43a5992",
+     "metadata": null,
+     "name": "test-dataset-fields",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-fields",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,267 @@
+{
+ "cassette": "eval/testdata/cassettes/TestDatasetAPI_Get_Integration.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset",
+   "request": {
+    "body": {
+     "description": "Test dataset for DatasetAPI.Get",
+     "name": "test-dataset-get",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:00:31.193Z",
+     "deleted_at": null,
+     "description": "Test dataset for DatasetAPI.Get",
+     "id": "89c799f5-622b-45d4-9553-3d1fa5636649",
+     "metadata": null,
+     "name": "test-dataset-get",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-get",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89c799f5-622b-45d4-9553-3d1fa5636649/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": {
+        "answer": "4"
+       },
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "tags": [
+        "math",
+        "easy"
+       ]
+      },
+      {
+       "expected": {
+        "answer": "Paris"
+       },
+       "input": {
+        "question": "What is the capital of France?"
+       },
+       "tags": [
+        "geography"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "be3f6c2b-b9e0-4ce1-817a-945936ac2f14",
+      "aa7da62a-392a-4f5c-b311-abc128e9f294"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89c799f5-622b-45d4-9553-3d1fa5636649/fetch",
+   "request": {
+    "body": {
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "atlSHwiyAAA",
+     "events": [
+      {
+       "_pagination_key": "p07699275331209920513",
+       "_xact_id": "1000198073871173810",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073871173810",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:31.327Z",
+       "dataset_id": "89c799f5-622b-45d4-9553-3d1fa5636649",
+       "expected": {
+        "answer": "Paris"
+       },
+       "facets": null,
+       "id": "aa7da62a-392a-4f5c-b311-abc128e9f294",
+       "input": {
+        "question": "What is the capital of France?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "568da474-347e-4d50-9050-cdfd5ffbaa7e",
+       "span_id": "568da474-347e-4d50-9050-cdfd5ffbaa7e",
+       "tags": [
+        "geography"
+       ]
+      },
+      {
+       "_pagination_key": "p07699275331209920512",
+       "_xact_id": "1000198073871173810",
+       "audit_data": [
+        {
+         "_xact_id": "1000198073871173810",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "created": "2026-10-22T00:00:31.327Z",
+       "dataset_id": "89c799f5-622b-45d4-9553-3d1fa5636649",
+       "expected": {
+        "answer": "4"
+       },
+       "facets": null,
+       "id": "be3f6c2b-b9e0-4ce1-817a-945936ac2f14",
+       "input": {
+        "question": "What is 2+2?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "root_span_id": "d402c725-cf71-41a1-987f-01cd2bf84ffe",
+       "span_id": "d402c725-cf71-41a1-987f-01cd2bf84ffe",
+       "tags": [
+        "math",
+        "easy"
+       ]
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "2",
+     "x-bt-cursor": "atlSHwiyAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/89c799f5-622b-45d4-9553-3d1fa5636649/fetch",
+   "request": {
+    "body": {
+     "cursor": "atlSHwiyAAA",
+     "limit": 100
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-count": "0"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/dataset/89c799f5-622b-45d4-9553-3d1fa5636649",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-22T00:00:31.193Z",
+     "deleted_at": "2026-10-22T00:00:32.204Z",
+     "description": "Test dataset for DatasetAPI.Get",
+     "id": "89c799f5-622b-45d4-9553-3d1fa5636649",
+     "metadata": null,
+     "name": "test-dataset-get",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "tags": null,
+     "url_slug": "test-dataset-get",
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

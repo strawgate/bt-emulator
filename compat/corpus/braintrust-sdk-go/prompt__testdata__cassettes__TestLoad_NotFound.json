@@ -1,0 +1,112 @@
+{
+ "cassette": "prompt/testdata/cassettes/TestLoad_NotFound.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/prompt?limit=1&project_id=900b1ba7-5336-4a3f-8a6d-52e1a170bd78&slug=sdk-go-load-prompt",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073873795655",
+       "created": "2026-10-22T00:01:11.605Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_type": "prompt",
+       "id": "fb99c4ff-a918-4ac1-8003-920a4cb11480",
+       "log_id": "p",
+       "metadata": null,
+       "name": "sdk-go-load-prompt",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You greet people warmly.",
+           "role": "system"
+          },
+          {
+           "content": "Say hello to {{name}}.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "sdk-go-load-prompt",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/prompt?limit=1&project_name=go-sdk-tests&slug=sdk-go-no-such-prompt",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

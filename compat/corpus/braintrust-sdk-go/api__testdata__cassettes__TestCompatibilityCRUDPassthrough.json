@@ -1,0 +1,115 @@
+{
+ "cassette": "api/testdata/cassettes/TestCompatibilityCRUDPassthrough.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-compat-lifecycle-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T23:59:44.741Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "e7b58beb-f8ba-4576-a058-d263433603fb",
+     "name": "go-sdk-compat-lifecycle-test",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project/e7b58beb-f8ba-4576-a058-d263433603fb",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T23:59:44.741Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "e7b58beb-f8ba-4576-a058-d263433603fb",
+     "name": "go-sdk-compat-lifecycle-test",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?limit=1&org_id=5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2026-10-21T23:59:44.741Z",
+       "deleted_at": null,
+       "description": null,
+       "id": "e7b58beb-f8ba-4576-a058-d263433603fb",
+       "name": "go-sdk-compat-lifecycle-test",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "settings": null,
+       "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/e7b58beb-f8ba-4576-a058-d263433603fb",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-21T23:59:44.741Z",
+     "deleted_at": "2026-10-21T23:59:45.251Z",
+     "description": null,
+     "id": "e7b58beb-f8ba-4576-a058-d263433603fb",
+     "name": "go-sdk-compat-lifecycle-test",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "a5ca7f9c-bf20-40c4-a82b-5c992f6a38f5"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

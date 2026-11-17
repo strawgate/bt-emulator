@@ -1,0 +1,292 @@
+{
+ "cassette": "eval/testdata/cassettes/TestScorerAPI_Get.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestScorerAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "name": "Test Scorer",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "fail": 0,
+        "pass": 1
+       },
+       "type": "llm_classifier",
+       "use_cot": true
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate the input and output.",
+         "role": "system"
+        },
+        {
+         "content": "Choose 'pass' if the output is good, 'fail' if it's bad.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestScorerAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073872288218",
+     "created": "2026-10-22T00:00:48.490Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "id": "e54990c6-16a8-4e92-a325-53d55752ca6c",
+     "log_id": "p",
+     "name": "Test Scorer",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0,
+        "use_cache": true
+       }
+      },
+      "parser": {
+       "choice_scores": {
+        "fail": 0,
+        "pass": 1
+       },
+       "type": "llm_classifier",
+       "use_cot": true
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate the input and output.",
+         "role": "system"
+        },
+        {
+         "content": "Choose 'pass' if the output is good, 'fail' if it's bad.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestScorerAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestScorerAPI_Get-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073872288218",
+       "created": "2026-10-22T00:00:48.490Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": "scorer",
+       "id": "e54990c6-16a8-4e92-a325-53d55752ca6c",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Test Scorer",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0,
+          "use_cache": true
+         }
+        },
+        "parser": {
+         "choice_scores": {
+          "fail": 0,
+          "pass": 1
+         },
+         "type": "llm_classifier",
+         "use_cot": true
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer. Evaluate the input and output.",
+           "role": "system"
+          },
+          {
+           "content": "Choose 'pass' if the output is good, 'fail' if it's bad.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestScorerAPI_Get-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/e54990c6-16a8-4e92-a325-53d55752ca6c/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": {
+       "answer": "4"
+      },
+      "input": {
+       "question": "What is 2+2?"
+      },
+      "output": {
+       "answer": "4"
+      }
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "metadata": {
+      "choice": "fail",
+      "rationale": "The instruction does not provide any specific input or output to evaluate. Without context or examples, it is impossible to determine whether the output is good or bad. Therefore, I cannot make a valid assessment."
+     },
+     "name": "Test Scorer",
+     "score": 0
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "8f97fb2c-c2d7-495b-8ef9-3fcb3414f670",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/e54990c6-16a8-4e92-a325-53d55752ca6c",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073872420940",
+     "created": "2026-10-22T00:00:50.873Z",
+     "id": "e54990c6-16a8-4e92-a325-53d55752ca6c",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestScorerAPI_Get-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,23 @@
+{
+ "cassette": "api/testdata/cassettes/TestCompatibilityRegisterAndErrors/server_error.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project/non-existent-project-id-12345",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "[\n  {\n    \"validation\": \"uuid\",\n    \"code\": \"invalid_string\",\n    \"message\": \"Invalid uuid\",\n    \"path\": [\n      \"id\",\n      0\n    ]\n  }\n] [user_email=user@example.com] [user_org=REDACTED] [timestamp=1792627185.817] [request_id=iad1::6pxzf-1792627185763-b3466fe6e5b7]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

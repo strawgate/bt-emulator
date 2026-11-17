@@ -1,0 +1,266 @@
+{
+ "cassette": "eval/testdata/cassettes/TestFunctionsAPI_Task_MapInput.yaml",
+ "commit": "31a87dafd05438bdf81aabdb8b548d58af21ee52",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "go-sdk-tests"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-10-19T23:49:12.896Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "name": "go-sdk-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Task_MapInput-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": []
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "Map Processing Task",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 50,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You process input and return a JSON object with a 'result' field.",
+         "role": "system"
+        },
+        {
+         "content": "Process this data: {{input.name}} - {{input.value}}. Return ONLY JSON like {\"result\": \"processed\"}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Task_MapInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000198073869730411",
+     "created": "2026-10-22T00:00:09.169Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "7b12285c-9fc9-4316-be77-79f04e5d3c8b",
+     "log_id": "p",
+     "name": "Map Processing Task",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "max_tokens": 50,
+        "response_format": {
+         "type": "json_object"
+        },
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You process input and return a JSON object with a 'result' field.",
+         "role": "system"
+        },
+        {
+         "content": "Process this data: {{input.name}} - {{input.value}}. Return ONLY JSON like {\"result\": \"processed\"}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "TestFunctionsAPI_Task_MapInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?limit=1&project_name=go-sdk-tests&slug=TestFunctionsAPI_Task_MapInput-slug",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000198073869730411",
+       "created": "2026-10-22T00:00:09.169Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "7b12285c-9fc9-4316-be77-79f04e5d3c8b",
+       "log_id": "p",
+       "metadata": null,
+       "name": "Map Processing Task",
+       "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "origin": null,
+       "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "max_tokens": 50,
+          "response_format": {
+           "type": "json_object"
+          },
+          "temperature": 0
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You process input and return a JSON object with a 'result' field.",
+           "role": "system"
+          },
+          {
+           "content": "Process this data: {{input.name}} - {{input.value}}. Return ONLY JSON like {\"result\": \"processed\"}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "TestFunctionsAPI_Task_MapInput-slug",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/7b12285c-9fc9-4316-be77-79f04e5d3c8b/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "name": "test",
+      "nested": {
+       "key": "value"
+      },
+      "value": 42
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "result": "processed"
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "MISS",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-passthrough": "false",
+     "x-bt-request-id": "8bd8460e-7df8-44d8-9660-5a85e80d1fac",
+     "x-bt-secrets-scope": "org_and_project",
+     "x-bt-stale-secrets": "false",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/7b12285c-9fc9-4316-be77-79f04e5d3c8b",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000198073869861038",
+     "created": "2026-10-22T00:00:11.048Z",
+     "id": "7b12285c-9fc9-4316-be77-79f04e5d3c8b",
+     "log_id": "p",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "project_id": "900b1ba7-5336-4a3f-8a6d-52e1a170bd78",
+     "slug": "TestFunctionsAPI_Task_MapInput-slug"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-go"
+}

@@ -1,0 +1,896 @@
+{
+ "cassette": "py/src/braintrust/integrations/harbor/cassettes/0.16.0/test_atif_import_round_trips_with_real_sdks.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-harbor-tests",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-07-30T23:19:36.349Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+     "name": "python-sdk-harbor-tests",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": false,
+     "name": "harbor-atif-import",
+     "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+     "public": false
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-07-30T23:19:36.349Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "harbor-atif-import",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/version",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "brainstore_can_contain_row_refs": true,
+     "brainstore_default": "force",
+     "brainstore_export_enabled": true,
+     "brainstore_wal_footer_version": "v3",
+     "brainstore_wal_use_efficient_format": true,
+     "code_execution": true,
+     "commit": "e27b14341914e26f128098670df73d3dd05169bf",
+     "control_plane_telemetry": [
+      "status",
+      "memprof",
+      "usage"
+     ],
+     "date_version": "20260819",
+     "deployment_mode": "lambda",
+     "deployment_type": "custom",
+     "ff_version": 46,
+     "has_logs2": true,
+     "has_realtime_wal_bucket": true,
+     "js": true,
+     "logs3_payload_max_bytes": 5242880,
+     "loop_runtime_enabled": true,
+     "skip_pg_config": "all",
+     "universal": true,
+     "version": "2.11.0"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "_is_merge": false,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust-python-logger"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.799139+00:00",
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "id": "c7a87986-0192-5f40-9ac0-a535810f1fe7",
+       "metrics": {
+        "start": 1767225600.0
+       },
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "span_attributes": {
+        "exec_counter": 1,
+        "name": "agent_execution",
+        "type": "task"
+       },
+       "span_id": "2f305ef3c122e561",
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "c7a87986-0192-5f40-9ac0-a535810f1fe7"
+     ],
+     "xact_id": "1000197715931218107"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/logs3",
+   "request": {
+    "body": {
+     "api_version": 2,
+     "rows": [
+      {
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.799754+00:00",
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "id": "7eb93a96-dfea-5318-bfff-63cf37ce89c6",
+       "input": [
+        {
+         "content": "What is 2+2?",
+         "role": "user"
+        }
+       ],
+       "metadata": {
+        "model": "gpt-4o-mini",
+        "provider": "openai",
+        "tools": [
+         {
+          "function": {
+           "name": "calculator",
+           "parameters": {
+            "type": "object"
+           }
+          },
+          "type": "function"
+         }
+        ]
+       },
+       "metrics": {
+        "completion_tokens": 4,
+        "end": 1767225602.0,
+        "estimated_cost": 0.001,
+        "prompt_tokens": 10,
+        "start": 1767225601.0,
+        "tokens": 14
+       },
+       "output": {
+        "content": "I'll calculate it.",
+        "role": "assistant",
+        "tool_calls": [
+         {
+          "function": {
+           "arguments": "{\"expression\": \"2+2\"}",
+           "name": "calculator"
+          },
+          "id": "call_1",
+          "type": "function"
+         }
+        ]
+       },
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "span_attributes": {
+        "exec_counter": 2,
+        "name": "chat.completions.create",
+        "type": "llm"
+       },
+       "span_id": "5bdcfdc9bd146b10",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ]
+      },
+      {
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.800242+00:00",
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "id": "b134c10f-7dc4-543a-9707-fa9af07dbbe8",
+       "input": {
+        "expression": "2+2"
+       },
+       "metadata": {
+        "tool_call_id": "call_1"
+       },
+       "metrics": {
+        "end": 1767225602.0,
+        "start": 1767225601.0
+       },
+       "output": "4",
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "span_attributes": {
+        "exec_counter": 3,
+        "name": "calculator",
+        "type": "tool"
+       },
+       "span_id": "22a60516daec7a83",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ]
+      },
+      {
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.800486+00:00",
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "id": "a2713e08-b2cb-5762-99d7-be29120f9880",
+       "input": [
+        {
+         "content": "What is 2+2?",
+         "role": "user"
+        },
+        {
+         "content": "I'll calculate it.",
+         "role": "assistant",
+         "tool_calls": [
+          {
+           "function": {
+            "arguments": "{\"expression\": \"2+2\"}",
+            "name": "calculator"
+           },
+           "id": "call_1",
+           "type": "function"
+          }
+         ]
+        },
+        {
+         "content": "4",
+         "role": "tool",
+         "tool_call_id": "call_1"
+        }
+       ],
+       "metadata": {
+        "model": "gpt-4o-mini",
+        "provider": "openai",
+        "tools": [
+         {
+          "function": {
+           "name": "calculator",
+           "parameters": {
+            "type": "object"
+           }
+          },
+          "type": "function"
+         }
+        ]
+       },
+       "metrics": {
+        "completion_tokens": 5,
+        "end": 1767225603.0,
+        "prompt_tokens": 15,
+        "start": 1767225602.0,
+        "tokens": 20
+       },
+       "output": {
+        "content": "The answer is 4.",
+        "role": "assistant"
+       },
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "span_attributes": {
+        "exec_counter": 4,
+        "name": "chat.completions.create",
+        "type": "llm"
+       },
+       "span_id": "fcc9672d43517931",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ]
+      },
+      {
+       "_is_merge": true,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "id": "c7a87986-0192-5f40-9ac0-a535810f1fe7",
+       "metrics": {
+        "end": 1767225603.0
+       },
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "span_id": "2f305ef3c122e561",
+       "span_parents": null
+      }
+     ]
+    },
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "ids": [
+      "7eb93a96-dfea-5318-bfff-63cf37ce89c6",
+      "b134c10f-7dc4-543a-9707-fa9af07dbbe8",
+      "a2713e08-b2cb-5762-99d7-be29120f9880",
+      "c7a87986-0192-5f40-9ac0-a535810f1fe7"
+     ],
+     "xact_id": "1000197715931220260"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/7aba8758-862e-41ef-9e77-6247c4b71287/fetch",
+   "request": {
+    "body": {
+     "limit": 1000
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "amvcb4/jAAE",
+     "events": [
+      {
+       "_pagination_key": "p07675817378414067714",
+       "_xact_id": "1000197715931220260",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715931220260",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.800Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "facets": null,
+       "id": "a2713e08-b2cb-5762-99d7-be29120f9880",
+       "input": [
+        {
+         "content": "What is 2+2?",
+         "role": "user"
+        },
+        {
+         "content": "I'll calculate it.",
+         "role": "assistant",
+         "tool_calls": [
+          {
+           "function": {
+            "arguments": "{\"expression\": \"2+2\"}",
+            "name": "calculator"
+           },
+           "id": "call_1",
+           "type": "function"
+          }
+         ]
+        },
+        {
+         "content": "4",
+         "role": "tool",
+         "tool_call_id": "call_1"
+        }
+       ],
+       "is_root": false,
+       "metadata": {
+        "model": "gpt-4o-mini",
+        "provider": "openai",
+        "tools": [
+         {
+          "function": {
+           "name": "calculator",
+           "parameters": {
+            "type": "object"
+           }
+          },
+          "type": "function"
+         }
+        ]
+       },
+       "metrics": {
+        "completion_tokens": 5,
+        "end": 1767225603,
+        "prompt_tokens": 15,
+        "start": 1767225602,
+        "tokens": 20
+       },
+       "origin": null,
+       "output": {
+        "content": "The answer is 4.",
+        "role": "assistant"
+       },
+       "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 4,
+        "name": "chat.completions.create",
+        "type": "llm"
+       },
+       "span_id": "fcc9672d43517931",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ],
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07675817378414067713",
+       "_xact_id": "1000197715931220260",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715931220260",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.800Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "facets": null,
+       "id": "b134c10f-7dc4-543a-9707-fa9af07dbbe8",
+       "input": {
+        "expression": "2+2"
+       },
+       "is_root": false,
+       "metadata": {
+        "tool_call_id": "call_1"
+       },
+       "metrics": {
+        "end": 1767225602,
+        "start": 1767225601
+       },
+       "origin": null,
+       "output": "4",
+       "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 3,
+        "name": "calculator",
+        "type": "tool"
+       },
+       "span_id": "22a60516daec7a83",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ],
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07675817378414067712",
+       "_xact_id": "1000197715931220260",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715931220260",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.799Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "facets": null,
+       "id": "7eb93a96-dfea-5318-bfff-63cf37ce89c6",
+       "input": [
+        {
+         "content": "What is 2+2?",
+         "role": "user"
+        }
+       ],
+       "is_root": false,
+       "metadata": {
+        "model": "gpt-4o-mini",
+        "provider": "openai",
+        "tools": [
+         {
+          "function": {
+           "name": "calculator",
+           "parameters": {
+            "type": "object"
+           }
+          },
+          "type": "function"
+         }
+        ]
+       },
+       "metrics": {
+        "completion_tokens": 4,
+        "end": 1767225602,
+        "estimated_cost": 0.001,
+        "prompt_tokens": 10,
+        "start": 1767225601,
+        "tokens": 14
+       },
+       "origin": null,
+       "output": {
+        "content": "I'll calculate it.",
+        "role": "assistant",
+        "tool_calls": [
+         {
+          "function": {
+           "arguments": "{\"expression\": \"2+2\"}",
+           "name": "calculator"
+          },
+          "id": "call_1",
+          "type": "function"
+         }
+        ]
+       },
+       "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 2,
+        "name": "chat.completions.create",
+        "type": "llm"
+       },
+       "span_id": "5bdcfdc9bd146b10",
+       "span_parents": [
+        "2f305ef3c122e561"
+       ],
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07675817378272968704",
+       "_xact_id": "1000197715931220260",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715931218107",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000197715931220260",
+         "audit_data": {
+          "action": "merge",
+          "from": null,
+          "path": [
+           "metrics"
+          ],
+          "to": {
+           "end": 1767225603
+          }
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust-python-logger"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.34.0"
+        }
+       },
+       "created": "2026-08-19T18:51:38.799Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "facets": null,
+       "id": "c7a87986-0192-5f40-9ac0-a535810f1fe7",
+       "input": null,
+       "is_root": true,
+       "metadata": null,
+       "metrics": {
+        "end": 1767225603,
+        "start": 1767225600
+       },
+       "origin": null,
+       "output": null,
+       "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+       "root_span_id": "068edaac6b560c90df32ec633cdf5225",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 1,
+        "name": "agent_execution",
+        "type": "task"
+       },
+       "span_id": "2f305ef3c122e561",
+       "span_parents": null,
+       "tags": null
+      },
+      {
+       "_pagination_key": "p07668465162241900545",
+       "_xact_id": "1000197603745304547",
+       "audit_data": [
+        {
+         "_xact_id": "1000197603738631632",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000197603742781733",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        },
+        {
+         "_xact_id": "1000197603745304547",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": {
+        "caller_filename": "[REDACTED_PATH]",
+        "caller_functionname": "pytest_pyfunc_call",
+        "caller_lineno": 167,
+        "span_origin": {
+         "instrumentation": {
+          "name": "braintrust.plugin.harbor"
+         },
+         "name": "braintrust.sdk.python",
+         "version": "0.31.0"
+        }
+       },
+       "created": "2026-07-30T23:21:18.801Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "7aba8758-862e-41ef-9e77-6247c4b71287",
+       "facets": null,
+       "id": "843c7c39-2f3a-5813-aa42-56da9fe5709f",
+       "input": {
+        "expression": "2+2"
+       },
+       "is_root": false,
+       "metadata": {
+        "tool_call_id": "call_1"
+       },
+       "metrics": {
+        "end": 1767225602,
+        "start": 1767225601
+       },
+       "origin": null,
+       "output": "4",
+       "project_id": "d982a2fd-c0b1-4b55-a0ac-b5af3ba3e229",
+       "root_span_id": "d43785839001054eaf1c4ac196c82112",
+       "scores": null,
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b",
+        "exec_counter": 3,
+        "name": "calculator",
+        "type": "tool"
+       },
+       "span_id": "161550719b4ad9d1",
+       "span_parents": [
+        "2d261ed7ec06b709"
+       ],
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "amvcb4/jAAE"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/7aba8758-862e-41ef-9e77-6247c4b71287/fetch",
+   "request": {
+    "body": {
+     "cursor": "amvcb4/jAAE",
+     "limit": 1000
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}

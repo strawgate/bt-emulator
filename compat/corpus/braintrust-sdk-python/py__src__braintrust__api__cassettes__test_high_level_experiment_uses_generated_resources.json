@@ -1,0 +1,476 @@
+{
+ "cassette": "py/src/braintrust/api/cassettes/test_high_level_experiment_uses_generated_resources.yaml",
+ "commit": "3495aba6dff65552b37cdbf5bcc45ba3c453f1f8",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "dirty",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time"
+        ]
+       },
+       "id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+       "is_universal_api": null,
+       "name": "Braintrust SDKs",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "python-sdk-high-level-experiments-vcr",
+     "org_name": "Braintrust SDKs"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-19T18:45:42.569Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+     "name": "python-sdk-high-level-experiments-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": false,
+     "name": "high-level-generated-experiment",
+     "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "git_diff": null,
+      "tag": null
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-08-19T18:45:42.807Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "6a0fc93e-9df4-4125-ad25-b36e6af72613",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "high-level-generated-experiment",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "tag": null
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "id": "high-level-generated-experiment-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "output": "42",
+       "root_span_id": "high-level-generated-experiment-row",
+       "scores": {
+        "accuracy": 1
+       },
+       "span_id": "high-level-generated-experiment-row"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "high-level-generated-experiment-row"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613/fetch",
+   "request": {
+    "body": {
+     "limit": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "aoX51/XxAAA",
+     "events": [
+      {
+       "_pagination_key": "p07675815845862375424",
+       "_xact_id": "1000197715907835377",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715907835377",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": null,
+       "created": "2026-08-19T18:45:42.956Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "6a0fc93e-9df4-4125-ad25-b36e6af72613",
+       "facets": null,
+       "id": "high-level-generated-experiment-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "metrics": null,
+       "origin": null,
+       "output": "42",
+       "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+       "root_span_id": "high-level-generated-experiment-row",
+       "scores": {
+        "accuracy": 1
+       },
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+       },
+       "span_id": "high-level-generated-experiment-row",
+       "span_parents": null,
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoX51/XxAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613/fetch",
+   "request": {
+    "body": {
+     "cursor": "aoX51/XxAAA",
+     "limit": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/experiment?experiment_name=high-level-generated-experiment&project_name=python-sdk-high-level-experiments-vcr&org_name=Braintrust%20SDKs",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "base_exp_id": null,
+       "commit": null,
+       "created": "2026-08-19T18:45:42.807Z",
+       "dataset_id": null,
+       "dataset_version": null,
+       "deleted_at": null,
+       "description": null,
+       "id": "6a0fc93e-9df4-4125-ad25-b36e6af72613",
+       "internal_metadata": null,
+       "metadata": null,
+       "name": "high-level-generated-experiment",
+       "parameters_id": null,
+       "parameters_version": null,
+       "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+       "public": false,
+       "repo_info": {
+        "author_email": null,
+        "author_name": null,
+        "branch": null,
+        "commit": null,
+        "commit_message": null,
+        "commit_time": null,
+        "dirty": null,
+        "tag": null
+       },
+       "tags": null,
+       "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613/fetch",
+   "request": {
+    "body": {
+     "limit": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "cursor": "aoX51/XxAAA",
+     "events": [
+      {
+       "_pagination_key": "p07675815845862375424",
+       "_xact_id": "1000197715907835377",
+       "audit_data": [
+        {
+         "_xact_id": "1000197715907835377",
+         "audit_data": {
+          "action": "upsert"
+         },
+         "metadata": {},
+         "source": "api"
+        }
+       ],
+       "classifications": null,
+       "comments": null,
+       "context": null,
+       "created": "2026-08-19T18:45:42.956Z",
+       "error": null,
+       "expected": null,
+       "experiment_id": "6a0fc93e-9df4-4125-ad25-b36e6af72613",
+       "facets": null,
+       "id": "high-level-generated-experiment-row",
+       "input": {
+        "question": "What is the answer?"
+       },
+       "is_root": true,
+       "metadata": null,
+       "metrics": null,
+       "origin": null,
+       "output": "42",
+       "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+       "root_span_id": "high-level-generated-experiment-row",
+       "scores": {
+        "accuracy": 1
+       },
+       "span_attributes": {
+        "created_by_api_key_id": "607d8072-e7a7-48d9-a326-de588dc07bf0",
+        "created_by_user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+       },
+       "span_id": "high-level-generated-experiment-row",
+       "span_parents": null,
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aoX51/XxAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613/fetch",
+   "request": {
+    "body": {
+     "cursor": "aoX51/XxAAA",
+     "limit": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "events": []
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/experiment/6a0fc93e-9df4-4125-ad25-b36e6af72613",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-08-19T18:45:42.807Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": "2026-08-19T18:45:46.080Z",
+     "description": null,
+     "id": "6a0fc93e-9df4-4125-ad25-b36e6af72613",
+     "internal_metadata": null,
+     "metadata": null,
+     "name": "high-level-generated-experiment",
+     "parameters_id": null,
+     "parameters_version": null,
+     "project_id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+     "public": false,
+     "repo_info": {
+      "author_email": null,
+      "author_name": null,
+      "branch": null,
+      "commit": null,
+      "commit_message": null,
+      "commit_time": null,
+      "dirty": null,
+      "tag": null
+     },
+     "tags": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/project/fd57931d-9a18-4a35-8993-88b6807305ef",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "created": "2026-08-19T18:45:42.569Z",
+     "deleted_at": "2026-08-19T18:45:46.390Z",
+     "description": null,
+     "id": "fd57931d-9a18-4a35-8993-88b6807305ef",
+     "name": "python-sdk-high-level-experiments-vcr",
+     "org_id": "5abfae3a-7aa7-4653-a9c8-b3efcb18f584",
+     "settings": null,
+     "user_id": "c1f71e19-b3ce-4f59-89a9-055901f7755b"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-python"
+}
