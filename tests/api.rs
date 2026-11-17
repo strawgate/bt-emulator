@@ -344,6 +344,8 @@ async fn logs3_merge_replace_delete_and_fetch() {
             {"experiment_id": eid, "id": "b", "output": "replaced"},
             {"experiment_id": eid, "id": resp["ids"][2], "_object_delete": true},
             {"experiment_id": eid, "id": "new", "_is_merge": true, "output": "merge-insert"},
+            {"experiment_id": eid, "id": "child", "root_span_id": "trace", "span_parents": ["x"]},
+            {"experiment_id": eid, "id": "odd", "span_attributes": "not-an-object"},
         ]))
         .await;
 
@@ -357,7 +359,7 @@ async fn logs3_merge_replace_delete_and_fetch() {
                 .cloned()
                 .unwrap()
         };
-        assert_eq!(events.as_array().unwrap().len(), 3);
+        assert_eq!(events.as_array().unwrap().len(), 5);
         let a = by_id("a");
         assert_eq!(a["metrics"], json!({"start": 1, "end": 2}));
         assert_eq!(a["tags"], json!(["x", "y"]));
@@ -390,6 +392,14 @@ async fn logs3_merge_replace_delete_and_fetch() {
             (Some(true), 2)
         );
         assert_eq!(by_id("new")["span_id"], "new");
+        // A missing span_id defaults to the row id without touching a given root_span_id.
+        let child = by_id("child");
+        assert_eq!(
+            (child["span_id"].as_str(), child["root_span_id"].as_str()),
+            (Some("child"), Some("trace"))
+        );
+        // Non-object span_attributes are stored as sent.
+        assert_eq!(by_id("odd")["span_attributes"], "not-an-object");
 
         // Snapshot read at the first transaction.
         let old = app
