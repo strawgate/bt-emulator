@@ -16,10 +16,12 @@ const COUNT_METRICS: [&str; 5] = [
     "llm_errors",
     "tool_errors",
 ];
-const TOKEN_METRICS: [&str; 7] = [
+const TOKEN_METRICS: [&str; 9] = [
     "prompt_tokens",
     "prompt_cached_tokens",
     "prompt_cache_creation_tokens",
+    "prompt_cache_creation_5m_tokens",
+    "prompt_cache_creation_1h_tokens",
     "completion_tokens",
     "completion_reasoning_tokens",
     "total_tokens",
@@ -187,8 +189,9 @@ pub fn summarize(
         // Lower is better for every metric (latency, tokens, cost, errors).
         let (up, down) = changes(&current, &baseline, &get);
         let mut m = json!({"name": name, "metric": metric, "unit": unit(name), "improvements": down, "regressions": up});
-        if let Some(base) = mean(&baseline_traces, &get).filter(|_| has_comparison) {
-            m["diff"] = json!(metric - base);
+        // Metrics, unlike scores, always have a diff when comparing (0 when unmeasured).
+        if has_comparison {
+            m["diff"] = json!(metric - mean(&baseline_traces, &get).unwrap_or(0.0));
         }
         metrics.insert(name.to_owned(), m);
     }
@@ -270,6 +273,7 @@ mod tests {
             (Some(1), Some(1))
         );
         assert_eq!(metrics["duration"]["diff"], 1.5 - 7.0 / 3.0);
+        assert_eq!(metrics["completion_reasoning_tokens"]["diff"], 0.0);
     }
 
     #[test]
@@ -303,7 +307,7 @@ mod tests {
         assert!(scores.is_empty());
         assert_eq!(
             metrics["llm_calls"],
-            json!({"name": "llm_calls", "metric": 0.0, "unit": "", "improvements": 0, "regressions": 0})
+            json!({"name": "llm_calls", "metric": 0.0, "unit": "", "improvements": 0, "regressions": 0, "diff": 0.0})
         );
     }
 }

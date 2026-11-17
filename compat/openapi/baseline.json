@@ -21,12 +21,48 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "694bea",
+      "operation": "GET /v1/dataset",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "73d77c",
+      "operation": "GET /v1/dataset",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "197a72",
       "operation": "GET /v1/dataset/{dataset_id}/fetch",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "19b659",
+      "operation": "GET /v1/experiment",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "8a9d3e",
+      "operation": "GET /v1/experiment",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
     {
@@ -48,11 +84,47 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "4346c0",
+      "operation": "GET /v1/function",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "7a70ae",
+      "operation": "GET /v1/function",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "873116",
       "operation": "GET /v1/function/{function_id}",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "83d840",
+      "operation": "GET /v1/project",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "7eac23",
+      "operation": "GET /v1/project",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
       "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
@@ -66,11 +138,65 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "d16970",
+      "operation": "GET /v1/project_score",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "f95e44",
+      "operation": "GET /v1/project_score",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "71ad85",
+      "operation": "GET /v1/project_tag",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "9b3267",
+      "operation": "GET /v1/project_tag",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "98dfe4",
       "operation": "GET /v1/prompt",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "134b28",
+      "operation": "GET /v1/prompt",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "03a285",
+      "operation": "GET /v1/prompt",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
       "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
@@ -90,6 +216,15 @@
       "failure": "UndefinedStatusCode",
       "signature": "409",
       "first_seen": "2026-11-16",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "f72701",
+      "operation": "PATCH /v1/env_var/{env_var_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
     {
@@ -120,6 +255,15 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "db7b1a",
+      "operation": "PATCH /v1/group/{group_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "2deef8",
       "operation": "PATCH /v1/project/{project_id}",
       "check": "positive_data_acceptance",
@@ -138,8 +282,71 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "d897e8",
+      "operation": "PATCH /v1/project_automation/{project_automation_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "bbef21",
+      "operation": "PATCH /v1/project_group/{project_group_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "f6d979",
+      "operation": "PATCH /v1/project_score/{project_score_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "7f8120",
+      "operation": "PATCH /v1/project_tag/{project_tag_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "1d0736",
       "operation": "PATCH /v1/prompt/{prompt_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "07c372",
+      "operation": "PATCH /v1/role/{role_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "e4c448",
+      "operation": "PATCH /v1/view/{view_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "ee229e",
+      "operation": "POST /v1/dataset",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
@@ -162,6 +369,15 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "c55ea2",
+      "operation": "POST /v1/dataset_snapshot",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
     {
@@ -192,6 +408,24 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "32baf1",
+      "operation": "POST /v1/function",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "5956be",
+      "operation": "POST /v1/mcp_server",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "4df497",
       "operation": "POST /v1/project_logs/{project_id}/fetch",
       "check": "positive_data_acceptance",
@@ -207,6 +441,123 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "7a78e7",
+      "operation": "POST /v1/project_score",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "0da2a1",
+      "operation": "POST /v1/project_tag",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "da9999",
+      "operation": "POST /v1/prompt",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "c855ab",
+      "operation": "POST /v1/span_iframe",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "53c49a",
+      "operation": "POST /v1/view",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "633cd5",
+      "operation": "PUT /v1/dataset_snapshot",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "c4bb6b",
+      "operation": "PUT /v1/function",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "2299a7",
+      "operation": "PUT /v1/mcp_server",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "1dd19e",
+      "operation": "PUT /v1/project_automation",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "6a72d0",
+      "operation": "PUT /v1/project_score",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "a377d0",
+      "operation": "PUT /v1/project_tag",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "d1c466",
+      "operation": "PUT /v1/prompt",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "26fedb",
+      "operation": "PUT /v1/view",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     }
   ]

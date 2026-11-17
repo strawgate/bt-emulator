@@ -36,6 +36,23 @@ fn correct(spec: &mut Value) {
     }
 }
 
+/// A named schema from the spec's components.
+pub fn schema(name: &str) -> &'static Value {
+    &SPEC["components"]["schemas"][name]
+}
+
+/// The spec's schema for one row of `object_type` (`experiment`, `dataset` or
+/// `project_logs`), as BTQL returns it alongside the rows.
+pub fn event_schema(object_type: &str) -> Value {
+    let name = match object_type {
+        "experiment" => "ExperimentEvent",
+        "dataset" => "DatasetEvent",
+        _ => "ProjectLogsEvent",
+    };
+    let properties = schema(name)["properties"].clone();
+    json!({"type": "array", "items": {"type": "object", "properties": properties}})
+}
+
 struct Param {
     name: String,
     required: bool,
@@ -242,7 +259,8 @@ pub async fn require_auth(
     req: Request,
     next: Next,
 ) -> Response {
-    if req.uri().path() == "/" {
+    // Signed attachment URLs carry their own token instead of an API key.
+    if req.uri().path() == "/" || req.uri().path().starts_with("/attachment/blob/") {
         return next.run(req).await;
     }
     let token = req

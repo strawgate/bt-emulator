@@ -213,7 +213,7 @@ async fn project_crud() {
             StatusCode::BAD_REQUEST
         );
         assert_eq!(
-            app.status("GET", "/v1/role", None).await,
+            app.status("GET", "/v1/user", None).await,
             StatusCode::NOT_FOUND
         );
         assert_eq!(
@@ -306,10 +306,13 @@ async fn experiment_create_semantics() {
             )
             .await;
         assert!(unnamed["name"].as_str().unwrap().starts_with("main-"));
+        // A write naming a missing project is a plain-text 400 (reads are 403s).
         let missing = json!({"project_id": "7e5a3a7c-2a5c-4d0b-9a8e-0b7e3e3f9999"});
+        let (status, body) = app.call("POST", "/v1/experiment", Some(missing)).await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
         assert_eq!(
-            app.status("POST", "/v1/experiment", Some(missing)).await,
-            StatusCode::FORBIDDEN
+            body,
+            "Missing read access to project id 7e5a3a7c-2a5c-4d0b-9a8e-0b7e3e3f9999, or the project does not exist"
         );
         let list = app
             .ok(
@@ -363,7 +366,8 @@ async fn logs3_merge_replace_delete_and_fetch() {
         };
         assert_eq!(events.as_array().unwrap().len(), 5);
         let a = by_id("a");
-        assert_eq!(a["metrics"], json!({"start": 1, "end": 2}));
+        // `duration` is derived on read, as an integer when start and end are.
+        assert_eq!(a["metrics"], json!({"start": 1, "end": 2, "duration": 1}));
         assert_eq!(a["tags"], json!(["x", "y"]));
         assert_eq!(a["created"], "2026-01-01T00:00:00.123Z");
         assert_eq!(
@@ -551,6 +555,43 @@ async fn spec_validation_and_auth() {
             "http://emu.test/app/bt-emulator/p/p/datasets/d"
         );
     }
+}
+
+#[tokio::test]
+async fn a_configured_org_name_is_reported() {
+    let (_, db) = common::backends().await.remove(0);
+    let config = bt_emulator::api::Config {
+        org_name: Some("Acme Inc".into()),
+        ..Default::default()
+    };
+    let send = |method: &'static str, uri: String, body: Option<Value>| {
+        let app = bt_emulator::api::app(db.clone(), config.clone());
+        async move {
+            let req = Request::builder()
+                .method(method)
+                .uri(uri)
+                .header("host", "emu.test")
+                .header("authorization", "Bearer t");
+            let body = body.map_or_else(Body::empty, |b| Body::from(b.to_string()));
+            let resp = app.oneshot(req.body(body).unwrap()).await.unwrap();
+            let bytes = resp.into_body().collect().await.unwrap().to_bytes();
+            serde_json::from_slice::<Value>(&bytes).unwrap()
+        }
+    };
+    let login = send("POST", "/api/apikey/login".into(), None).await;
+    assert_eq!(login["org_info"][0]["name"], "Acme Inc");
+    let pid = send("POST", "/v1/project".into(), Some(json!({"name": "p"}))).await["id"].clone();
+    let eid = send(
+        "POST",
+        "/v1/experiment".into(),
+        Some(json!({"project_id": pid, "name": "e"})),
+    )
+    .await["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let summary = send("GET", format!("/v1/experiment/{eid}/summarize"), None).await;
+    assert_eq!(summary["project_url"], "http://emu.test/app/Acme%20Inc/p/p");
 }
 
 #[tokio::test]
@@ -1350,7 +1391,7 @@ async fn functions_and_prompts_are_versioned_by_slug() {
             json!({"project_id": "00000000-0000-0000-0000-000000000000", "name": "x", "slug": "x"});
         assert_eq!(
             app.status("POST", "/v1/prompt", Some(orphan)).await,
-            StatusCode::FORBIDDEN
+            StatusCode::BAD_REQUEST
         );
     }
 }

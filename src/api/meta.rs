@@ -1,17 +1,17 @@
 //! Login, org discovery and server metadata.
 
-use axum::Json;
 use axum::http::HeaderMap;
+use axum::{Extension, Json};
 use serde_json::{Value, json};
 
 use super::extract::base_url;
-use super::{ORG_ID, ORG_NAME};
+use super::{ORG_ID, OrgName};
 
-pub async fn login(headers: HeaderMap) -> Json<Value> {
+pub async fn login(Extension(org): Extension<OrgName>, headers: HeaderMap) -> Json<Value> {
     let base = base_url(&headers);
     Json(json!({"org_info": [{
         "id": ORG_ID,
-        "name": ORG_NAME,
+        "name": &*org.0,
         "api_url": base,
         "proxy_url": base,
         "realtime_url": base.replacen("http", "ws", 1),

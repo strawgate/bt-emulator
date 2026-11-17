@@ -10,6 +10,7 @@ readme = "README.md"
 
 [dependencies]
 axum = "0.8"
+base64 = "0.22"
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
 clap = { version = "4.6", features = ["derive", "env"] }
 flate2 = "1"

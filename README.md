@@ -5,9 +5,9 @@ An offline emulator for the [Braintrust](https://www.braintrust.dev) API, writte
 Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no account, no network, no API key. That covers logging, experiments, datasets, summaries, and fetching data back.
 
 > **Status:** early development. The official Python, JS and Go SDKs can log and trace
-> (including OpenTelemetry/OTLP), run experiments and evals, read datasets back, store and
-> load versioned prompts and functions, and invoke them against a local model you configure.
-> Attachments are not implemented yet.
+> (including OpenTelemetry/OTLP), upload attachments, run experiments and evals, read
+> datasets back, store and load versioned prompts and functions, and invoke them against a
+> local model you configure.
 
 ## Why
 
@@ -24,6 +24,8 @@ Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no accou
   - The REST API (`/v1/project`, `/v1/experiment`, `/v1/dataset`, `/v1/project_logs`, …), including `insert`, `fetch`, `feedback`, and `summarize`
   - Versioned prompts and functions (`/v1/prompt`, `/v1/function`), as loaded by `load_prompt`/`loadPrompt`
   - Function invocation (`invoke`, remote scorers and tasks): prompts run against any OpenAI-compatible API you point it at; inline code runs locally if you allow it
+  - Attachments (`/attachment`), stored locally
+  - The other named `/v1` resources (project scores and tags, automations, views, roles, groups, AI secrets, …), stored but not acted on
 - Storage backends:
   - **SQLite:** zero-setup default
   - **PostgreSQL:** for shared or long-lived instances
@@ -43,6 +45,8 @@ export BRAINTRUST_API_KEY=local
 
 Then use the Braintrust SDK as usual. Any API key is accepted unless you start the
 emulator with `--api-key <key>` (or `BT_EMULATOR_API_KEY`), which makes it reject others.
+The org is called `bt-emulator`; if your code sets `BRAINTRUST_ORG_NAME`, start the
+emulator with the same `--org-name`.
 
 ### Invoking functions
 
@@ -72,14 +76,15 @@ Development is test-first, and CI enforces 100% line and function coverage of th
 | SDK end-to-end | The real Python, JS and Go SDKs against the binary, fully offline (prompts run against a local stub model) | `just e2e`, `just e2e-pg` |
 | Everything CI runs | fmt, clippy, coverage gate on both backends | `just ci` |
 
-Known-incompatible cassettes are listed in `compat/expected-failures.txt`; regenerate with
+Known-incompatible cassettes are listed in `compat/expected-failures.txt` (why each cannot
+replay: [`compat/README.md`](compat/README.md)); regenerate with
 `just compat-bless`. The wire protocol the emulator implements is documented in
 [`docs/protocol.md`](docs/protocol.md).
 
 ## Non-goals
 
 - The Braintrust web UI
-- Hosted features such as the AI proxy, online scoring, and automations (for now)
+- Hosted features such as the AI proxy, online scoring, running automations, and remote sandboxes (for now)
 
 ## Disclaimer
 

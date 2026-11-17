@@ -15,12 +15,16 @@ pub async fn serve(
         .await
 }
 
-/// Resolves on SIGINT or SIGTERM.
-pub async fn shutdown_signal() {
-    let mut term = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-        .expect("install SIGTERM handler");
-    tokio::select! {
-        _ = tokio::signal::ctrl_c() => {}
-        _ = term.recv() => {}
+/// Resolves on SIGINT or SIGTERM. The handlers are installed when this is called,
+/// so a signal sent any time afterwards (even before the future is polled) is seen.
+pub fn shutdown_signal() -> impl Future<Output = ()> + Send + 'static {
+    use tokio::signal::unix::{SignalKind, signal};
+    let mut int = signal(SignalKind::interrupt()).expect("install SIGINT handler");
+    let mut term = signal(SignalKind::terminate()).expect("install SIGTERM handler");
+    async move {
+        tokio::select! {
+            _ = int.recv() => {}
+            _ = term.recv() => {}
+        }
     }
 }

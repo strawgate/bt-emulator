@@ -103,6 +103,20 @@ fn shape(src: &Source, event: Event) -> Value {
         }
     };
     row.extend(event.data);
+    // Newer servers derive `metrics.duration` from start and end on read.
+    if let Some(metrics) = row.get_mut("metrics").and_then(Value::as_object_mut) {
+        let (start, end) = (&metrics.get("start"), &metrics.get("end"));
+        let duration = match (start.and_then(Value::as_i64), end.and_then(Value::as_i64)) {
+            (Some(s), Some(e)) => Some(json!(e - s)),
+            _ => start
+                .and_then(Value::as_f64)
+                .zip(end.and_then(Value::as_f64))
+                .map(|(s, e)| json!(e - s)),
+        };
+        if let (Some(duration), false) = (duration, metrics.contains_key("duration")) {
+            metrics.insert("duration".into(), duration);
+        }
+    }
     let is_root = row
         .get("span_parents")
         .and_then(Value::as_array)
@@ -309,7 +323,7 @@ pub async fn btql(State(db): State<Db>, JsonBody(body): JsonBody) -> ApiResult<R
             None => resp,
         });
     }
-    let schema = json!({"type": "array", "items": {"type": "object", "properties": {}}});
+    let schema = super::validate::event_schema(&query.object_type);
     // Reads are always fully fresh: everything written is immediately visible.
     let latest = data
         .iter()

@@ -2,6 +2,7 @@
 //! driver; the backend is chosen at runtime from the database URL. All SQL in
 //! this crate must be portable between the two (use `$N` placeholders).
 
+pub mod attachments;
 pub mod events;
 pub mod objects;
 

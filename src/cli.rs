@@ -31,6 +31,10 @@ pub struct ServeArgs {
     /// Only accept this API key (default: accept any bearer token).
     #[arg(long, env = "BT_EMULATOR_API_KEY")]
     pub api_key: Option<String>,
+    /// Organization name reported at login (default `bt-emulator`). Set it to match
+    /// `BRAINTRUST_ORG_NAME` if your code sets one.
+    #[arg(long, env = "BT_EMULATOR_ORG_NAME")]
+    pub org_name: Option<String>,
     /// OpenAI-compatible API that prompt functions run against when invoked
     /// (e.g. `http://localhost:11434/v1`). Without it, invoking a prompt fails.
     #[arg(long, env = "BT_EMULATOR_LLM_BASE_URL")]
@@ -62,21 +66,19 @@ pub async fn run(cli: Cli) -> Result<(), crate::error::Error> {
     let Command::Serve(args) = cli.command;
     let db = crate::db::Db::connect(&args.database_url).await?;
     let listener = tokio::net::TcpListener::bind(args.listen).await?;
-    println!("listening on http://{}", listener.local_addr()?);
-    crate::server::serve(
-        listener,
-        db,
-        crate::api::Config {
-            api_key: args.api_key,
-            runtime: crate::invoke::Runtime {
-                llm_base_url: args.llm_base_url,
-                llm_api_key: args.llm_api_key,
-                allow_code: args.allow_code_execution,
-                ..Default::default()
-            },
+    let config = crate::api::Config {
+        api_key: args.api_key,
+        org_name: args.org_name,
+        runtime: crate::invoke::Runtime {
+            llm_base_url: args.llm_base_url,
+            llm_api_key: args.llm_api_key,
+            allow_code: args.allow_code_execution,
+            ..Default::default()
         },
-        crate::server::shutdown_signal(),
-    )
-    .await?;
+    };
+    // Ready to stop cleanly before telling anyone we are listening.
+    let shutdown = crate::server::shutdown_signal();
+    println!("listening on http://{}", listener.local_addr()?);
+    crate::server::serve(listener, db, config, shutdown).await?;
     Ok(())
 }

@@ -47,6 +47,21 @@ const STRIP: [&str; 13] = [
     "is_root",
 ];
 
+/// Row data fields a merge's audit entry can name.
+const AUDITED: [&str; 11] = [
+    "classifications",
+    "context",
+    "error",
+    "expected",
+    "input",
+    "metadata",
+    "metrics",
+    "output",
+    "scores",
+    "span_attributes",
+    "tags",
+];
+
 /// The object a `/logs3` row addresses.
 pub fn target_of(row: &Map<String, Value>) -> Option<Target> {
     let field = |k: &str| row.get(k).and_then(Value::as_str).map(str::to_owned);
@@ -159,6 +174,13 @@ async fn apply(
         }
     }
 
+    // A merge's audit entry names one changed field: recordings show the
+    // alphabetically first data field the merge sets, with its new value.
+    let merged_field = row
+        .iter()
+        .filter(|(k, _)| AUDITED.contains(&k.as_str()))
+        .min_by(|a, b| a.0.cmp(b.0))
+        .map(|(k, v)| (k.clone(), v.clone()));
     let existing = Db::current_row(conn, ty, oid, id).await?;
     let (mut data, action) = match existing {
         Some(mut current) if is_merge => {
@@ -211,7 +233,10 @@ async fn apply(
         }
     }
     let change = match action {
-        "merge" => json!({"action": "merge", "from": null, "path": [], "to": null}),
+        "merge" => match merged_field {
+            Some((key, to)) => json!({"action": "merge", "from": null, "path": [key], "to": to}),
+            None => json!({"action": "merge", "from": null, "path": [], "to": null}),
+        },
         _ => json!({"action": "upsert"}),
     };
     let audit = json!({"_xact_id": xact.to_string(), "audit_data": change, "metadata": metadata, "source": source});

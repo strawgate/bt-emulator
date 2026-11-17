@@ -156,7 +156,7 @@ async fn otlp_spans_become_rows() {
         );
         assert_eq!(
             root["metrics"],
-            json!({"start": 1_700_000_000.0, "end": 1_700_000_001.0})
+            json!({"start": 1_700_000_000.0, "end": 1_700_000_001.0, "duration": 1.0})
         );
         assert_eq!(root["created"], "2023-11-14T22:13:20.000Z");
         assert_eq!(root["is_root"], true);

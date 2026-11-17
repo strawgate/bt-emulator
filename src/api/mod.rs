@@ -1,6 +1,7 @@
 //! HTTP surface. One router serves both the Braintrust "app" URL (`/api/*`) and
 //! the "api" URL; their paths do not collide.
 
+mod attachments;
 mod error;
 mod extract;
 mod functions;
@@ -9,6 +10,7 @@ mod legacy;
 mod meta;
 mod objects;
 mod otel;
+mod resources;
 mod rows;
 mod summary;
 mod validate;
@@ -35,7 +37,14 @@ pub struct Config {
     pub api_key: Option<String>,
     /// Where function invocations run.
     pub runtime: crate::invoke::Runtime,
+    /// The organization's name (default [`ORG_NAME`]). SDKs configured with an org
+    /// name (`BRAINTRUST_ORG_NAME`) refuse to log in unless it matches.
+    pub org_name: Option<String>,
 }
+
+/// The configured organization name, available to handlers as an extension.
+#[derive(Debug, Clone)]
+pub struct OrgName(pub std::sync::Arc<str>);
 
 /// The router with default options (any API key accepted).
 pub fn router(db: Db) -> Router {
@@ -45,6 +54,7 @@ pub fn router(db: Db) -> Router {
 pub fn app(db: Db, config: Config) -> Router {
     let api_key: Option<std::sync::Arc<str>> = config.api_key.map(Into::into);
     let runtime = std::sync::Arc::new(config.runtime);
+    let org = OrgName(config.org_name.as_deref().unwrap_or(ORG_NAME).into());
     Router::new()
         .route("/", get(root))
         // App URL
@@ -67,6 +77,15 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/btql", post(rows::btql))
         .route("/otel/v1/traces", post(otel::traces))
         .route(
+            "/attachment",
+            get(attachments::metadata).post(attachments::create),
+        )
+        .route("/attachment/status", post(attachments::status))
+        .route(
+            "/attachment/blob/{key}",
+            get(attachments::download).put(attachments::upload),
+        )
+        .route(
             "/experiment-comparison2",
             get(summary::experiment_comparison),
         )
@@ -77,6 +96,7 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/v1/function/{id}/invoke", post(invoke::by_id))
         .route("/function/invoke", post(invoke::by_ref))
         .route("/v1/prompt/{id}", functions_item())
+        .merge(resource_routes())
         .route("/v1/{kind}", get(objects::list).post(objects::create))
         .route(
             "/v1/{kind}/{id}",
@@ -99,8 +119,28 @@ pub fn app(db: Db, config: Config) -> Router {
             validate::require_auth,
         ))
         .layer(axum::Extension(runtime))
+        .layer(axum::Extension(org))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
         .with_state(db)
+}
+
+fn resource_routes() -> Router<Db> {
+    let mut router = Router::new();
+    for (kind, _) in resources::KINDS {
+        let mut root = get(resources::list)
+            .post(resources::create)
+            .put(resources::create);
+        if kind == "ai_secret" {
+            root = root.delete(resources::delete_by_name);
+        }
+        router = router.route(&format!("/v1/{kind}"), root).route(
+            &format!("/v1/{kind}/{{id}}"),
+            get(resources::get)
+                .patch(resources::patch)
+                .delete(resources::delete),
+        );
+    }
+    router
 }
 
 fn functions_root() -> axum::routing::MethodRouter<Db> {

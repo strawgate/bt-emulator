@@ -530,3 +530,27 @@ The Go SDK traces only through OpenTelemetry: a batch span processor exports to 
   - A span with error status gets `error`: the `exception` event's `exception.message`, else the status message, else `"error"`.
 - **Writes:** each export is one transaction, and every span replaces any row with the same id. Span events other than `exception` are not stored.
 - These mappings follow Braintrust's public OpenTelemetry attribute documentation and the Apache-2.0 SDKs. The server-side converter is not open source, so details such as decoding plain-string JSON are the emulator's choices.
+
+## 18. Named resources (`/v1/project_automation`, `/v1/project_score`, `/v1/role`, …)
+
+The spec's other named `/v1` objects share one set of conventions, which the emulator implements once (`src/api/resources.rs`), driven by each kind's response schema in the spec: `ai_secret`, `dataset_snapshot`, `env_var`, `group`, `mcp_server`, `project_automation`, `project_group`, `project_score`, `project_tag`, `role`, `span_iframe` and `view`. They are stored, never acted on: automations do not fire, AI secrets are not used by invoke, and so on.
+- **Scope:** names are unique within the project (`project_id`), dataset (`dataset_id`), object (`object_type` + `object_id`, for views and env vars) or else the org. A write naming a missing project or dataset is the plain-text 400 of §11.
+- **`POST`** creates, or returns the existing resource of that name unmodified. **`PUT`** creates, or replaces it, keeping its `id` and `created`. Both follow the spec's operation descriptions.
+- **Representation:** the request's fields that the response schema has, plus server fields: `id`, `created`, `user_id` and `org_id` when the schema has them, and `updated_at`, refreshed on every write. Unset nullable fields are `null`, and unset required lists, objects and flags start empty or `false`. Write-only input such as an AI secret's `secret` is not returned.
+- **`GET`** lists newest first, filtered by `ids`, `<kind>_name`, `project_id`/`project_name`, `object_type`/`object_id`, `view_type` and `score_type`, and paged like other lists. `GET /{id}` reads one. A missing id is 403 `ForbiddenError` "Missing read access to <kind> id …" (`go:openapi/testdata/cassettes/TestGeneratedAutomationLifecycle.yaml`).
+- **`PATCH`** replaces the fields it gives (ignoring server and scoping fields; `null` only clears nullable ones). `add_<field>`/`remove_<field>` lists edit a list field's members (roles, groups, project groups). Renaming onto an existing name is 409.
+- **`DELETE /{id}`** removes it and returns it, with `deleted_at` set when the schema has one. `DELETE /v1/ai_secret` takes `{name}` in the body.
+- Not implemented: `acl`, `api_key`, `service_token`, `organization`, `user`, `column`, `ingest_key` and `/v1/eval`.
+
+## 19. Attachments (`POST /attachment`, `/attachment/status`, `GET /attachment`)
+
+The SDKs upload `Attachment` values separately from the rows that reference them:
+- `POST /attachment {key, filename, content_type, org_id}` → `{"signedUrl", "headers": {"Content-Type", "If-None-Match": "*"}}` (`py:src/braintrust/integrations/pipecat/cassettes/*`).
+- The SDK `PUT`s the bytes to `signedUrl` with those headers.
+- It then reports `POST /attachment/status {key, org_id, status: {upload_status: "done" | "error", error_message?}}` → `{"status": "success"}`.
+- `ReadonlyAttachment` reads `GET /attachment?key=&filename=&content_type=&org_id=` → `{"downloadUrl", "status"}` and downloads from `downloadUrl`. An `external_attachment` passes `url=` instead, and its `downloadUrl` is that URL.
+
+How the emulator serves this:
+- The signed URLs point back at the emulator: `/attachment/blob/{key}?token=…`. The token is random per key and replaces the API key on those URLs, since the SDKs send no `Authorization` header to object storage.
+- Content is stored base64-encoded in the database. Asking for the same key again returns the same URL.
+- An unknown key is 404 on `GET /attachment` and 400 on `/attachment/status`. A wrong token is 403.

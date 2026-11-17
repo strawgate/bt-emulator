@@ -29,6 +29,14 @@ pub fn check_uuid(id: &str) -> ApiResult<()> {
     })
 }
 
+/// The live project a new object belongs to, or Braintrust's 400.
+pub async fn require_parent(db: &Db, id: &str) -> ApiResult<Object> {
+    check_uuid(id)?;
+    db.object(Kind::Project, id)
+        .await?
+        .ok_or_else(|| ApiError::missing_parent(Kind::Project, id))
+}
+
 /// A live object by id, or Braintrust's 403.
 pub async fn require(db: &Db, kind: Kind, id: &str) -> ApiResult<Object> {
     check_uuid(id)?;
@@ -187,12 +195,12 @@ pub async fn create(
                 .0
         }
         Kind::Experiment => {
-            let project = require(&db, Kind::Project, required(&body, "project_id")).await?;
+            let project = require_parent(&db, required(&body, "project_id")).await?;
             let ensure_new = body["ensure_new"].as_bool().unwrap_or(false);
             create_experiment(&db, &project, str_field(&body, "name"), ensure_new, &body).await?
         }
         Kind::Dataset => {
-            let project = require(&db, Kind::Project, required(&body, "project_id")).await?;
+            let project = require_parent(&db, required(&body, "project_id")).await?;
             get_or_create_dataset(&db, &project, required(&body, "name"), &body)
                 .await?
                 .0

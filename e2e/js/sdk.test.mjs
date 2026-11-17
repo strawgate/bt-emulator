@@ -155,3 +155,22 @@ test("Eval with a remote LLM classifier", async () => {
   });
   assert.deepEqual(result.results.map((r) => Object.values(r.scores)[0]).sort(), [0, 1]);
 });
+
+test("attachments upload and read back", async () => {
+  const project = projectName();
+  const logger = braintrust.initLogger({ projectName: project, asyncFlush: false });
+  const audio = new braintrust.Attachment({
+    data: new Blob([new TextEncoder().encode("RIFF....WAVE")], { type: "audio/wav" }),
+    filename: "clip.wav",
+    contentType: "audio/wav",
+  });
+  logger.log({ input: { audio }, output: "ok" });
+  await logger.flush();
+
+  const [row] = await rest.fetch("project_logs", await rest.projectId(project));
+  const reference = row.input.audio;
+  assert.equal(reference.type, "braintrust_attachment");
+  const attachment = new braintrust.ReadonlyAttachment(reference);
+  assert.deepEqual(await attachment.status(), { upload_status: "done" });
+  assert.equal(await (await attachment.data()).text(), "RIFF....WAVE");
+});

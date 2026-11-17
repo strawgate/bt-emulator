@@ -224,20 +224,75 @@ async fn send(
     (status, parse_body(&String::from_utf8_lossy(&bytes)))
 }
 
-/// Recordings were made against a real org, so a list call may return objects created
+/// The project with id `pid` as some recorded response shows it, if any does.
+fn recorded_project(interactions: &[Value], pid: &str) -> Option<Value> {
+    interactions.iter().find_map(|it| {
+        let body = &it["response"]["body"];
+        let mut candidates = vec![body, &body["project"]];
+        candidates.extend(body["objects"].as_array().into_iter().flatten());
+        // Projects are the objects whose id is `pid` and that belong to the org.
+        candidates
+            .into_iter()
+            .find(|o| o["id"] == pid && o["org_id"].is_string() && o["name"].is_string())
+            .cloned()
+    })
+}
+
+/// Our id for the recording's project `pid`, creating the project if this replay
+/// has not seen it yet (named as the recording names it elsewhere, if it does).
+async fn ensure_project(
+    router: &axum::Router,
+    st: &mut Replay,
+    interactions: &[Value],
+    pid: &str,
+    name: Option<String>,
+) -> Option<String> {
+    if let Some(ours) = st.ids.get(pid) {
+        return Some(ours.clone());
+    }
+    if pid.is_empty() {
+        return None;
+    }
+    let recorded = recorded_project(interactions, pid).unwrap_or_default();
+    let name = name
+        .or_else(|| recorded["name"].as_str().map(str::to_owned))
+        .unwrap_or_else(|| format!("project-{pid}"));
+    let mut body = json!({"name": name});
+    for key in ["description", "settings"] {
+        if !recorded[key].is_null() {
+            body[key] = recorded[key].clone();
+        }
+    }
+    let (_, project) = send(router, "POST", "/v1/project", Some(body)).await;
+    st.learn(
+        None,
+        &json!({"project_id": pid}),
+        &json!({"project_id": project["id"]}),
+    );
+    st.ids.get(pid).cloned()
+}
+
+/// Recordings were made against a real org, so a call may return objects created
 /// before the recording started. Seed them through the public API so the rest of the
 /// cassette can replay. Only names and parents are seeded, never rows.
-async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
+async fn hydrate(router: &axum::Router, st: &mut Replay, interactions: &[Value], it: &Value) {
     let path = it["path"].as_str().unwrap();
     let response = &it["response"]["body"];
-    if it["method"] != "GET" || it["response"]["status"] != 200 {
+    if it["response"]["status"] != 200 {
         return;
     }
-    let list = ["project", "experiment", "dataset", "function", "prompt"]
+    if path == "/api/base_experiment/get_id" {
+        return seed_base_experiment(router, st, interactions, response).await;
+    }
+    if it["method"] != "GET" {
+        return;
+    }
+    const KINDS: [&str; 5] = ["project", "experiment", "dataset", "function", "prompt"];
+    let list = KINDS
         .into_iter()
         .find(|k| path.starts_with(&format!("/v1/{k}?")));
-    // A function fetched by id may also predate the recording.
-    let single = ["function", "prompt"].into_iter().find(|k| {
+    // An object fetched by id may also predate the recording.
+    let single = KINDS.into_iter().find(|k| {
         path.strip_prefix(&format!("/v1/{k}/"))
             .is_some_and(|rest| !rest.split('?').next().unwrap().contains('/'))
     });
@@ -274,20 +329,12 @@ async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
             fields.remove(key);
         }
         fields.retain(|_, v| !v.is_null());
-        let recorded_pid = obj["project_id"].as_str().unwrap_or_default();
-        let known = kind == "project" || st.ids.contains_key(recorded_pid);
-        if let (false, Some(name)) = (known, query_param(path, "project_name")) {
-            // Listed by project name before the project was ever fetched.
-            let (_, project) =
-                send(router, "POST", "/v1/project", Some(json!({"name": name}))).await;
-            st.learn(
-                None,
-                &json!({"project_id": recorded_pid}),
-                &json!({"project_id": project["id"]}),
-            );
-        }
         if kind != "project" {
-            let Some(pid) = obj["project_id"].as_str().and_then(|p| st.ids.get(p)) else {
+            let recorded_pid = obj["project_id"].as_str().unwrap_or_default();
+            // Listed by project name before the project was ever fetched.
+            let name = query_param(path, "project_name");
+            let Some(pid) = ensure_project(router, st, interactions, recorded_pid, name).await
+            else {
                 continue;
             };
             body["project_id"] = json!(pid);
@@ -297,6 +344,44 @@ async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
             st.learn(None, obj, &created);
         }
     }
+}
+
+/// `get_id` names a base experiment the recording org already had: create it, and
+/// point the experiment at it.
+async fn seed_base_experiment(
+    router: &axum::Router,
+    st: &mut Replay,
+    interactions: &[Value],
+    response: &Value,
+) {
+    let (Some(base), Some(name), Some(exp)) = (
+        response["base_exp_id"].as_str(),
+        response["base_exp_name"].as_str(),
+        response["id"]
+            .as_str()
+            .and_then(|id| st.ids.get(id))
+            .cloned(),
+    ) else {
+        return;
+    };
+    if st.ids.contains_key(base) {
+        return;
+    }
+    let recorded_pid = response["project_id"].as_str().unwrap_or_default();
+    let Some(pid) = ensure_project(router, st, interactions, recorded_pid, None).await else {
+        return;
+    };
+    let body = json!({"project_id": pid, "name": name});
+    let (_, created) = send(router, "POST", "/v1/experiment", Some(body)).await;
+    st.learn(None, &json!({"id": base}), &json!({"id": created["id"]}));
+    let patch = json!({"base_exp_id": created["id"]});
+    send(
+        router,
+        "PATCH",
+        &format!("/v1/experiment/{exp}"),
+        Some(patch),
+    )
+    .await;
 }
 
 /// The model reply that makes an invoke return what was recorded: a classifier's
@@ -323,8 +408,20 @@ async fn replay(
     cassette: &Cassette,
 ) -> Result<(), String> {
     let mut st = Replay::default();
+    // Each recording was made in one org, and the emulator has one org: every
+    // recorded org id is ours, even one a client sends before logging in.
+    for it in &cassette.interactions {
+        let login_org = it["response"]["body"]["org_info"][0]["id"].as_str();
+        let sent_org = it["request"]["body"]["org_id"].as_str();
+        for org in [login_org, sent_org].into_iter().flatten() {
+            if uuid::Uuid::parse_str(org).is_ok() {
+                st.ids
+                    .insert(org.to_owned(), bt_emulator::api::ORG_ID.to_owned());
+            }
+        }
+    }
     for (n, it) in cassette.interactions.iter().enumerate() {
-        hydrate(&router, &mut st, it).await;
+        hydrate(&router, &mut st, &cassette.interactions, it).await;
         if it["path"].as_str().unwrap().ends_with("/invoke") {
             *llm.sticky.lock().unwrap() = Some(model_reply(&it["response"]["body"]));
         }
@@ -473,7 +570,29 @@ async fn recorded_sdk_traffic_replays() {
     let mut per_backend: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
     for cassette in &corpus {
         for (backend, db) in common::backends().await {
-            let router = bt_emulator::api::app(db, config.clone());
+            // The emulator is configured with the recording org's name, as a user
+            // whose code sets BRAINTRUST_ORG_NAME would.
+            let org_name = cassette
+                .interactions
+                .iter()
+                .find(|it| it["path"] == "/api/apikey/login")
+                .and_then(|it| it["response"]["body"]["org_info"][0]["name"].as_str())
+                .map(str::to_owned);
+            // A recording whose logins were all rejected used a key the server did
+            // not accept: require a different one, as `--api-key` does.
+            let logins: Vec<_> = cassette
+                .interactions
+                .iter()
+                .filter(|it| it["path"] == "/api/apikey/login")
+                .collect();
+            let rejected =
+                !logins.is_empty() && logins.iter().all(|it| it["response"]["status"] == 401);
+            let config = bt_emulator::api::Config {
+                org_name,
+                api_key: rejected.then(|| "a-key-the-recording-did-not-use".to_owned()),
+                ..config.clone()
+            };
+            let router = bt_emulator::api::app(db, config);
             if let Err(reason) = replay(router, &llm, cassette).await {
                 per_backend
                     .entry(backend)

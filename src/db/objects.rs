@@ -1,4 +1,4 @@
-//! Projects, experiments and datasets.
+//! Projects, experiments and datasets, and the other named `/v1` resources.
 
 use serde_json::Value;
 use sqlx::Row;
@@ -51,10 +51,15 @@ fn decode(row: &AnyRow) -> Result<Object, Error> {
 impl Db {
     /// All live objects of a kind, newest first.
     pub async fn objects(&self, kind: Kind) -> Result<Vec<Object>, Error> {
+        self.objects_of(kind.as_str()).await
+    }
+
+    /// All live objects of a kind named by string, newest first.
+    pub async fn objects_of(&self, kind: &str) -> Result<Vec<Object>, Error> {
         sqlx::query(
             "SELECT seq, data FROM objects WHERE kind = $1 AND deleted = 0 ORDER BY seq DESC",
         )
-        .bind(kind.as_str())
+        .bind(kind)
         .fetch_all(self.pool())
         .await?
         .iter()
@@ -63,10 +68,14 @@ impl Db {
     }
 
     pub async fn object(&self, kind: Kind, id: &str) -> Result<Option<Object>, Error> {
+        self.object_of(kind.as_str(), id).await
+    }
+
+    pub async fn object_of(&self, kind: &str, id: &str) -> Result<Option<Object>, Error> {
         let row = sqlx::query(
             "SELECT seq, data FROM objects WHERE kind = $1 AND id = $2 AND deleted = 0",
         )
-        .bind(kind.as_str())
+        .bind(kind)
         .bind(id)
         .fetch_optional(self.pool())
         .await?;
@@ -79,10 +88,19 @@ impl Db {
         parent_id: &str,
         name: &str,
     ) -> Result<Option<Object>, Error> {
+        self.object_by_name_of(kind.as_str(), parent_id, name).await
+    }
+
+    pub async fn object_by_name_of(
+        &self,
+        kind: &str,
+        parent_id: &str,
+        name: &str,
+    ) -> Result<Option<Object>, Error> {
         let row = sqlx::query(
             "SELECT seq, data FROM objects WHERE kind = $1 AND parent_id = $2 AND name = $3 AND deleted = 0",
         )
-        .bind(kind.as_str())
+        .bind(kind)
         .bind(parent_id)
         .bind(name)
         .fetch_optional(self.pool())
@@ -97,12 +115,21 @@ impl Db {
         parent_id: &str,
         data: Value,
     ) -> Result<Object, Error> {
+        self.insert_object_of(kind.as_str(), parent_id, data).await
+    }
+
+    pub async fn insert_object_of(
+        &self,
+        kind: &str,
+        parent_id: &str,
+        data: Value,
+    ) -> Result<Object, Error> {
         let seq = self.next_counter("object").await?;
         let id = data["id"].as_str().unwrap_or_default();
         let name = data["name"].as_str().unwrap_or_default();
         sqlx::query("INSERT INTO objects (id, kind, parent_id, name, seq, deleted, data) VALUES ($1, $2, $3, $4, $5, 0, $6)")
             .bind(id)
-            .bind(kind.as_str())
+            .bind(kind)
             .bind(parent_id)
             .bind(name)
             .bind(seq)

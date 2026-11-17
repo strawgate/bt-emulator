@@ -1,13 +1,13 @@
 //! Experiment and dataset summaries (docs/protocol.md §8).
 
-use axum::Json;
 use axum::extract::{Path, RawQuery, State};
 use axum::http::HeaderMap;
+use axum::{Extension, Json};
 use serde_json::{Value, json};
 
 use super::extract::{Params, base_url};
 use super::objects::require;
-use super::{ApiError, ApiResult, ORG_NAME};
+use super::{ApiError, ApiResult, OrgName};
 use crate::db::Db;
 use crate::db::objects::{Kind, Object};
 
@@ -64,10 +64,11 @@ fn segment(name: &str) -> String {
         .collect()
 }
 
-fn project_url(headers: &HeaderMap, project: &Object) -> String {
+fn project_url(headers: &HeaderMap, org: &OrgName, project: &Object) -> String {
     format!(
-        "{}/app/{ORG_NAME}/p/{}",
+        "{}/app/{}/p/{}",
         base_url(headers),
+        segment(&org.0),
         segment(project.name())
     )
 }
@@ -76,6 +77,7 @@ pub async fn experiment(
     State(db): State<Db>,
     Path(id): Path<String>,
     RawQuery(query): RawQuery,
+    Extension(org): Extension<OrgName>,
     headers: HeaderMap,
 ) -> ApiResult<Json<Value>> {
     let params = Params::parse(query.as_deref());
@@ -87,7 +89,7 @@ pub async fn experiment(
     )
     .await?;
     let comparison = comparison_for(&db, &exp, params.get("comparison_experiment_id")).await?;
-    let project_url = project_url(&headers, &project);
+    let project_url = project_url(&headers, &org, &project);
     let mut body = json!({
         "project_name": project.name(),
         "project_url": project_url,
@@ -125,6 +127,7 @@ async fn total_records(db: &Db, dataset: &Object) -> ApiResult<usize> {
 pub async fn dataset(
     State(db): State<Db>,
     Path(id): Path<String>,
+    Extension(org): Extension<OrgName>,
     headers: HeaderMap,
 ) -> ApiResult<Json<Value>> {
     let dataset = require(&db, Kind::Dataset, &id).await?;
@@ -134,7 +137,7 @@ pub async fn dataset(
         dataset.data["project_id"].as_str().unwrap_or_default(),
     )
     .await?;
-    let project_url = project_url(&headers, &project);
+    let project_url = project_url(&headers, &org, &project);
     Ok(Json(json!({
         "project_name": project.name(),
         "project_url": project_url,

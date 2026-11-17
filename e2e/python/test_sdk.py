@@ -194,3 +194,18 @@ def test_eval_with_a_remote_llm_classifier(project_name, api):
     )
     assert sorted(r.scores["judge"] for r in result.results) == [0, 1]
     assert result.summary.scores["judge"].score == 0.5
+
+
+def test_attachments_upload_and_read_back(project_name, api):
+    logger = braintrust.init_logger(project=project_name)
+    audio = braintrust.Attachment(data=b"RIFF....WAVE", filename="clip.wav", content_type="audio/wav")
+    logger.log(input={"audio": audio}, output="ok")
+    logger.flush()
+
+    [row] = api.fetch("project_logs", api.project_id(project_name))
+    reference = row["input"]["audio"]
+    assert reference["type"] == "braintrust_attachment"
+    assert reference["filename"] == "clip.wav"
+    attachment = braintrust.ReadonlyAttachment(reference)
+    assert attachment.status() == {"upload_status": "done"}
+    assert attachment.data == b"RIFF....WAVE"

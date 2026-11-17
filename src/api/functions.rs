@@ -9,7 +9,7 @@ use axum::http::{StatusCode, Uri};
 use serde_json::{Map, Value, json};
 
 use super::extract::{JsonBody, Params};
-use super::objects::{check_uuid, new_id, paginate, require};
+use super::objects::{check_uuid, new_id, paginate, require_parent};
 use super::rows::parse_version;
 use super::{ApiError, ApiResult, ORG_ID};
 use crate::db::Db;
@@ -137,12 +137,7 @@ pub async fn create(
     JsonBody(body): JsonBody,
 ) -> ApiResult<Json<Value>> {
     let flavor = Flavor::of(&uri);
-    let project = require(
-        &db,
-        Kind::Project,
-        body["project_id"].as_str().unwrap_or_default(),
-    )
-    .await?;
+    let project = require_parent(&db, body["project_id"].as_str().unwrap_or_default()).await?;
     let slug = body["slug"].as_str().unwrap_or_default();
     let _guard = db.write_lock().await;
     let existing = db

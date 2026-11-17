@@ -1,5 +1,5 @@
 use axum::Json;
-use axum::http::StatusCode;
+use axum::http::{StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use serde_json::{Value, json};
 
@@ -30,13 +30,26 @@ impl ApiError {
         Self::new(StatusCode::NOT_FOUND, message)
     }
 
+    /// A write naming a parent that is missing or deleted: 400, as plain text
+    /// (`ruby:test/fixtures/vcr_cassettes/experiments/create_invalid_project.yml`).
+    pub fn missing_parent(kind: Kind, id: &str) -> Self {
+        let kind = kind.as_str();
+        Self {
+            status: StatusCode::BAD_REQUEST,
+            body: Value::String(format!(
+                "Missing read access to {kind} id {id}, or the {kind} does not exist"
+            )),
+        }
+    }
+
     /// Braintrust answers 403 for objects that are missing or deleted.
     pub fn missing(kind: Kind, id: &str) -> Self {
-        let message = format!(
-            "Missing read access to {} id {id}, or the {} does not exist",
-            kind.as_str(),
-            kind.as_str()
-        );
+        Self::missing_named(kind.as_str(), id)
+    }
+
+    pub fn missing_named(kind: &str, id: &str) -> Self {
+        let message =
+            format!("Missing read access to {kind} id {id}, or the {kind} does not exist");
         Self {
             status: StatusCode::FORBIDDEN,
             body: json!({"Code": "ForbiddenError", "Message": message}),
@@ -46,7 +59,16 @@ impl ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        (self.status, Json(self.body)).into_response()
+        match self.body {
+            // Some Braintrust errors are plain text.
+            Value::String(text) => (
+                self.status,
+                [(header::CONTENT_TYPE, "text/plain; charset=utf-8")],
+                text,
+            )
+                .into_response(),
+            body => (self.status, Json(body)).into_response(),
+        }
     }
 }
 

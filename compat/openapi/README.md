@@ -33,9 +33,11 @@ spec. Any failure not listed fails the run.
 |---|---|---|
 | `GET`/`POST .../fetch` (experiment, dataset, project_logs), `GET /v1/function`, `GET /v1/prompt` and their by-id reads | positive data rejected (400) | `version` is a transaction id (or its 16-hex display form). The spec types it as any string; the emulator rejects anything else instead of silently ignoring it. |
 | `GET`, `PATCH`, `DELETE` on `/v1/function/{id}` and `/v1/prompt/{id}` | positive data rejected (400) | A missing function or prompt is a 400 `BadRequestError` ("Prompt does not exist or you do not have access"), as recorded from the real API in the Go SDK's cassettes. |
-| `POST /v1/experiment`, `PATCH /v1/experiment/{id}`, `PATCH /v1/project/{id}` | positive data rejected (400) | In JSON Schema 2020-12, `format: uuid` is only an annotation, so `""` is technically valid. The emulator enforces formats, like the real API's validators. |
+| `POST /v1/experiment`, `PATCH /v1/experiment/{id}`, `PATCH /v1/project/{id}`, `POST`/`PUT`/`PATCH` on `/v1/view` | positive data rejected (400) | In JSON Schema 2020-12, `format: uuid` is only an annotation, so `""` is technically valid. The emulator enforces formats, like the real API's validators. |
+| `POST`/`PUT` creating an object under a project or dataset (datasets, functions, prompts, MCP servers, project scores, project tags, span iframes, dataset snapshots) | positive data rejected (400) | A write naming a project or dataset that does not exist is a plain-text 400 ("Missing read access to project id …"), as recorded from the real API (`ruby:test/fixtures/vcr_cassettes/experiments/create_invalid_project.yml`). Reads of a missing object stay 403. |
+| `GET` lists with very long query strings | undocumented status code (414) | The HTTP server rejects URIs over its length limit before any handler runs. |
 | `POST .../insert` (experiment, dataset, project_logs) | positive data rejected (400) | Same, for `format: date-time` on `created`. |
-| `PATCH` on projects, experiments, datasets | undocumented status code (409) | Renaming onto an existing name returns 409 Conflict, which the spec does not list. |
+| `PATCH` on projects, experiments, datasets and the named resources (roles, groups, project scores and tags, …) | undocumented status code (409) | Renaming onto an existing name returns 409 Conflict, which the spec does not list. |
 
 Regenerate after an intentional change with
 `just fuzz --baseline-update --baseline-prune` and update the table above.
