@@ -1,8 +1,8 @@
 //! Projects, experiments and datasets, and the other named `/v1` resources.
 
 use serde_json::Value;
-use sqlx::Row;
 use sqlx::any::AnyRow;
+use sqlx::{AnyConnection, Row};
 
 use super::Db;
 use crate::error::Error;
@@ -134,7 +134,17 @@ impl Db {
         parent_id: &str,
         data: Value,
     ) -> Result<Object, Error> {
-        let seq = self.next_counter("object").await?;
+        Self::insert_object_in(&mut *self.pool().acquire().await?, kind, parent_id, data).await
+    }
+
+    /// [`Db::insert_object_of`] on a given connection, such as an open transaction.
+    pub async fn insert_object_in(
+        conn: &mut AnyConnection,
+        kind: &str,
+        parent_id: &str,
+        data: Value,
+    ) -> Result<Object, Error> {
+        let seq = Self::next_counter(conn, "object").await?;
         let id = data["id"].as_str().unwrap_or_default();
         let name = data[identity(kind)].as_str().unwrap_or_default();
         sqlx::query("INSERT INTO objects (id, kind, parent_id, name, seq, deleted, data) VALUES ($1, $2, $3, $4, $5, 0, $6)")
@@ -144,13 +154,22 @@ impl Db {
             .bind(name)
             .bind(seq)
             .bind(data.to_string())
-            .execute(self.pool())
+            .execute(conn)
             .await?;
         Ok(Object { seq, data })
     }
 
     /// Replace an object's data (and name). `deleted` soft-deletes it.
     pub async fn update_object(&self, data: &Value, deleted: bool) -> Result<(), Error> {
+        Self::update_object_in(&mut *self.pool().acquire().await?, data, deleted).await
+    }
+
+    /// [`Db::update_object`] on a given connection, such as an open transaction.
+    pub async fn update_object_in(
+        conn: &mut AnyConnection,
+        data: &Value,
+        deleted: bool,
+    ) -> Result<(), Error> {
         sqlx::query(
             "UPDATE objects SET name = CASE WHEN kind = 'environment' THEN $5 ELSE $1 END, \
              deleted = $2, data = $3 WHERE id = $4",
@@ -160,7 +179,7 @@ impl Db {
         .bind(data.to_string())
         .bind(data["id"].as_str().unwrap_or_default())
         .bind(data["slug"].as_str().unwrap_or_default())
-        .execute(self.pool())
+        .execute(conn)
         .await?;
         Ok(())
     }

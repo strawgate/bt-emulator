@@ -207,6 +207,19 @@ async fn prompts_load_at_the_version_their_environment_serves() {
             );
         }
 
+        // Only prompts take `environment_slugs` (spec: CreatePrompt); functions ignore it.
+        let tool = json!({"project_id": pid, "name": "Tool", "slug": "tool", "environment_slugs": ["production", "nope"],
+            "function_data": {"type": "code", "data": {"type": "inline", "runtime_context": {"runtime": "node", "version": "20"}, "code": "x"}}});
+        ok(&db, "POST", "/v1/function", tool).await;
+        let served = ok(
+            &db,
+            "GET",
+            "/v1/function?slug=tool&environment=production",
+            Value::Null,
+        )
+        .await;
+        assert_eq!(served["objects"], json!([]));
+
         // A re-created environment starts with nothing assigned.
         ok(&db, "DELETE", &format!("/environment/{eid}"), Value::Null).await;
         assert_eq!(
@@ -237,5 +250,52 @@ async fn prompts_load_at_the_version_their_environment_serves() {
         )
         .await;
         assert_eq!(status, StatusCode::BAD_REQUEST);
+    }
+}
+
+#[tokio::test]
+async fn a_failed_assignment_writes_no_prompt_version() {
+    // SQLite only: a trigger makes the assignment write fail mid-transaction.
+    let db = bt_emulator::db::Db::connect("sqlite::memory:")
+        .await
+        .unwrap();
+    ok(
+        &db,
+        "POST",
+        "/environment",
+        json!({"name": "Production", "slug": "production"}),
+    )
+    .await;
+    let pid = ok(&db, "POST", "/v1/project", json!({"name": "p"})).await["id"].clone();
+    db.execute_raw(
+        "CREATE TRIGGER no_assign BEFORE INSERT ON objects \
+         WHEN NEW.kind = 'environment_assignment' BEGIN SELECT RAISE(ABORT, 'boom'); END",
+    )
+    .await
+    .unwrap();
+    let prompt = json!({"project_id": pid, "name": "Greeter", "slug": "greet", "environment_slugs": ["production"],
+        "prompt_data": {"prompt": {"type": "chat", "messages": [{"role": "user", "content": "hi"}]}}});
+    let (status, _) = call(&db, "POST", "/v1/prompt", prompt).await;
+    assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+    let listed = ok(&db, "GET", "/v1/prompt?slug=greet", Value::Null).await;
+    assert_eq!(listed["objects"], json!([]));
+}
+
+#[tokio::test]
+async fn datasets_cannot_be_loaded_by_environment() {
+    for (_, db) in common::backends().await {
+        let did = uuid::Uuid::new_v4();
+        let (status, out) = call(
+            &db,
+            "GET",
+            &format!("/environment-object/dataset/{did}/production?org_name=o"),
+            Value::Null,
+        )
+        .await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "{out}");
+        assert!(
+            out["error"].as_str().unwrap().contains("not supported"),
+            "{out}"
+        );
     }
 }

@@ -258,6 +258,33 @@ async fn dataset_snapshots_through_the_app_endpoints() {
             (patched["name"].clone(), patched["description"].clone()),
             (json!("renamed"), json!("first"))
         );
+        // Names are unique per dataset; keeping one's own name is fine.
+        let (status, out) = call(
+            &db,
+            "POST",
+            "/api/dataset_snapshot/patch_id",
+            json!({"id": id, "name": "v2"}),
+        )
+        .await;
+        assert_eq!(status, StatusCode::CONFLICT, "{out}");
+        ok(
+            &db,
+            "POST",
+            "/api/dataset_snapshot/patch_id",
+            json!({"id": id, "name": "renamed"}),
+        )
+        .await;
+        let described = ok(
+            &db,
+            "POST",
+            "/api/dataset_snapshot/patch_id",
+            json!({"id": id, "description": "second"}),
+        )
+        .await;
+        assert_eq!(
+            (described["name"].clone(), described["description"].clone()),
+            (json!("renamed"), json!("second"))
+        );
         assert_eq!(
             ok(
                 &db,

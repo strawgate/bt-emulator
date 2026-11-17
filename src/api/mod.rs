@@ -129,6 +129,10 @@ pub fn app(db: Db, config: Config) -> Router {
         )
         .route("/xact-id", get(datasets::xact_id))
         .route(
+            "/environment-object/{*path}",
+            get(datasets::environment_object),
+        )
+        .route(
             "/api/dataset_snapshot/register",
             post(datasets::snapshot_register),
         )

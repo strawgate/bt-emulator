@@ -12,8 +12,11 @@ use super::extract::{JsonBody, Params};
 use super::objects::{check_uuid, list_scope, new_id, paginate, require_parent};
 use super::rows::parse_version;
 use super::{ApiError, ApiResult, ORG_ID};
+use sqlx::AnyConnection;
+
 use crate::db::Db;
 use crate::db::events::Event;
+use crate::db::objects::Object;
 use crate::error::Error;
 
 pub(super) const OBJECT_TYPE: &str = "functions";
@@ -156,13 +159,15 @@ pub(super) struct Written {
 
 /// Create the function `body` describes in `project_id`, or append a version of the
 /// existing one with the same slug (or, with `keep_existing`, leave it unchanged).
-/// `function_data` defaults to `default_data`. Callers hold the write lock.
+/// `function_data` defaults to `default_data`. The environments (by id) are pointed
+/// at the new version in the same transaction. Callers hold the write lock.
 pub(super) async fn upsert(
     db: &Db,
     project_id: &str,
     body: &Value,
     default_data: Option<Value>,
     keep_existing: bool,
+    environments: &[String],
 ) -> ApiResult<Written> {
     let project = require_parent(db, project_id).await?;
     let slug = body["slug"].as_str().unwrap_or_default();
@@ -194,7 +199,30 @@ pub(super) async fn upsert(
         ("log_id".into(), json!("p")),
         ("created".into(), json!(crate::time::now_iso())),
     ]);
-    let xact = put(db, project.id(), &id, Some(&data)).await?;
+    // Read before the transaction opens: an in-memory SQLite pool has one connection.
+    let mut assignments = Vec::new();
+    for environment_id in environments {
+        let existing = db
+            .object_by_name_of(ASSIGNMENT, &id, environment_id)
+            .await?;
+        assignments.push((environment_id, existing));
+    }
+    let mut tx = db.begin().await?;
+    let xact = Db::next_xact(&mut tx).await?;
+    Db::put_row(
+        &mut tx,
+        OBJECT_TYPE,
+        project.id(),
+        &id,
+        xact,
+        0,
+        Some(&data),
+    )
+    .await?;
+    for (environment_id, existing) in assignments {
+        assign(&mut tx, &id, environment_id, existing, xact).await?;
+    }
+    tx.commit().await.map_err(Error::from)?;
     Ok(Written {
         data,
         xact,
@@ -209,30 +237,23 @@ pub async fn create(
     uri: Uri,
     JsonBody(body): JsonBody,
 ) -> ApiResult<Json<Value>> {
-    let default_data = (Flavor::of(&uri) == Flavor::Prompt).then(|| json!({"type": "prompt"}));
+    let is_prompt = Flavor::of(&uri) == Flavor::Prompt;
+    let default_data = is_prompt.then(|| json!({"type": "prompt"}));
     let project_id = body["project_id"].as_str().unwrap_or_default();
-    // Every environment must exist, or nothing is written (spec: CreatePrompt).
+    // Only prompts take `environment_slugs` (spec: CreatePrompt, not
+    // CreateFunction). Every environment must exist, or nothing is written.
+    let _guard = db.write_lock().await;
     let mut environments = Vec::new();
     for slug in body["environment_slugs"]
         .as_array()
+        .filter(|_| is_prompt)
         .into_iter()
         .flatten()
         .filter_map(Value::as_str)
     {
         environments.push(require_environment(&db, slug).await?);
     }
-    let written = {
-        let _guard = db.write_lock().await;
-        upsert(&db, project_id, &body, default_data, false).await?
-    };
-    let id = written
-        .data
-        .get("id")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
-    for environment_id in environments {
-        assign(&db, id, &environment_id, written.xact).await?;
-    }
+    let written = upsert(&db, project_id, &body, default_data, false, &environments).await?;
     Ok(Json(with_xact(written.data, written.xact)))
 }
 
@@ -402,18 +423,24 @@ async fn environment_param(db: &Db, params: &Params) -> ApiResult<Option<String>
     Ok(Some(require_environment(db, slug).await?))
 }
 
-/// Point environment `environment_id` at version `xact` of function `id`.
-async fn assign(db: &Db, id: &str, environment_id: &str, xact: i64) -> ApiResult<()> {
-    let _guard = db.write_lock().await;
-    match db.object_by_name_of(ASSIGNMENT, id, environment_id).await? {
+/// Point environment `environment_id` at version `xact` of function `id`, updating
+/// its `existing` assignment if it has one.
+async fn assign(
+    conn: &mut AnyConnection,
+    id: &str,
+    environment_id: &str,
+    existing: Option<Object>,
+    xact: i64,
+) -> ApiResult<()> {
+    match existing {
         Some(mut existing) => {
             existing.data["version"] = json!(xact);
-            db.update_object(&existing.data, false).await?;
+            Db::update_object_in(conn, &existing.data, false).await?;
         }
         None => {
             let data =
                 json!({"id": new_id(), "name": environment_id, "function_id": id, "version": xact});
-            db.insert_object_of(ASSIGNMENT, id, data).await?;
+            Db::insert_object_in(conn, ASSIGNMENT, id, data).await?;
         }
     }
     Ok(())

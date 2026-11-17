@@ -114,11 +114,11 @@ impl Db {
         Ok(self.pool.begin().await?)
     }
 
-    pub async fn next_counter(&self, name: &str) -> Result<i64, Error> {
+    pub async fn next_counter(conn: &mut AnyConnection, name: &str) -> Result<i64, Error> {
         let row =
             sqlx::query("UPDATE counters SET value = value + 1 WHERE name = $1 RETURNING value")
                 .bind(name)
-                .fetch_one(&self.pool)
+                .fetch_one(conn)
                 .await?;
         Ok(row.try_get("value")?)
     }

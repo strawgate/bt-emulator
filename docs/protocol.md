@@ -225,7 +225,7 @@ The Go SDK sends `ensure_new: !update` with `omitempty`, so `update=true` omits 
   - JS reads `project.id/name` and `dataset.id/name` (js:9193-9213). Get-or-create.
 - **`POST /api/self/get_object_info`** `{object_type:"dataset", object_ids:[id]}` → `[{object_id, object_name, parent_cols:{project:{id,name}}}]` (zod js:5826-5835, call js:9165-9190). Used when JS `initDataset({datasetId})`.
 - **`GET {api}/dataset-summary?dataset_id=<id>`** → `{"total_records": number}` (zod, js:12009-12026).
-- `GET {api}/environment-object/dataset/{id}/{env}?org_name=` → `{object_version}`. Only used with `environment=` (py:logger.py:5681-5690; js:9031). Low priority.
+- `GET {api}/environment-object/dataset/{id}/{env}?org_name=` → `{object_version}`. Only used with `environment=` (py:logger.py:5681-5690; js:9031). **Not supported (400):** no SDK or spec endpoint assigns datasets to environments, so there is nothing to serve; load by `version` instead.
 
 ---
 
@@ -500,7 +500,9 @@ Prompts are functions with `function_data: {"type": "prompt"}`. Both endpoints s
 - **Delete** writes a tombstone and returns the last version with `_object_delete: true` and a fresh `created`.
 - **Missing id** → 400 `{"Code":"BadRequestError","Message":"Prompt does not exist or you do not have access"}` (`go:prompt/testdata/cassettes/TestLoadWithClient_HTTPError.yaml`). `/v1/function` says "Function".
 - **Environments** (spec: `CreatePrompt.environment_slugs`, the `PromptEnvironment` parameter, `/environment`):
-  - Writing a prompt with `environment_slugs` points each named environment at the version just written. Every slug must exist, or nothing is written (400).
+  - Writing a prompt with `environment_slugs` points each named environment at the version just written, in the same transaction. Every slug must exist, or nothing is written (400).
+  - Only `/v1/prompt` takes `environment_slugs` (the spec has it on `CreatePrompt`, not `CreateFunction`); `/v1/function` ignores it.
+  - A write without `environment_slugs` leaves existing assignments on their versions.
   - `?environment=<slug>` on `GET /v1/prompt|function[/{id}]` returns the assigned version: lists include only assigned functions, and a by-id read of an unassigned one is the usual missing-function 400.
   - An unknown environment, or `environment` together with `version`, is 400.
   - Environments are managed at `/environment` (§18), identified by `slug`.
@@ -598,6 +600,6 @@ Code that points an OpenAI client at Braintrust (`base_url=<api_url>/v1/proxy`, 
 - **JS snapshot endpoints** (all on the app URL):
   - `POST /api/dataset_snapshot/register {dataset_id, dataset_snapshot_name, description, xact_id, update}` → `{dataset_snapshot, found_existing}`. An existing name is returned unchanged, or moved to the new `xact_id`/`description` when `update` is true.
   - `POST /api/dataset_snapshot/get {dataset_id, name?, xact_id?}` → the matching snapshots.
-  - `POST /api/dataset_snapshot/patch_id {id, name?, description?}` and `POST /api/dataset_snapshot/delete_id {id}` → the snapshot.
+  - `POST /api/dataset_snapshot/patch_id {id, name?, description?}` and `POST /api/dataset_snapshot/delete_id {id}` → the snapshot. Names are unique per dataset: renaming to another snapshot's name is 409, as on `PATCH /v1/dataset_snapshot/{id}`.
 
   They share storage with `/v1/dataset_snapshot` (§18). Shapes are from the JS SDK (`datasetSnapshotRegisterResponseSchema`, `DatasetSnapshot`, `datasetRestore*ResultSchema`).

@@ -95,7 +95,15 @@ pub async fn insert_functions(
     let mut xact_id = 0;
     for (f, if_exists) in plans {
         let project_id = f["project_id"].as_str().unwrap_or_default();
-        let written = upsert(&db, project_id, &f, None, if_exists == IfExists::Ignore).await?;
+        let written = upsert(
+            &db,
+            project_id,
+            &f,
+            None,
+            if_exists == IfExists::Ignore,
+            &[],
+        )
+        .await?;
         xact_id = xact_id.max(written.xact);
         out.push(json!({
             "id": written.data.get("id"),

@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 
 use axum::Json;
 use axum::extract::{Path, State};
+use axum::http::StatusCode;
 use serde_json::{Map, Value, json};
 
 use super::extract::JsonBody;
@@ -183,6 +184,17 @@ pub async fn snapshot_patch(
     let id = body["id"].as_str().unwrap_or_default();
     let _guard = db.write_lock().await;
     let mut data = find(&db, SNAPSHOT, id).await?.data;
+    // Names are unique per dataset, as with `PATCH /v1/dataset_snapshot/{id}`.
+    if let Some(name) = body["name"].as_str() {
+        let dataset_id = data["dataset_id"].as_str().unwrap_or_default();
+        let taken = db.object_by_name_of(SNAPSHOT, dataset_id, name).await?;
+        if taken.is_some_and(|o| o.id() != id) {
+            return Err(ApiError::new(
+                StatusCode::CONFLICT,
+                format!("a dataset_snapshot named {name:?} already exists"),
+            ));
+        }
+    }
     for key in ["name", "description"] {
         if let Some(value) = body.get(key).filter(|v| v.is_string()) {
             data[key] = value.clone();
@@ -190,6 +202,16 @@ pub async fn snapshot_patch(
     }
     db.update_object(&data, false).await?;
     Ok(Json(data))
+}
+
+/// `GET /environment-object/{object_type}/{id}/{environment}`: the version of an
+/// object an environment serves, which `init_dataset(environment=)` loads. Nothing
+/// public assigns datasets to environments, so this is refused (docs/protocol.md §5.2).
+pub async fn environment_object() -> ApiResult<Json<Value>> {
+    Err(ApiError::bad_request(
+        "loading a dataset by environment is not supported: bt-emulator has no way to assign \
+         datasets to environments; load it by version instead",
+    ))
 }
 
 /// `POST /api/dataset_snapshot/delete_id {id}`.
