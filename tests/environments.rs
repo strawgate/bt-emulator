@@ -207,10 +207,7 @@ async fn prompts_load_at_the_version_their_environment_serves() {
             );
         }
 
-        // Deleting an environment's prompt stops serving it.
-        ok(&db, "DELETE", &format!("/v1/prompt/{id}"), Value::Null).await;
-        let gone = ok(&db, "GET", "/v1/prompt?environment=production", Value::Null).await;
-        assert_eq!(gone["objects"], json!([]));
+        // A re-created environment starts with nothing assigned.
         ok(&db, "DELETE", &format!("/environment/{eid}"), Value::Null).await;
         assert_eq!(
             call(&db, "GET", "/v1/prompt?environment=production", Value::Null)
@@ -218,5 +215,27 @@ async fn prompts_load_at_the_version_their_environment_serves() {
                 .0,
             StatusCode::BAD_REQUEST
         );
+        ok(
+            &db,
+            "POST",
+            "/environment",
+            json!({"name": "Production", "slug": "production"}),
+        )
+        .await;
+        let fresh = ok(&db, "GET", "/v1/prompt?environment=production", Value::Null).await;
+        assert_eq!(fresh["objects"], json!([]));
+
+        // Deleting an environment's prompt stops serving it, by id or in lists.
+        ok(&db, "DELETE", &format!("/v1/prompt/{id}"), Value::Null).await;
+        let gone = ok(&db, "GET", "/v1/prompt?environment=staging", Value::Null).await;
+        assert_eq!(gone["objects"], json!([]));
+        let (status, _) = call(
+            &db,
+            "GET",
+            &format!("/v1/prompt/{id}?environment=staging"),
+            Value::Null,
+        )
+        .await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
     }
 }

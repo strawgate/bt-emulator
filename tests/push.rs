@@ -169,7 +169,39 @@ async fn push_uploads_bundles_and_inserts_functions() {
         assert_eq!(status, StatusCode::BAD_REQUEST);
         assert!(out["error"].as_str().unwrap().contains("bundled code"));
 
-        // Nothing is written when any definition is invalid.
+        // Nothing is written when any definition is invalid or any slug that must be
+        // new is taken, by an existing function or earlier in the batch.
+        let count = || async {
+            call(&db, "GET", "/v1/function", Value::Null).await.1["objects"]
+                .as_array()
+                .unwrap()
+                .len()
+        };
+        let before = count().await;
+        let mut fresh = prompt(&pid, Some("replace"), "x");
+        fresh["slug"] = json!("fresh");
+        let mut twice = prompt(&pid, None, "x");
+        twice["slug"] = json!("twice");
+        for (functions, needle) in [
+            (
+                json!([fresh, prompt(&pid, None, "x")]),
+                "functions/1: a function with slug \"greet\"",
+            ),
+            (
+                json!([twice.clone(), twice]),
+                "functions/1: a function with slug \"twice\"",
+            ),
+        ] {
+            let (status, out) = call(
+                &db,
+                "POST",
+                "/insert-functions",
+                json!({"functions": functions}),
+            )
+            .await;
+            assert_eq!(status, StatusCode::BAD_REQUEST, "{out}");
+            assert!(out["error"].as_str().unwrap().contains(needle), "{out}");
+        }
         let missing = json!("00000000-0000-0000-0000-000000000000");
         for (body, needle) in [
             (json!({"functions": "x"}), "must be an array"),
@@ -178,7 +210,7 @@ async fn push_uploads_bundles_and_inserts_functions() {
                 "invalid if_exists",
             ),
             (
-                json!({"functions": [prompt(&pid, None, "x"), {"slug": "s"}]}),
+                json!({"functions": [prompt(&pid, Some("replace"), "x"), {"slug": "s"}]}),
                 "functions/1",
             ),
         ] {
@@ -186,6 +218,7 @@ async fn push_uploads_bundles_and_inserts_functions() {
             assert_eq!(status, StatusCode::BAD_REQUEST, "{out}");
             assert!(out["error"].as_str().unwrap().contains(needle), "{out}");
         }
+        assert_eq!(count().await, before);
         let (status, _) = call(
             &db,
             "POST",

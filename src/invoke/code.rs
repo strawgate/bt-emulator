@@ -52,16 +52,15 @@ pub async fn run(rt: &Runtime, data: &Value, call: &Call) -> Result<Value, Invok
                 .into(),
         ));
     }
-    let (program, runner) = match data["runtime_context"]["runtime"].as_str() {
-        Some("node") => (&rt.node, NODE_RUNNER),
-        Some("python") => (&rt.python, PYTHON_RUNNER),
+    let (program, flag, runner) = match data["runtime_context"]["runtime"].as_str() {
+        Some("node") => (&rt.node, "-e", NODE_RUNNER),
+        Some("python") => (&rt.python, "-c", PYTHON_RUNNER),
         other => {
             return Err(InvokeError::Unsupported(format!(
                 "bt-emulator cannot run code for runtime {other:?}"
             )));
         }
     };
-    let flag = if runner == NODE_RUNNER { "-e" } else { "-c" };
     let mut child = tokio::process::Command::new(program)
         .args([flag, runner])
         .stdin(Stdio::piped())

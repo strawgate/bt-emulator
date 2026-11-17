@@ -12,7 +12,7 @@ pub async fn run(
     function: &Map<String, Value>,
     call: &Call,
 ) -> Result<Value, InvokeError> {
-    let Some(base) = &rt.llm_base_url else {
+    let Some(req) = rt.model_request(reqwest::Method::POST, "chat/completions") else {
         return Err(InvokeError::Unsupported(
             "prompt functions need a model: start bt-emulator with --llm-base-url pointing at an OpenAI-compatible API".into(),
         ));
@@ -30,24 +30,18 @@ pub async fn run(
         ));
     }
     let request = build_request(prompt_data, call)?;
-    let mut req = rt
-        .http
-        .post(format!("{}/chat/completions", base.trim_end_matches('/')))
-        .json(&request);
-    if let Some(key) = &rt.llm_api_key {
-        req = req.bearer_auth(key);
-    }
-    let failed = |e: reqwest::Error| InvokeError::Failed(format!("model request failed: {e}"));
+    let req = req.json(&request);
+    let failed = |e: reqwest::Error| InvokeError::Model(format!("model request failed: {e}"));
     let resp = req.send().await.map_err(failed)?;
     let status = resp.status();
     let text = resp.text().await.map_err(failed)?;
     if !status.is_success() {
-        return Err(InvokeError::Failed(format!(
+        return Err(InvokeError::Model(format!(
             "model returned {status}: {text}"
         )));
     }
     let reply: Value = serde_json::from_str(&text)
-        .map_err(|e| InvokeError::Failed(format!("model returned invalid JSON: {e}")))?;
+        .map_err(|e| InvokeError::Model(format!("model returned invalid JSON: {e}")))?;
     let message = &reply["choices"][0]["message"];
     let name = function.get("name").cloned().unwrap_or(Value::Null);
     match &prompt_data["parser"] {
@@ -69,7 +63,7 @@ fn variables(call: &Call) -> Value {
 
 /// Render every string inside `value` as a template.
 fn render_all(value: &Value, vars: &Value) -> Result<Value, InvokeError> {
-    let bad = |e: String| InvokeError::Failed(format!("invalid prompt template: {e}"));
+    let bad = |e: String| InvokeError::Invalid(format!("invalid prompt template: {e}"));
     Ok(match value {
         Value::String(s) => Value::String(crate::mustache::render(s, vars).map_err(bad)?),
         Value::Array(items) => Value::Array(
@@ -111,7 +105,7 @@ fn build_request(prompt_data: &Value, call: &Call) -> Result<Value, InvokeError>
     if let Some(tools) = prompt["tools"].as_str().filter(|t| !t.trim().is_empty()) {
         let rendered = render_all(&json!(tools), &vars)?;
         let tools: Value = serde_json::from_str(rendered.as_str().unwrap_or_default())
-            .map_err(|e| InvokeError::Failed(format!("prompt tools are not valid JSON: {e}")))?;
+            .map_err(|e| InvokeError::Invalid(format!("prompt tools are not valid JSON: {e}")))?;
         request.insert("tools".into(), tools);
     }
     let parser = &prompt_data["parser"];
@@ -155,12 +149,12 @@ fn classify(parser: &Value, message: &Value, name: Value) -> Result<Value, Invok
         .as_str()
         .and_then(|a| serde_json::from_str::<Value>(a).ok())
         .ok_or_else(|| {
-            InvokeError::Failed(format!("model did not call select_choice: {message}"))
+            InvokeError::Model(format!("model did not call select_choice: {message}"))
         })?;
     let choice = args["choice"].as_str().unwrap_or_default();
     let score = &parser["choice_scores"][choice];
     if !score.is_number() {
-        return Err(InvokeError::Failed(format!(
+        return Err(InvokeError::Model(format!(
             "model chose unknown choice {choice:?}"
         )));
     }
@@ -253,11 +247,11 @@ mod tests {
         );
         let bad_tools = json!({"prompt": {"messages": [], "tools": "not json"}});
         assert!(
-            matches!(build_request(&bad_tools, &call), Err(InvokeError::Failed(e)) if e.contains("tools"))
+            matches!(build_request(&bad_tools, &call), Err(InvokeError::Invalid(e)) if e.contains("tools"))
         );
         let bad_template = json!({"prompt": {"messages": [{"content": [{"text": "{{#x}}"}]}]}});
         assert!(
-            matches!(build_request(&bad_template, &call), Err(InvokeError::Failed(e)) if e.contains("template"))
+            matches!(build_request(&bad_template, &call), Err(InvokeError::Invalid(e)) if e.contains("template"))
         );
     }
 
@@ -307,10 +301,10 @@ mod tests {
             json!({"name": "S", "score": 1, "metadata": {"choice": "good"}})
         );
         assert!(
-            matches!(classify(&parser, &call(r#"{"choice": "meh"}"#), json!("S")), Err(InvokeError::Failed(e)) if e.contains("unknown choice"))
+            matches!(classify(&parser, &call(r#"{"choice": "meh"}"#), json!("S")), Err(InvokeError::Model(e)) if e.contains("unknown choice"))
         );
         assert!(
-            matches!(classify(&parser, &json!({"content": "good"}), json!("S")), Err(InvokeError::Failed(e)) if e.contains("select_choice"))
+            matches!(classify(&parser, &json!({"content": "good"}), json!("S")), Err(InvokeError::Model(e)) if e.contains("select_choice"))
         );
     }
 

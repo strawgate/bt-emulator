@@ -248,28 +248,24 @@ async fn prompts_run_against_the_configured_model() {
             .await;
         assert_eq!(llm.last().1["messages"][0]["content"], "Say hello to old");
 
-        // Model failures are 500s.
+        // Model failures are 502s, as from the proxy.
         llm.reply(503, "overloaded");
         assert!(
-            app.error(&greet, json!({}), StatusCode::INTERNAL_SERVER_ERROR)
+            app.error(&greet, json!({}), StatusCode::BAD_GATEWAY)
                 .await
                 .contains("503")
         );
         llm.reply(200, "not json");
         assert!(
-            app.error(&greet, json!({}), StatusCode::INTERNAL_SERVER_ERROR)
+            app.error(&greet, json!({}), StatusCode::BAD_GATEWAY)
                 .await
                 .contains("invalid JSON")
         );
         llm.reply(200, text_reply("no tool call").to_string());
         assert!(
-            app.error(
-                &scorer,
-                json!({"input": {}}),
-                StatusCode::INTERNAL_SERVER_ERROR
-            )
-            .await
-            .contains("select_choice")
+            app.error(&scorer, json!({"input": {}}), StatusCode::BAD_GATEWAY)
+                .await
+                .contains("select_choice")
         );
 
         let mut with_tools = prompt(json!([]), json!({}));
@@ -279,6 +275,20 @@ async fn prompts_run_against_the_configured_model() {
             app.error(&with_tools, json!({}), StatusCode::BAD_REQUEST)
                 .await
                 .contains("tool_functions")
+        );
+
+        // A stored template that does not parse is the caller's to fix, not a 500.
+        let broken = app
+            .function(
+                &pid,
+                "broken",
+                prompt(json!([{"role": "user", "content": "{{#open}}"}]), json!({})),
+            )
+            .await;
+        assert!(
+            app.error(&broken, json!({}), StatusCode::BAD_REQUEST)
+                .await
+                .contains("invalid prompt template")
         );
 
         let missing = uuid::Uuid::new_v4().to_string();
@@ -310,7 +320,7 @@ async fn prompts_need_a_reachable_model() {
     runtime.llm_base_url = Some("http://127.0.0.1:9/v1".into());
     let app = App { runtime, ..app };
     assert!(
-        app.error(&id, json!({}), StatusCode::INTERNAL_SERVER_ERROR)
+        app.error(&id, json!({}), StatusCode::BAD_GATEWAY)
             .await
             .contains("model request failed")
     );
@@ -531,7 +541,7 @@ async fn invocations_are_logged_under_their_parent() {
         let (status, _) = app
             .invoke(&greet, json!({"input": "y", "parent": lazy}))
             .await;
-        assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(status, StatusCode::BAD_GATEWAY);
         let lazy_id = app
             .ok("GET", "/v1/project?project_name=lazy", Value::Null)
             .await["objects"][0]["id"]

@@ -1,6 +1,7 @@
 //! OTLP trace ingest (docs/protocol.md §17): decode `ExportTraceServiceRequest`
 //! (protobuf or JSON) and map each span to a Braintrust row.
 
+use base64::Engine;
 use serde_json::{Map, Value, json};
 
 /// The subset of the OTLP trace protobuf the emulator reads
@@ -126,7 +127,8 @@ pub fn decode_protobuf(bytes: &[u8]) -> Result<Vec<Span>, String> {
             Some(V::DoubleValue(d)) => json!(d),
             Some(V::ArrayValue(a)) => a.values.into_iter().map(|v| any(Some(v))).collect(),
             Some(V::KvlistValue(kv)) => Value::Object(attrs(kv.values)),
-            Some(V::BytesValue(b)) => json!(hex::encode(b)),
+            // Base64, as OTLP/JSON carries bytes, so both encodings store the same.
+            Some(V::BytesValue(b)) => json!(base64::engine::general_purpose::STANDARD.encode(b)),
             None => Value::Null,
         }
     }
@@ -466,7 +468,7 @@ mod tests {
         );
         assert_eq!(
             Value::Object(s.attributes.clone()),
-            json!({"s": "x", "b": true, "i": -3, "d": 0.5, "a": [1, null], "kv": {"k": "v"}, "bytes": "ff"})
+            json!({"s": "x", "b": true, "i": -3, "d": 0.5, "a": [1, null], "kv": {"k": "v"}, "bytes": "/w=="})
         );
         assert_eq!(s.events, vec![("exception".into(), Map::new())]);
         assert_eq!(spans[1].status, (0, String::new()));

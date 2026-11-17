@@ -13,7 +13,7 @@ use axum::http::{Method, StatusCode, Uri};
 use serde_json::{Map, Value, json};
 
 use super::extract::{JsonBody, Params};
-use super::objects::{check_uuid, new_id, paginate, require_parent};
+use super::objects::{check_uuid, list_scope, new_id, paginate, require_parent};
 use super::{ApiError, ApiResult, ORG_ID, USER_ID};
 use crate::db::Db;
 use crate::db::objects::{Kind, Object, identity};
@@ -79,6 +79,15 @@ fn nullable(schema: &Value) -> bool {
     schema["type"]
         .as_array()
         .is_some_and(|types| types.iter().any(|t| t == "null"))
+}
+
+/// A list field: `type` is `array`, or a type list containing it (nullable lists).
+fn is_list(schema: &Value) -> bool {
+    let ty = &schema["type"];
+    ty == "array"
+        || ty
+            .as_array()
+            .is_some_and(|types| types.contains(&json!("array")))
 }
 
 /// The scope names are unique within: the project, dataset or object the resource
@@ -191,13 +200,8 @@ pub async fn list(
         format!("{kind}_name")
     };
     let name = params.get(&name_param);
-    let project_id = match (params.get("project_id"), params.get("project_name")) {
-        (Some(id), _) => Some(id.to_owned()),
-        (None, Some(name)) => match db.object_by_name(Kind::Project, ORG_ID, name).await? {
-            Some(project) => Some(project.id().to_owned()),
-            None => return Ok(Json(json!({"objects": []}))),
-        },
-        (None, None) => None,
+    let Some(project_id) = list_scope(&db, &params).await? else {
+        return Ok(Json(json!({"objects": []})));
     };
     // Exact-match filters on the resource's own fields.
     let filters: Vec<(&str, &str)> = ["object_type", "object_id", "view_type", "score_type"]
@@ -239,16 +243,23 @@ pub async fn patch(
     }
     for (key, value) in fields {
         let scoping = ["project_id", "dataset_id", "object_type", "object_id"];
-        // `add_<field>` / `remove_<field>` edit a list field's members.
+        // `add_<field>` / `remove_<field>` edit the members of one of the
+        // resource's list fields.
         let edit = key
             .strip_prefix("add_")
             .map(|f| (f, true))
-            .or_else(|| key.strip_prefix("remove_").map(|f| (f, false)));
+            .or_else(|| key.strip_prefix("remove_").map(|f| (f, false)))
+            .filter(|(f, _)| {
+                props.get(*f).is_some_and(is_list)
+                    && !SERVER_FIELDS.contains(f)
+                    && !scoping.contains(f)
+            });
         if let (Some((field, add)), Value::Array(items)) = (edit, &value) {
             let mut list = data[field].as_array().cloned().unwrap_or_default();
             for item in items {
-                list.retain(|v| v != item);
-                if add {
+                if !add {
+                    list.retain(|v| v != item);
+                } else if !list.contains(item) {
                     list.push(item.clone());
                 }
             }

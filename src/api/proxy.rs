@@ -45,26 +45,23 @@ async fn forward(
     headers: &HeaderMap,
     body: Bytes,
 ) -> ApiResult<Response> {
-    let Some(base) = &rt.llm_base_url else {
+    let path = match query {
+        Some(query) => format!("{path}?{query}"),
+        None => path.to_owned(),
+    };
+    // The caller authenticated with a Braintrust key; the model gets its own.
+    let Some(mut req) = rt.model_request(method, &path) else {
         return Err(ApiError::bad_request(
             "the AI proxy needs a model: start bt-emulator with --llm-base-url pointing at an OpenAI-compatible API",
         ));
     };
-    let mut url = format!("{}/{path}", base.trim_end_matches('/'));
-    if let Some(query) = query {
-        url = format!("{url}?{query}");
-    }
-    let mut req = rt.http.request(method, url).body(body);
     let forwarded = [header::CONTENT_TYPE, header::ACCEPT]
         .into_iter()
         .filter_map(|name| Some((name.clone(), headers.get(&name)?.clone())));
     for (name, value) in forwarded {
         req = req.header(name, value);
     }
-    // The caller authenticated with a Braintrust key; the model gets its own.
-    if let Some(key) = &rt.llm_api_key {
-        req = req.bearer_auth(key);
-    }
+    let req = req.body(body);
     let resp = req.send().await.map_err(|e| {
         ApiError::new(
             StatusCode::BAD_GATEWAY,

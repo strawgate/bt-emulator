@@ -222,15 +222,22 @@ async fn org_and_object_scoped_resources() {
             .ok(
                 "PATCH",
                 &format!("/v1/role/{id}"),
-                Some(json!({"add_member_roles": ["22222222-2222-2222-2222-222222222222", "11111111-1111-1111-1111-111111111111"], "remove_member_roles": ["33333333-3333-3333-3333-333333333333"], "add_member_permissions": [{"permission": "read"}]})),
+                Some(json!({"add_member_roles": ["22222222-2222-2222-2222-222222222222", "11111111-1111-1111-1111-111111111111"], "remove_member_roles": ["33333333-3333-3333-3333-333333333333"], "add_member_permissions": [{"permission": "read"}], "add_members": ["x"], "add_id": ["x"], "remove_name": ["reviewer"]})),
             )
             .await;
+        // Existing members keep their place; new ones are appended.
         assert_eq!(
             patched["member_roles"],
             json!([
-                "22222222-2222-2222-2222-222222222222",
-                "11111111-1111-1111-1111-111111111111"
+                "11111111-1111-1111-1111-111111111111",
+                "22222222-2222-2222-2222-222222222222"
             ])
+        );
+        // `add_`/`remove_` only edit list fields the resource has, never its id or name.
+        assert!(patched.get("members").is_none(), "{patched}");
+        assert_eq!(
+            (patched["id"].as_str(), patched["name"].as_str()),
+            (Some(id), Some("reviewer"))
         );
         assert_eq!(
             patched["member_permissions"],

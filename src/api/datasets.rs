@@ -50,17 +50,24 @@ async fn plan(db: &Db, dataset_id: &str, body: &Value) -> ApiResult<(Rows, Vec<S
         .ok_or_else(|| ApiError::bad_request("`version` is required"))?;
     let then = rows(db, dataset_id, Some(version)).await?;
     let now = rows(db, dataset_id, None).await?;
-    let delete: Vec<String> = now
+    let (restore, delete) = diff(then, &now);
+    within_limit(restore.len() + delete.len(), version)?;
+    Ok((restore, delete))
+}
+
+/// How to get from `now` back to `then`: rows whose data differs (or that were
+/// deleted since) are written back as they were; rows created since are deleted.
+fn diff(then: Rows, now: &Rows) -> (Rows, Vec<String>) {
+    let delete = now
         .keys()
         .filter(|id| !then.contains_key(*id))
         .cloned()
         .collect();
-    let restore: Rows = then
+    let restore = then
         .into_iter()
         .filter(|(id, data)| now.get(id) != Some(data))
         .collect();
-    within_limit(restore.len() + delete.len(), version)?;
-    Ok((restore, delete))
+    (restore, delete)
 }
 
 fn within_limit(changed: usize, version: i64) -> ApiResult<()> {
@@ -198,6 +205,42 @@ pub async fn snapshot_delete(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn rows(entries: &[(&str, i64)]) -> Rows {
+        entries
+            .iter()
+            .map(|(id, v)| {
+                let data = json!({"id": id, "v": v}).as_object().unwrap().clone();
+                ((*id).to_owned(), data)
+            })
+            .collect()
+    }
+
+    #[test]
+    fn restoring_reverts_changes_and_drops_newer_rows() {
+        // then: a=1, b=1, c=1. Since: a unchanged, b edited, c deleted, d created.
+        let then = rows(&[("a", 1), ("b", 1), ("c", 1)]);
+        let now = rows(&[("a", 1), ("b", 2), ("d", 1)]);
+        let (restore, delete) = diff(then, &now);
+        assert_eq!(restore, rows(&[("b", 1), ("c", 1)]));
+        assert_eq!(delete, ["d"]);
+    }
+
+    #[test]
+    fn restoring_the_current_version_changes_nothing() {
+        let now = rows(&[("a", 1), ("b", 2)]);
+        let (restore, delete) = diff(now.clone(), &now);
+        assert!(restore.is_empty() && delete.is_empty());
+        let (restore, delete) = diff(Rows::new(), &Rows::new());
+        assert!(restore.is_empty() && delete.is_empty());
+    }
+
+    #[test]
+    fn restoring_before_the_first_row_deletes_everything() {
+        let (restore, delete) = diff(Rows::new(), &rows(&[("a", 1), ("b", 1)]));
+        assert!(restore.is_empty());
+        assert_eq!(delete, ["a", "b"]);
+    }
 
     #[test]
     fn restores_are_limited_to_20000_rows() {

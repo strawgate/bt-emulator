@@ -231,12 +231,35 @@ async fn otlp_rejects_bad_exports() {
             vec![attr("braintrust.parent", parent)]
         };
         export(vec![proto::Span {
+            span_id: vec![0x01; 8],
             attributes,
             ..Default::default()
         }])
     };
     let missing = format!("experiment_id:{}", uuid::Uuid::new_v4());
+    let pid = json_call(&db, "POST", "/v1/project", json!({"name": "p"})).await["id"].clone();
+    let parent = format!("project_id:{}", pid.as_str().unwrap());
+    let span_id = |id: Vec<u8>| {
+        export(vec![proto::Span {
+            span_id: id,
+            attributes: vec![attr("braintrust.parent", &parent)],
+            ..Default::default()
+        }])
+    };
     for (req, body, status, needle) in [
+        // Rows are keyed by span id, which OTLP requires to be non-zero.
+        (
+            traces(),
+            span_id(vec![]),
+            StatusCode::BAD_REQUEST,
+            "empty or all-zero spanId",
+        ),
+        (
+            traces(),
+            span_id(vec![0; 8]),
+            StatusCode::BAD_REQUEST,
+            "empty or all-zero spanId",
+        ),
         (traces(), span(""), StatusCode::BAD_REQUEST, "no parent"),
         (
             traces(),

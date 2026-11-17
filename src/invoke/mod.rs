@@ -52,11 +52,32 @@ pub struct Call {
 pub enum InvokeError {
     /// The function cannot run here (unsupported kind, or the feature is disabled).
     Unsupported(String),
-    /// The function ran and failed: bad model response, code error, timeout.
+    /// The stored function is malformed (a template that does not parse).
+    Invalid(String),
+    /// The model failed: unreachable, an error status, or an unusable reply.
+    Model(String),
+    /// The function ran and failed: code error, timeout.
     Failed(String),
 }
 
 impl Runtime {
+    /// A request to the configured model API (`<llm_base_url>/<path>`), with the
+    /// model's own key; `None` when no model is configured.
+    pub(crate) fn model_request(
+        &self,
+        method: reqwest::Method,
+        path: &str,
+    ) -> Option<reqwest::RequestBuilder> {
+        let base = self.llm_base_url.as_deref()?;
+        let req = self
+            .http
+            .request(method, format!("{}/{path}", base.trim_end_matches('/')));
+        Some(match &self.llm_api_key {
+            Some(key) => req.bearer_auth(key),
+            None => req,
+        })
+    }
+
     /// Run `function` (a stored function's data) and return its output.
     pub async fn invoke(
         &self,

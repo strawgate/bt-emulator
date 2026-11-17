@@ -4,7 +4,7 @@
 use axum::Json;
 use axum::extract::{Path, RawQuery, State};
 use axum::http::StatusCode;
-use serde_json::{Value, json};
+use serde_json::{Map, Value, json};
 
 use super::extract::{JsonBody, Params};
 use super::{ApiError, ApiResult, ORG_ID, USER_ID};
@@ -183,6 +183,50 @@ pub async fn project_ref(
     }
 }
 
+/// Where a span is logged: an experiment, or a project's logs.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LogTarget {
+    Experiment(String),
+    ProjectLogs(String),
+    /// A project's logs, named rather than identified; created if missing.
+    NamedProjectLogs(String),
+}
+
+/// The row fields addressing `target`, after checking it exists.
+pub async fn log_fields(db: &Db, target: &LogTarget) -> ApiResult<Map<String, Value>> {
+    let fields = match target {
+        LogTarget::Experiment(id) => {
+            require(db, Kind::Experiment, id).await?;
+            json!({"experiment_id": id})
+        }
+        LogTarget::ProjectLogs(id) => {
+            require(db, Kind::Project, id).await?;
+            json!({"project_id": id, "log_id": "g"})
+        }
+        LogTarget::NamedProjectLogs(name) => {
+            let (project, _) = get_or_create_project(db, name, &Value::Null).await?;
+            json!({"project_id": project.id(), "log_id": "g"})
+        }
+    };
+    Ok(serde_json::from_value(fields).expect("fields are an object"))
+}
+
+/// The project a list is filtered to, from `project_id` or `project_name`:
+/// `Some(None)` when neither is given, `None` when the named project does not
+/// exist (so nothing matches).
+pub async fn list_scope(db: &Db, params: &Params) -> ApiResult<Option<Option<String>>> {
+    Ok(
+        match (params.get("project_id"), params.get("project_name")) {
+            (Some(id), _) => Some(Some(id.to_owned())),
+            (None, Some(name)) => db
+                .object_by_name(Kind::Project, ORG_ID, name)
+                .await?
+                .map(|project| Some(project.id().to_owned())),
+            (None, None) => Some(None),
+        },
+    )
+}
+
 pub async fn create(
     State(db): State<Db>,
     Path(kind): Path<String>,
@@ -225,11 +269,10 @@ pub async fn list(
     let params = Params::parse(query.as_deref());
     let ids: Vec<&str> = params.all("ids").chain(params.all("id")).collect();
     let name = params.get(&format!("{}_name", kind.as_str()));
-    let project_id = match (kind, params.get("project_id"), params.get("project_name")) {
-        (Kind::Project, ..) | (_, None, None) => None,
-        (_, Some(id), _) => Some(id.to_owned()),
-        (_, None, Some(name)) => match db.object_by_name(Kind::Project, ORG_ID, name).await? {
-            Some(project) => Some(project.id().to_owned()),
+    let project_id = match kind {
+        Kind::Project => None,
+        _ => match list_scope(&db, &params).await? {
+            Some(scope) => scope,
             None => return Ok(Json(json!({"objects": []}))),
         },
     };
