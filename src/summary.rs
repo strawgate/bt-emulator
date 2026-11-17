@@ -175,9 +175,11 @@ pub fn summarize(
     }
 
     let mut metrics = Map::new();
+    // Every metric is always reported, like the real API (0 when nothing measured it).
     let names: std::collections::BTreeSet<&'static str> = COUNT_METRICS
         .into_iter()
-        .chain(current.iter().flat_map(|t| t.metrics.keys().copied()))
+        .chain(TOKEN_METRICS)
+        .chain(["duration"])
         .collect();
     for name in names {
         let get = |t: &Trace| t.metrics.get(name).copied();
@@ -285,6 +287,13 @@ mod tests {
         let (scores, _) = summarize(&rows, None);
         assert_eq!(scores["exact"]["score"], 0.5);
         assert_eq!(scores["fuzzy"]["score"], 0.75);
+    }
+
+    #[test]
+    fn roots_without_timing_have_no_duration() {
+        let rows = vec![json!({"id": "r", "root_span_id": "r", "input": 1, "scores": {"s": 1.0}})];
+        let (_, metrics) = summarize(&rows, None);
+        assert_eq!(metrics["duration"]["metric"], 0.0);
     }
 
     #[test]

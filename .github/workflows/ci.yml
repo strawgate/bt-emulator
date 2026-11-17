@@ -24,8 +24,9 @@ jobs:
       BT_REQUIRE_POSTGRES: "1"
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: "1.100.0"
           components: rustfmt, clippy, llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
@@ -49,7 +50,9 @@ jobs:
           --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.100.0"
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
         with:

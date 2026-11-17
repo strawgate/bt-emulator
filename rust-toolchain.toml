@@ -1,0 +1,5 @@
+# Pinned so the 100% coverage gate is deterministic: coverage mapping changes
+# between rustc releases. Keep in sync with .github/workflows/ci.yml.
+[toolchain]
+channel = "1.100.0"
+components = ["rustfmt", "clippy", "llvm-tools-preview"]
