@@ -1,9 +1,10 @@
 # Braintrust-owned compatibility corpus inventory (bt-emulator)
 
-Surveyed 2026-11-16. 110 repos in `braintrustdata` (`gh repo list`, saved at `scratchpad/repos.json`). Clones (depth 1, read-only, nothing executed) are in `scratchpad/clones/<name>`; `py` = braintrust-sdk-python, `go` = braintrust-sdk-go.
-Tally script: `scratchpad/tally.py <dir>`. It parses every YAML cassette (vcrpy, Ruby VCR, go-vcr) and keeps the interactions whose host matches `braintrust.dev|localhost:8000|staging-api`. It normalizes UUIDs to `{id}`. WireMock tally: `scratchpad/wm.py <mappings dir>`.
+Surveyed 2026-11-16 across the public `braintrustdata` GitHub org.
 
-Note: `gh repo list --json licenseInfo` returned null for every repo, so each license below comes from the repo's top-level LICENSE file, confirmed through `gh api repos/...`. I also searched every clone for nested LICENSE/NOTICE files under test directories and found none. The only nested ones are vendored-code licenses: `go/internal/mustache/LICENSE`, `braintrust-sdk-rust/crates/braintrust-api-client/LICENSE`, `braintrust-sdk-javascript/js/licenses/*` and `braintrust-api-js/src/internal/qs/LICENSE.md`.
+**Source policy.** bt-emulator only uses public, permissively licensed (MIT/Apache/BSD) open-source material, with its license kept alongside it. Nothing is ever recorded or run against Braintrust's hosted API. Every "live mode" below means pointing a suite at a local bt-emulator, never at braintrust.dev. Repos without a license (marked **none**) are listed for completeness only and are not used, not even to run.
+
+Licenses come from each repo's top-level LICENSE file.
 
 ## Ranked summary table
 
@@ -96,12 +97,10 @@ To harvest any of them, parse each interaction, rewrite the host to the emulator
 
 ## Recommended harvesting order
 1. Vendor the OpenAPI spec (Apache) at its pinned SHA, then run schemathesis over `/v1/*` with the Rust overlay applied.
-2. Gate CI on the braintest-suite `functional` + `evaltest` suites (external checkout, no vendoring).
-3. Run the terraform acceptance suite (40 lifecycles).
-4. Build a cassette-replay harness over the Go (292), Ruby (449), Java (251) and Python (219) BT interactions, about 1,211 recorded request/response pairs in total. Vendoring is fine for Apache/MIT; keep the MIT notice for Java cassettes.
-5. Run the SDK suites in live mode: Go `VCR_MODE=off` (non-contrib pkgs), Ruby `VCR_OFF=true`, Java `VCR_MODE=off` (BT-only tests), and JS e2e with prod forwarding.
-6. Run the btx `llm_span` specs as a BTQL roundtrip test (needs the provider-replay patch).
-7. Use Stainless suites + `TEST_API_BASE_URL` once a permissive ID mode exists.
+2. Run the terraform acceptance suite (40 lifecycles) against a local emulator.
+3. Extend the cassette-replay harness (`tests/compat.rs`) over the Go (292), Ruby (449), Java (251) and Python (219) BT interactions, about 1,211 recorded request/response pairs in total. Vendoring is fine for Apache/MIT; keep the MIT notice for Java cassettes.
+4. Run the SDK suites with Braintrust traffic pointed at a local emulator: Go `VCR_MODE=off` (non-contrib pkgs), Ruby `VCR_OFF=true`, Java `VCR_MODE=off` (Braintrust-only tests, no LLM calls), and JS e2e with forwarding to the emulator.
+5. Use the Apache-licensed Stainless suites with `TEST_API_BASE_URL` once a permissive ID mode exists.
 
 ## Uncertainties
 - I did not run any tests. All counts are static greps and parses, so test counts are approximate: parametrized and variant tests are counted once.

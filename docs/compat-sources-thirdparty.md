@@ -1,6 +1,8 @@
 # Third-party (non-`braintrustdata`) Braintrust API compatibility corpus
 
-Researched 2026-11-16. Shallow clones live in `scratchpad/clones3p/<owner>__<repo>`. Nothing in them was executed.
+Researched 2026-11-16 across public GitHub. Nothing in these repos was executed.
+
+**Source policy.** Only public, permissively licensed sources (MIT/Apache/BSD) may be vendored or run. Entries marked as having no license, or a copyleft or non-commercial license, are reference only and are not copied.
 The Braintrust interaction counts are static: they count recorded interactions, mock routes or stubs found in the code. Nothing was replayed.
 
 ## TL;DR
