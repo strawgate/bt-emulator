@@ -3,3 +3,8 @@
 *.db-*
 .env
 .DS_Store
+/lcov.info
+node_modules/
+.venv/
+__pycache__/
+.pytest_cache/

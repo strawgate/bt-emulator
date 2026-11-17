@@ -1,0 +1,17 @@
+[project]
+name = "bt-emulator-e2e"
+version = "0"
+requires-python = ">=3.10"
+dependencies = [
+    "braintrust==0.50.0",
+    "pytest>=8",
+    "pytest-socket>=0.7",
+    "pytest-timeout>=2",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+# Fully offline: the SDK may only talk to the emulator on localhost.
+addopts = "--allow-hosts=127.0.0.1,localhost --timeout=60"

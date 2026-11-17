@@ -1,0 +1,11 @@
+{
+  "name": "bt-emulator-e2e-js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 --test-timeout=60000"
+  },
+  "dependencies": {
+    "braintrust": "3.44.0"
+  }
+}
