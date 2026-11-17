@@ -23,9 +23,17 @@ test *args:
 test-all *args: pg-start
     BT_TEST_POSTGRES_URL={{pg_url}} cargo test {{args}}
 
-# Enforce 100% line and function coverage.
+# Enforce 100% line and function coverage. On failure, list uncovered lines from lcov.
 cov:
-    cargo llvm-cov --fail-under-lines 100 --fail-under-functions 100 --show-missing-lines
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cargo llvm-cov --no-report
+    cargo llvm-cov report --lcov --output-path target/lcov.info
+    if ! cargo llvm-cov report --fail-under-lines 100 --fail-under-functions 100; then
+        echo "Uncovered lines:"
+        awk -F'[:,]' '/^SF:/{f=$2} /^DA:/ && $3=="0"{print f":"$2}' target/lcov.info
+        exit 1
+    fi
 
 # Coverage across both backends.
 cov-all: pg-start
