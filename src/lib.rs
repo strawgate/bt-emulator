@@ -10,6 +10,7 @@ pub mod merge;
 pub mod mustache;
 pub mod otlp;
 pub mod server;
+pub mod span_parent;
 pub mod summary;
 pub mod time;
 pub mod xact;

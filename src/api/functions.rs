@@ -40,7 +40,8 @@ const FUNCTION_FIELDS: [&str; 8] = [
 ];
 
 /// Fields a write may not set directly.
-const IMMUTABLE: [&str; 7] = [
+const IMMUTABLE: [&str; 8] = [
+    "environment_slugs",
     "id",
     "org_id",
     "project_id",
@@ -68,7 +69,10 @@ impl Flavor {
     }
 
     fn lists(self, data: &Map<String, Value>) -> bool {
-        self == Self::Function || data["function_data"]["type"] == "prompt"
+        self == Self::Function
+            || data
+                .get("function_data")
+                .is_some_and(|d| d["type"] == "prompt")
     }
 
     /// The full API representation of a stored version.
@@ -129,24 +133,60 @@ pub(super) async fn current(
     }
 }
 
-/// `POST` and `PUT`: both create the function, or append a new version of the one
-/// with the same slug in the project.
-pub async fn create(
-    State(db): State<Db>,
-    uri: Uri,
-    JsonBody(body): JsonBody,
-) -> ApiResult<Json<Value>> {
-    let flavor = Flavor::of(&uri);
-    let project = require_parent(&db, body["project_id"].as_str().unwrap_or_default()).await?;
+/// What a write does when the project already has a function with its slug.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(super) enum IfExists {
+    /// Append a new version (`POST`/`PUT /v1/function`, `if_exists: "replace"`).
+    Replace,
+    /// Keep the existing function unchanged.
+    Ignore,
+    /// Fail with 400.
+    Error,
+}
+
+/// A function write's outcome: the stored data, its version, and whether the slug
+/// already existed.
+pub(super) struct Written {
+    pub data: Map<String, Value>,
+    pub xact: i64,
+    pub found_existing: bool,
+}
+
+/// Create the function `body` describes in `project_id`, or handle the existing one
+/// with the same slug per `if_exists`. `function_data` defaults to `default_data`.
+pub(super) async fn upsert(
+    db: &Db,
+    project_id: &str,
+    body: &Value,
+    default_data: Option<Value>,
+    if_exists: IfExists,
+) -> ApiResult<Written> {
+    let project = require_parent(db, project_id).await?;
     let slug = body["slug"].as_str().unwrap_or_default();
     let _guard = db.write_lock().await;
     let existing = db
         .all_rows(OBJECT_TYPE, project.id())
         .await?
         .into_iter()
-        .find(|e| e.data["slug"] == slug);
+        .find(|e| e.field("slug") == slug);
+    match (&existing, if_exists) {
+        (Some(e), IfExists::Ignore) => {
+            return Ok(Written {
+                data: e.data.clone(),
+                xact: e.xact_id,
+                found_existing: true,
+            });
+        }
+        (Some(_), IfExists::Error) => {
+            return Err(ApiError::bad_request(format!(
+                "a function with slug {slug:?} already exists in this project"
+            )));
+        }
+        _ => {}
+    }
+    let found_existing = existing.is_some();
     let id = existing.map_or_else(new_id, |e| {
-        e.data["id"].as_str().unwrap_or_default().to_owned()
+        e.field("id").as_str().unwrap_or_default().to_owned()
     });
     let mut data = Map::new();
     for (key, value) in body.as_object().cloned().unwrap_or_default() {
@@ -154,9 +194,8 @@ pub async fn create(
             data.insert(key, value);
         }
     }
-    if flavor == Flavor::Prompt {
-        data.entry("function_data")
-            .or_insert(json!({"type": "prompt"}));
+    if let Some(default_data) = default_data {
+        data.entry("function_data").or_insert(default_data);
     }
     data.extend([
         ("id".into(), json!(id)),
@@ -165,8 +204,43 @@ pub async fn create(
         ("log_id".into(), json!("p")),
         ("created".into(), json!(crate::time::now_iso())),
     ]);
-    let xact = put(&db, project.id(), &id, Some(&data)).await?;
-    Ok(Json(with_xact(data, xact)))
+    let xact = put(db, project.id(), &id, Some(&data)).await?;
+    Ok(Written {
+        data,
+        xact,
+        found_existing,
+    })
+}
+
+/// `POST` and `PUT`: both create the function, or append a new version of the one
+/// with the same slug in the project.
+pub async fn create(
+    State(db): State<Db>,
+    uri: Uri,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let default_data = (Flavor::of(&uri) == Flavor::Prompt).then(|| json!({"type": "prompt"}));
+    let project_id = body["project_id"].as_str().unwrap_or_default();
+    // Every environment must exist, or nothing is written (spec: CreatePrompt).
+    let environments: Vec<&str> = body["environment_slugs"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .collect();
+    for slug in &environments {
+        require_environment(&db, slug).await?;
+    }
+    let written = upsert(&db, project_id, &body, default_data, IfExists::Replace).await?;
+    let id = written
+        .data
+        .get("id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    for slug in environments {
+        assign(&db, id, slug, written.xact).await?;
+    }
+    Ok(Json(with_xact(written.data, written.xact)))
 }
 
 pub async fn list(
@@ -188,14 +262,27 @@ pub async fn list(
     let ids: Vec<&str> = params.all("ids").collect();
     let name = params.get("function_name").or(params.get("prompt_name"));
     let slug = params.get("slug");
-    let objects: Vec<Value> = db
+    let environment = environment_param(&db, &params).await?;
+    let mut events = db
         .rows_page(OBJECT_TYPE, &project_id, version, None, usize::MAX)
-        .await?
+        .await?;
+    if let Some(environment) = environment {
+        // Only functions assigned to the environment, at their assigned versions.
+        let mut assigned = Vec::new();
+        for event in events {
+            let id = event.field("id").as_str().unwrap_or_default();
+            if let Some(event) = at_environment(&db, id, &environment).await? {
+                assigned.push(event);
+            }
+        }
+        events = assigned;
+    }
+    let objects: Vec<Value> = events
         .into_iter()
         .filter(|e| flavor.lists(&e.data))
-        .filter(|e| ids.is_empty() || ids.iter().any(|id| e.data["id"] == *id))
-        .filter(|e| name.is_none_or(|n| e.data["name"] == n))
-        .filter(|e| slug.is_none_or(|s| e.data["slug"] == s))
+        .filter(|e| ids.is_empty() || ids.iter().any(|id| e.field("id") == *id))
+        .filter(|e| name.is_none_or(|n| e.field("name") == n))
+        .filter(|e| slug.is_none_or(|s| e.field("slug") == s))
         .map(|e| flavor.shape(e))
         .collect();
     Ok(Json(json!({"objects": paginate(objects, &params)})))
@@ -210,9 +297,16 @@ pub async fn get(
     let flavor = Flavor::of(&uri);
     let params = Params::parse(query.as_deref());
     let version = parse_version(&params.get("version").map_or(Value::Null, |v| json!(v)))?;
-    Ok(Json(
-        flavor.shape(current(&db, flavor, &id, version).await?),
-    ))
+    let event = match environment_param(&db, &params).await? {
+        Some(environment) => {
+            check_uuid(&id)?;
+            at_environment(&db, &id, &environment)
+                .await?
+                .ok_or_else(|| flavor.missing())?
+        }
+        None => current(&db, flavor, &id, version).await?,
+    };
+    Ok(Json(flavor.shape(event)))
 }
 
 /// Object fields are deep-merged; other fields replace. `null` is ignored. An object
@@ -236,7 +330,11 @@ pub async fn patch(
     let mut replace = Vec::new();
     retyped(&data, &fields, &mut Vec::new(), &mut replace);
     crate::merge::merge_row(&mut data, fields, &replace);
-    let project_id = data["project_id"].as_str().unwrap_or_default().to_owned();
+    let project_id = data
+        .get("project_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default()
+        .to_owned();
     let xact = put(&db, &project_id, &id, Some(&data)).await?;
     Ok(Json(with_xact(data, xact)))
 }
@@ -271,10 +369,65 @@ pub async fn delete(
     let flavor = Flavor::of(&uri);
     let _guard = db.write_lock().await;
     let data = current(&db, flavor, &id, None).await?.data;
-    let project_id = data["project_id"].as_str().unwrap_or_default();
+    let project_id = data
+        .get("project_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
     let xact = put(&db, project_id, &id, None).await?;
     let mut out = data;
     out.insert("_object_delete".into(), json!(true));
     out.insert("created".into(), json!(crate::time::now_iso()));
     Ok(Json(with_xact(out, xact)))
+}
+
+/// Which version of each function an environment serves, stored per function.
+const ASSIGNMENT: &str = "environment_assignment";
+
+async fn require_environment(db: &Db, slug: &str) -> ApiResult<()> {
+    match db.object_by_name_of("environment", ORG_ID, slug).await? {
+        Some(_) => Ok(()),
+        None => Err(ApiError::bad_request(format!(
+            "environment {slug:?} does not exist"
+        ))),
+    }
+}
+
+/// `?environment=<slug>`, checked: it must exist and excludes `version`.
+async fn environment_param(db: &Db, params: &Params) -> ApiResult<Option<String>> {
+    let Some(slug) = params.get("environment") else {
+        return Ok(None);
+    };
+    if params.get("version").is_some() {
+        return Err(ApiError::bad_request(
+            "`environment` cannot be used together with `version`",
+        ));
+    }
+    require_environment(db, slug).await?;
+    Ok(Some(slug.to_owned()))
+}
+
+/// Point `environment` at version `xact` of function `id`.
+async fn assign(db: &Db, id: &str, environment: &str, xact: i64) -> ApiResult<()> {
+    let _guard = db.write_lock().await;
+    match db.object_by_name_of(ASSIGNMENT, id, environment).await? {
+        Some(mut existing) => {
+            existing.data["version"] = json!(xact);
+            db.update_object(&existing.data, false).await?;
+        }
+        None => {
+            let data =
+                json!({"id": new_id(), "name": environment, "function_id": id, "version": xact});
+            db.insert_object_of(ASSIGNMENT, id, data).await?;
+        }
+    }
+    Ok(())
+}
+
+/// Function `id` at the version `environment` is assigned, if it is assigned one.
+async fn at_environment(db: &Db, id: &str, environment: &str) -> ApiResult<Option<Event>> {
+    let Some(assignment) = db.object_by_name_of(ASSIGNMENT, id, environment).await? else {
+        return Ok(None);
+    };
+    let version = assignment.data["version"].as_i64();
+    Ok(db.row_at(OBJECT_TYPE, id, version).await?.map(|(_, e)| e))
 }

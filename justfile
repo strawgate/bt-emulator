@@ -85,6 +85,7 @@ e2e-pg: pg-start
     set -euo pipefail
     db="bt_e2e_$(date +%s)"
     psql -h 127.0.0.1 -p {{pg_port}} -U postgres -qc "CREATE DATABASE $db"
+    trap 'psql -h 127.0.0.1 -p {{pg_port}} -U postgres -qc "DROP DATABASE IF EXISTS $db WITH (FORCE)"' EXIT
     BT_EMULATOR_DATABASE_URL="postgres://postgres@127.0.0.1:{{pg_port}}/$db" just e2e
 
 # Re-harvest recorded Braintrust traffic from upstream repos (compat/sources.toml).
@@ -110,7 +111,7 @@ fuzz *args:
     url="$(sed -n 's/^listening on //p' "$log")"
     cd compat/openapi && uv run -q schemathesis run spec.json --url "$url" \
         -H "Authorization: Bearer fuzz-key" \
-        --include-path-regex '^/v1/(project|experiment|dataset|function|prompt|ai_secret|dataset_snapshot|env_var|group|mcp_server|project_automation|project_group|project_score|project_tag|role|span_iframe|view)(/|$)|^/v1/project_logs/' \
+        --include-path-regex '^/v1/(project|experiment|dataset|function|prompt|ai_secret|dataset_snapshot|env_var|group|mcp_server|project_automation|project_group|project_score|project_tag|role|span_iframe|view)(/|$)|^/v1/project_logs/|^/environment(/|$)' \
         --exclude-path-regex '/restore|/invoke' \
         --generation-deterministic --warnings off \
         --max-examples 25 --baseline baseline.json \

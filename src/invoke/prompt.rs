@@ -18,6 +18,17 @@ pub async fn run(
         ));
     };
     let prompt_data = field(function, "prompt_data");
+    // Running attached tools needs the server's tool loop, which is not public;
+    // refuse rather than call the model without them.
+    if prompt_data["tool_functions"]
+        .as_array()
+        .is_some_and(|t| !t.is_empty())
+    {
+        return Err(InvokeError::Unsupported(
+            "prompts with tool_functions cannot be invoked in bt-emulator (tool calls are not run)"
+                .into(),
+        ));
+    }
     let request = build_request(prompt_data, call)?;
     let mut req = rt
         .http

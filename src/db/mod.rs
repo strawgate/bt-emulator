@@ -123,6 +123,14 @@ impl Db {
         Ok(row.try_get("value")?)
     }
 
+    /// The newest transaction id issued so far.
+    pub async fn latest_xact(&self) -> Result<i64, Error> {
+        let row = sqlx::query("SELECT value FROM counters WHERE name = 'xact'")
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(row.try_get("value")?)
+    }
+
     /// Allocate the next transaction id: strictly increasing, and never below the
     /// Braintrust encoding of the current second.
     pub async fn next_xact(conn: &mut AnyConnection) -> Result<i64, Error> {

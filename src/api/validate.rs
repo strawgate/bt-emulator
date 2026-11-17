@@ -36,6 +36,22 @@ fn correct(spec: &mut Value) {
     }
 }
 
+/// Check `value` against a named schema from the spec's components; the error
+/// names the first failing path under `at`.
+pub fn check(schema_name: &str, value: &Value, at: &str) -> Result<(), String> {
+    static CACHE: LazyLock<Mutex<HashMap<String, Arc<Validator>>>> =
+        LazyLock::new(Default::default);
+    let validator = CACHE
+        .lock()
+        .expect("validator cache lock")
+        .entry(schema_name.to_owned())
+        .or_insert_with(|| Arc::new(validator(&format!("/components/schemas/{schema_name}"))))
+        .clone();
+    validator
+        .validate(value)
+        .map_err(|err| format!("{at}{}: {err}", err.instance_path()))
+}
+
 /// A named schema from the spec's components.
 pub fn schema(name: &str) -> &'static Value {
     &SPEC["components"]["schemas"][name]
@@ -194,8 +210,8 @@ fn invalid(location: &str, error: impl std::fmt::Display) -> Response {
 
 pub async fn middleware(req: Request, next: Next) -> Response {
     let path = req.uri().path().to_owned();
-    let Some(op) = path
-        .starts_with("/v1/")
+    let in_spec = path.starts_with("/v1/") || path.split('/').nth(1) == Some("environment");
+    let Some(op) = in_spec
         .then(|| operation(&req.method().as_str().to_lowercase(), &path))
         .flatten()
     else {

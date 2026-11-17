@@ -16,6 +16,13 @@ pub struct Event {
     pub data: Map<String, Value>,
 }
 
+impl Event {
+    /// A field of the row, `null` when absent (indexing the map would panic).
+    pub fn field(&self, key: &str) -> &Value {
+        self.data.get(key).unwrap_or(&Value::Null)
+    }
+}
+
 impl Db {
     /// The current (non-deleted) state of a row, as seen inside a transaction.
     pub async fn current_row(

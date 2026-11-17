@@ -31,16 +31,19 @@ fn field<'a>(body: &'a Value, key: &str) -> ApiResult<&'a str> {
         .ok_or_else(|| ApiError::bad_request(format!("`{key}` is required")))
 }
 
-pub async fn create(
-    State(db): State<Db>,
-    headers: HeaderMap,
-    JsonBody(body): JsonBody,
-) -> ApiResult<Json<Value>> {
-    let key = field(&body, "key")?;
+/// Register `key` for upload and return its signed URL. Asking again for a known
+/// key returns the same URL.
+pub async fn signed_upload(
+    db: &Db,
+    headers: &HeaderMap,
+    key: &str,
+    filename: &str,
+    content_type: &str,
+) -> ApiResult<String> {
     let attachment = Attachment {
         key: key.to_owned(),
-        filename: field(&body, "filename")?.to_owned(),
-        content_type: field(&body, "content_type")?.to_owned(),
+        filename: filename.to_owned(),
+        content_type: content_type.to_owned(),
         token: uuid::Uuid::new_v4().simple().to_string(),
         status: json!({"upload_status": "uploading"}),
         data: None,
@@ -48,9 +51,26 @@ pub async fn create(
     db.put_attachment(&attachment).await?;
     // The stored row keeps the first token handed out for this key.
     let stored = db.attachment(key).await?.unwrap_or(attachment);
+    Ok(blob_url(headers, &stored))
+}
+
+pub async fn create(
+    State(db): State<Db>,
+    headers: HeaderMap,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let content_type = field(&body, "content_type")?;
+    let url = signed_upload(
+        &db,
+        &headers,
+        field(&body, "key")?,
+        field(&body, "filename")?,
+        content_type,
+    )
+    .await?;
     Ok(Json(json!({
-        "signedUrl": blob_url(&headers, &stored),
-        "headers": {"Content-Type": stored.content_type, "If-None-Match": "*"},
+        "signedUrl": url,
+        "headers": {"Content-Type": content_type, "If-None-Match": "*"},
     })))
 }
 

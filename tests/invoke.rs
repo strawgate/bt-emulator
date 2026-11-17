@@ -272,6 +272,15 @@ async fn prompts_run_against_the_configured_model() {
             .contains("select_choice")
         );
 
+        let mut with_tools = prompt(json!([]), json!({}));
+        with_tools["prompt_data"]["tool_functions"] = json!([{"type": "function", "id": greet}]);
+        let with_tools = app.function(&pid, "with-tools", with_tools).await;
+        assert!(
+            app.error(&with_tools, json!({}), StatusCode::BAD_REQUEST)
+                .await
+                .contains("tool_functions")
+        );
+
         let missing = uuid::Uuid::new_v4().to_string();
         let (status, out) = app.invoke(&missing, json!({})).await;
         assert_eq!(status, StatusCode::BAD_REQUEST);
@@ -449,4 +458,138 @@ async fn inline_code_runs_only_when_allowed() {
             .await
             .contains("cannot run code function")
     );
+}
+
+#[tokio::test]
+async fn invocations_are_logged_under_their_parent() {
+    use base64::Engine;
+    let llm = Llm::default();
+    let mut runtime = Runtime::default();
+    runtime.llm_base_url = Some(llm.start().await);
+    for app in apps(&runtime).await {
+        let pid = app.ok("POST", "/v1/project", json!({"name": "p"})).await["id"]
+            .as_str()
+            .unwrap()
+            .to_owned();
+        let eid = app
+            .ok(
+                "POST",
+                "/v1/experiment",
+                json!({"project_id": pid, "name": "e"}),
+            )
+            .await["id"]
+            .as_str()
+            .unwrap()
+            .to_owned();
+        let greet = app
+            .function(
+                &pid,
+                "greet",
+                prompt(json!([{"role": "user", "content": "hi"}]), json!({})),
+            )
+            .await;
+
+        // Under a span of an experiment: a child `function` span with the propagated event.
+        let parent = json!({"object_type": "experiment", "object_id": eid,
+            "row_ids": {"id": "r", "span_id": "s", "root_span_id": "t"},
+            "propagated_event": {"span_attributes": {"purpose": "scorer"}}});
+        let body = json!({"input": "x", "metadata": {"m": 1}, "tags": ["a"], "parent": parent});
+        assert_eq!(app.invoke(&greet, body).await.1, json!("hello"));
+        let events = app
+            .ok("POST", &format!("/v1/experiment/{eid}/fetch"), json!({}))
+            .await["events"]
+            .clone();
+        let span = &events[0];
+        assert_eq!(
+            (span["span_parents"].clone(), span["root_span_id"].clone()),
+            (json!(["s"]), json!("t"))
+        );
+        assert_eq!(
+            (span["input"].clone(), span["output"].clone()),
+            (json!("x"), json!("hello"))
+        );
+        assert_eq!(
+            (span["metadata"].clone(), span["tags"].clone()),
+            (json!({"m": 1}), json!(["a"]))
+        );
+        let attrs = &span["span_attributes"];
+        assert_eq!(
+            (
+                attrs["name"].clone(),
+                attrs["type"].clone(),
+                attrs["purpose"].clone()
+            ),
+            (json!("greet"), json!("function"), json!("scorer"))
+        );
+        assert!(span["metrics"]["end"].as_f64() >= span["metrics"]["start"].as_f64());
+
+        // A logger exported before its project was known names the project; failures
+        // are logged with their error.
+        let lazy = base64::engine::general_purpose::STANDARD
+            .encode(b"\x04\x02\x00{\"compute_object_metadata_args\":{\"project_name\":\"lazy\"}}");
+        llm.reply(500, "down");
+        let (status, _) = app
+            .invoke(&greet, json!({"input": "y", "parent": lazy}))
+            .await;
+        assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+        let lazy_id = app
+            .ok("GET", "/v1/project?project_name=lazy", Value::Null)
+            .await["objects"][0]["id"]
+            .as_str()
+            .unwrap()
+            .to_owned();
+        let logs = app
+            .ok(
+                "POST",
+                &format!("/v1/project_logs/{lazy_id}/fetch"),
+                json!({}),
+            )
+            .await["events"]
+            .clone();
+        assert!(logs[0]["error"].as_str().unwrap().contains("500"), "{logs}");
+        assert_eq!(logs[0]["span_parents"], Value::Null);
+        assert_eq!(logs[0]["is_root"], true);
+
+        // By project id; playground parents and empty parents are not logged.
+        let by_id = json!({"object_type": "project_logs", "object_id": pid});
+        app.invoke(&greet, json!({"input": "z", "parent": by_id}))
+            .await;
+        let logs = app
+            .ok("POST", &format!("/v1/project_logs/{pid}/fetch"), json!({}))
+            .await["events"]
+            .clone();
+        assert_eq!(logs.as_array().unwrap().len(), 1);
+        for parent in [
+            json!({"object_type": "playground_logs", "object_id": "x"}),
+            json!(""),
+        ] {
+            assert_eq!(
+                app.invoke(&greet, json!({"parent": parent})).await.0,
+                StatusCode::OK
+            );
+        }
+
+        // A malformed parent, or one naming a missing object, fails before the call runs.
+        let before = llm.requests.lock().unwrap().len();
+        assert!(
+            app.error(
+                &greet,
+                json!({"parent": "garbage"}),
+                StatusCode::BAD_REQUEST
+            )
+            .await
+            .contains("exported span")
+        );
+        let missing =
+            json!({"object_type": "experiment", "object_id": uuid::Uuid::new_v4().to_string()});
+        let (status, _) = app.invoke(&greet, json!({"parent": missing})).await;
+        assert_eq!(status, StatusCode::FORBIDDEN);
+        let missing =
+            json!({"object_type": "project_logs", "object_id": uuid::Uuid::new_v4().to_string()});
+        assert_eq!(
+            app.invoke(&greet, json!({"parent": missing})).await.0,
+            StatusCode::FORBIDDEN
+        );
+        assert_eq!(llm.requests.lock().unwrap().len(), before);
+    }
 }

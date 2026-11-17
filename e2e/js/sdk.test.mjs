@@ -174,3 +174,47 @@ test("attachments upload and read back", async () => {
   assert.deepEqual(await attachment.status(), { upload_status: "done" });
   assert.equal(await (await attachment.data()).text(), "RIFF....WAVE");
 });
+
+test("dataset snapshots and restore", async () => {
+  const project = projectName();
+  const dataset = braintrust.initDataset(project, { dataset: "versioned" });
+  dataset.insert({ id: "a", input: "one", expected: "1" });
+  await dataset.flush();
+  const snapshot = await dataset.createSnapshot({ name: "baseline", description: "before edits" });
+  assert.equal(snapshot.name, "baseline");
+
+  dataset.insert({ id: "b", input: "two", expected: "2" });
+  dataset.update({ id: "a", input: "uno" });
+  await dataset.flush();
+  assert.deepEqual((await dataset.listSnapshots()).map((s) => s.name), ["baseline"]);
+
+  assert.deepEqual(await dataset.restorePreview({ version: snapshot.xact_id }), { rows_to_restore: 1, rows_to_delete: 1 });
+  const restored = await dataset.restore({ version: snapshot.xact_id });
+  assert.equal(restored.rows_deleted, 1);
+  const rows = await rest.fetch("dataset", await dataset.id);
+  assert.deepEqual(rows.map((r) => r.input), ["one"]);
+});
+
+test("loadPrompt by environment", async () => {
+  const project = projectName();
+  const { id: projectId } = await rest.request("POST", "/v1/project", { name: project });
+  const env = `prod-${projectId.slice(0, 8)}`;
+  await rest.request("POST", "/environment", { name: env, slug: env });
+  const save = (greeting, environments) =>
+    rest.request("PUT", "/v1/prompt", {
+      project_id: projectId,
+      name: "Greeter",
+      slug: "greeter",
+      environment_slugs: environments,
+      prompt_data: {
+        options: { model: "gpt-4o-mini" },
+        prompt: { type: "chat", messages: [{ role: "user", content: `${greeting} {{name}}` }] },
+      },
+    });
+  await save("Hello", [env]);
+  await save("Howdy", null);
+
+  const deployed = await braintrust.loadPrompt({ projectName: project, slug: "greeter", environment: env, noTrace: true });
+  assert.equal(deployed.build({ name: "Ada" }).messages[0].content, "Hello Ada");
+  await assert.rejects(braintrust.loadPrompt({ projectName: project, slug: "greeter", environment: "missing", noTrace: true }));
+});

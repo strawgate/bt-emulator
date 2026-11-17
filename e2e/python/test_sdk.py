@@ -195,6 +195,15 @@ def test_eval_with_a_remote_llm_classifier(project_name, api):
     assert sorted(r.scores["judge"] for r in result.results) == [0, 1]
     assert result.summary.scores["judge"].score == 0.5
 
+    # The server logs each invocation as a `function` span under the SDK's scorer span.
+    braintrust.flush()
+    rows = api.fetch("experiment", result.summary.experiment_id)
+    spans = {r["span_id"]: r for r in rows}
+    calls = [r for r in rows if r["span_attributes"]["type"] == "function"]
+    assert len(calls) == 2
+    assert all(spans[c["span_parents"][0]]["span_attributes"]["type"] == "score" for c in calls)
+    assert sorted(c["output"]["score"] for c in calls) == [0, 1]
+
 
 def test_attachments_upload_and_read_back(project_name, api):
     logger = braintrust.init_logger(project=project_name)
@@ -209,3 +218,25 @@ def test_attachments_upload_and_read_back(project_name, api):
     attachment = braintrust.ReadonlyAttachment(reference)
     assert attachment.status() == {"upload_status": "done"}
     assert attachment.data == b"RIFF....WAVE"
+
+
+def test_push_publishes_prompts(project_name, tmp_path):
+    import subprocess
+    import sys
+
+    source = tmp_path / "prompts.py"
+    source.write_text(
+        "import braintrust\n"
+        f"project = braintrust.projects.create(name={project_name!r})\n"
+        "project.prompts.create(name='Pushed', slug='pushed', model='stub',\n"
+        "    messages=[{'role': 'user', 'content': 'Pushed {{input}}'}])\n"
+    )
+    # The CLI imports the file as a module relative to the working directory.
+    cli = [sys.executable, "-m", "braintrust.cli", "push", source.name]
+    run = lambda *args, check=True: subprocess.run([*cli, *args], cwd=tmp_path, check=check, capture_output=True, text=True)  # noqa: E731
+    run()
+    assert braintrust.invoke(project_name=project_name, slug="pushed", input="x") == "echo: Pushed x"
+
+    # Pushing again is an error unless told what to do with the existing prompt.
+    assert run(check=False).returncode != 0
+    run("--if-exists", "replace")

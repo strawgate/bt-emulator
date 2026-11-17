@@ -48,6 +48,16 @@ fn decode(row: &AnyRow) -> Result<Object, Error> {
     })
 }
 
+/// The field that names an object uniquely within its parent: an environment's
+/// `slug`, everything else's `name`.
+pub fn identity(kind: &str) -> &'static str {
+    if kind == "environment" {
+        "slug"
+    } else {
+        "name"
+    }
+}
+
 impl Db {
     /// All live objects of a kind, newest first.
     pub async fn objects(&self, kind: Kind) -> Result<Vec<Object>, Error> {
@@ -126,7 +136,7 @@ impl Db {
     ) -> Result<Object, Error> {
         let seq = self.next_counter("object").await?;
         let id = data["id"].as_str().unwrap_or_default();
-        let name = data["name"].as_str().unwrap_or_default();
+        let name = data[identity(kind)].as_str().unwrap_or_default();
         sqlx::query("INSERT INTO objects (id, kind, parent_id, name, seq, deleted, data) VALUES ($1, $2, $3, $4, $5, 0, $6)")
             .bind(id)
             .bind(kind)
@@ -141,13 +151,17 @@ impl Db {
 
     /// Replace an object's data (and name). `deleted` soft-deletes it.
     pub async fn update_object(&self, data: &Value, deleted: bool) -> Result<(), Error> {
-        sqlx::query("UPDATE objects SET name = $1, deleted = $2, data = $3 WHERE id = $4")
-            .bind(data["name"].as_str().unwrap_or_default())
-            .bind(i64::from(deleted))
-            .bind(data.to_string())
-            .bind(data["id"].as_str().unwrap_or_default())
-            .execute(self.pool())
-            .await?;
+        sqlx::query(
+            "UPDATE objects SET name = CASE WHEN kind = 'environment' THEN $5 ELSE $1 END, \
+             deleted = $2, data = $3 WHERE id = $4",
+        )
+        .bind(data["name"].as_str().unwrap_or_default())
+        .bind(i64::from(deleted))
+        .bind(data.to_string())
+        .bind(data["id"].as_str().unwrap_or_default())
+        .bind(data["slug"].as_str().unwrap_or_default())
+        .execute(self.pool())
+        .await?;
         Ok(())
     }
 }

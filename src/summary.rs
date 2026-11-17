@@ -98,10 +98,23 @@ fn traces(rows: &[Value]) -> Vec<Trace> {
                     _ => {}
                 }
             }
+            let metrics = &span["metrics"];
             for name in TOKEN_METRICS {
-                if let Some(v) = span["metrics"][name].as_f64() {
+                if let Some(v) = metrics[name].as_f64() {
                     *t.metrics.entry(name).or_default() += v;
                 }
+            }
+            // SDKs log a span's total as `tokens`; without it, the total is prompt
+            // plus completion (as recorded: py:...test_experiment_summarize_with_real_backend).
+            let parts = ["prompt_tokens", "completion_tokens"].map(|k| metrics[k].as_f64());
+            let total = metrics["tokens"].as_f64().or_else(|| {
+                parts
+                    .iter()
+                    .any(Option::is_some)
+                    .then(|| parts.iter().flatten().sum())
+            });
+            if let (Some(total), None) = (total, metrics["total_tokens"].as_f64()) {
+                *t.metrics.entry("total_tokens").or_default() += total;
             }
         }
         out.push(t);
@@ -233,6 +246,21 @@ mod tests {
             json!({"name": "duration", "metric": 3.0, "unit": "s", "improvements": 0, "regressions": 0})
         );
         assert_eq!(metrics["total_tokens"]["metric"], 20.0);
+        // `tokens`, or prompt + completion, count toward total_tokens.
+        let mut a = child(1, "llm", Value::Null, 0.0);
+        a["metrics"] = json!({"tokens": 7, "prompt_tokens": 1});
+        let mut b = child(1, "llm", Value::Null, 0.0);
+        b["metrics"] = json!({"prompt_tokens": 2, "completion_tokens": 3});
+        let mut c = child(1, "task", Value::Null, 0.0);
+        c["metrics"] = json!({"start": 1});
+        let (_, m) = summarize(&[root(1, json!({}), 0.0, 1.0), a, b, c], None);
+        assert_eq!(
+            (
+                m["total_tokens"]["metric"].clone(),
+                m["prompt_tokens"]["metric"].clone()
+            ),
+            (json!(12.0), json!(3.0))
+        );
         assert_eq!(metrics["total_tokens"]["unit"], "tok");
         assert_eq!(metrics["llm_calls"]["metric"], 0.5);
         assert_eq!(metrics["tool_calls"]["metric"], 0.5);

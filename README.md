@@ -22,8 +22,11 @@ Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no accou
   - Project, experiment, and dataset registration
   - Span and event ingestion (`/logs3`), and OpenTelemetry traces (`/otel/v1/traces`, as the Go SDK and `braintrust.otel` export them)
   - The REST API (`/v1/project`, `/v1/experiment`, `/v1/dataset`, `/v1/project_logs`, …), including `insert`, `fetch`, `feedback`, and `summarize`
-  - Versioned prompts and functions (`/v1/prompt`, `/v1/function`), as loaded by `load_prompt`/`loadPrompt`
-  - Function invocation (`invoke`, remote scorers and tasks): prompts run against any OpenAI-compatible API you point it at; inline code runs locally if you allow it
+  - Versioned prompts and functions (`/v1/prompt`, `/v1/function`), as loaded by `load_prompt`/`loadPrompt`, including by environment (`/environment`)
+  - Dataset snapshots and restore to an earlier version
+  - Function invocation (`invoke`, remote scorers and tasks): prompts run against any OpenAI-compatible API you point it at; inline code runs locally if you allow it; calls are traced under their parent span
+  - `braintrust push` of prompts, tools and scorers (bundled code is stored, not run)
+  - The AI proxy (`/v1/proxy`), forwarded to the same OpenAI-compatible API
   - Attachments (`/attachment`), stored locally
   - The other named `/v1` resources (project scores and tags, automations, views, roles, groups, AI secrets, …), stored but not acted on
 - Storage backends:
@@ -48,10 +51,11 @@ emulator with `--api-key <key>` (or `BT_EMULATOR_API_KEY`), which makes it rejec
 The org is called `bt-emulator`; if your code sets `BRAINTRUST_ORG_NAME`, start the
 emulator with the same `--org-name`.
 
-### Invoking functions
+### Invoking functions and the AI proxy
 
 Invoking a prompt (`braintrust.invoke`, `init_function` scorers, the Go SDK's function
-tasks and scorers) needs a model. Point the emulator at any OpenAI-compatible API, such as
+tasks and scorers) and the AI proxy (an OpenAI client with `base_url=<emulator>/v1/proxy`)
+need a model. Point the emulator at any OpenAI-compatible API, such as
 Ollama, vLLM, LiteLLM or OpenAI itself:
 
 ```bash
@@ -62,7 +66,7 @@ bt-emulator serve --llm-base-url https://api.openai.com/v1 --llm-api-key "$OPENA
 The prompt's own `model` is passed through. Inline code functions (Node or Python) run in
 local `node`/`python3` processes only with `--allow-code-execution`. Leave that off when
 others can reach the emulator, since it runs their code on your machine. See
-[`docs/protocol.md` §16](docs/protocol.md) for the details.
+[`docs/protocol.md` §16 and §20](docs/protocol.md) for the details.
 
 ## Testing
 
@@ -84,7 +88,7 @@ replay: [`compat/README.md`](compat/README.md)); regenerate with
 ## Non-goals
 
 - The Braintrust web UI
-- Hosted features such as the AI proxy, online scoring, running automations, and remote sandboxes (for now)
+- Hosted features such as online scoring, running automations, bundled code functions, and remote sandboxes (for now)
 
 ## Disclaimer
 

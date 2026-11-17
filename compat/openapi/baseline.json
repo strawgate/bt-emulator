@@ -48,6 +48,24 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "a38754",
+      "operation": "GET /v1/env_var",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "583390",
+      "operation": "GET /v1/env_var",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "414",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "19b659",
       "operation": "GET /v1/experiment",
       "check": "positive_data_acceptance",
@@ -219,6 +237,15 @@
       "last_seen": "2026-11-17"
     },
     {
+      "id": "9eec1b",
+      "operation": "PATCH /v1/dataset_snapshot/{dataset_snapshot_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "f72701",
       "operation": "PATCH /v1/env_var/{env_var_id}",
       "check": "status_code_conformance",
@@ -341,6 +368,15 @@
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "647946",
+      "operation": "PATCH /v1/view/{view_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
       "first_seen": "2026-11-17",
       "last_seen": "2026-11-17"
     },
@@ -545,6 +581,15 @@
     {
       "id": "d1c466",
       "operation": "PUT /v1/prompt",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "b564e6",
+      "operation": "PUT /v1/span_iframe",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",

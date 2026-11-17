@@ -1,0 +1,213 @@
+//! Dataset versions: restore (`/v1/dataset/{id}/restore[/preview]`), the JS SDK's
+//! snapshot endpoints (`/api/dataset_snapshot/*`), and `GET /xact-id`, the newest
+//! version, which snapshots pin. See docs/protocol.md §22.
+
+use std::collections::BTreeMap;
+
+use axum::Json;
+use axum::extract::{Path, State};
+use serde_json::{Map, Value, json};
+
+use super::extract::JsonBody;
+use super::objects::require;
+use super::resources::{build, find, remove};
+use super::rows::parse_version;
+use super::{ApiError, ApiResult};
+use crate::db::Db;
+use crate::db::objects::Kind;
+
+/// The spec's limit on how many rows one restore may change.
+const MAX_RESTORE_ROWS: usize = 20_000;
+
+const SNAPSHOT: &str = "dataset_snapshot";
+
+pub async fn xact_id(State(db): State<Db>) -> ApiResult<String> {
+    Ok(db.latest_xact().await?.to_string())
+}
+
+type Rows = BTreeMap<String, Map<String, Value>>;
+
+async fn rows(db: &Db, dataset_id: &str, version: Option<i64>) -> ApiResult<Rows> {
+    let events = db
+        .rows_page("dataset", dataset_id, version, None, usize::MAX)
+        .await?;
+    Ok(events
+        .into_iter()
+        .map(|e| {
+            (
+                e.field("id").as_str().unwrap_or_default().to_owned(),
+                e.data,
+            )
+        })
+        .collect())
+}
+
+/// What restoring to the requested version does: rows to write back, with their
+/// data as of that version, and rows created since, to delete.
+async fn plan(db: &Db, dataset_id: &str, body: &Value) -> ApiResult<(Rows, Vec<String>)> {
+    require(db, Kind::Dataset, dataset_id).await?;
+    let version = parse_version(&body["version"])?
+        .ok_or_else(|| ApiError::bad_request("`version` is required"))?;
+    let then = rows(db, dataset_id, Some(version)).await?;
+    let now = rows(db, dataset_id, None).await?;
+    let delete: Vec<String> = now
+        .keys()
+        .filter(|id| !then.contains_key(*id))
+        .cloned()
+        .collect();
+    let restore: Rows = then
+        .into_iter()
+        .filter(|(id, data)| now.get(id) != Some(data))
+        .collect();
+    within_limit(restore.len() + delete.len(), version)?;
+    Ok((restore, delete))
+}
+
+fn within_limit(changed: usize, version: i64) -> ApiResult<()> {
+    if changed > MAX_RESTORE_ROWS {
+        return Err(ApiError::bad_request(format!(
+            "more than {MAX_RESTORE_ROWS} rows changed since version {version}"
+        )));
+    }
+    Ok(())
+}
+
+pub async fn restore_preview(
+    State(db): State<Db>,
+    Path(id): Path<String>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let (restore, delete) = plan(&db, &id, &body).await?;
+    Ok(Json(
+        json!({"rows_to_restore": restore.len(), "rows_to_delete": delete.len()}),
+    ))
+}
+
+/// Revert changed rows and delete newer ones, as one new transaction.
+pub async fn restore(
+    State(db): State<Db>,
+    Path(id): Path<String>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let _guard = db.write_lock().await;
+    let (restore, delete) = plan(&db, &id, &body).await?;
+    if restore.is_empty() && delete.is_empty() {
+        return Ok(Json(
+            json!({"xact_id": null, "rows_restored": 0, "rows_deleted": 0}),
+        ));
+    }
+    let mut tx = db.begin().await?;
+    let xact = Db::next_xact(&mut tx).await?;
+    let writes = restore
+        .iter()
+        .map(|(row, data)| (row, Some(data)))
+        .chain(delete.iter().map(|row| (row, None)));
+    for (seq, (row, data)) in writes.enumerate() {
+        Db::put_row(&mut tx, "dataset", &id, row, xact, seq as i64, data).await?;
+    }
+    tx.commit().await.map_err(crate::error::Error::from)?;
+    Ok(Json(json!({
+        "xact_id": xact.to_string(),
+        "rows_restored": restore.len(),
+        "rows_deleted": delete.len(),
+    })))
+}
+
+/// `POST /api/dataset_snapshot/register {dataset_id, dataset_snapshot_name,
+/// description, xact_id, update}`: create a named snapshot, or return the existing
+/// one (updated to the new version when `update`).
+pub async fn snapshot_register(
+    State(db): State<Db>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let dataset_id = body["dataset_id"].as_str().unwrap_or_default();
+    require(&db, Kind::Dataset, dataset_id).await?;
+    let name = body["dataset_snapshot_name"]
+        .as_str()
+        .ok_or_else(|| ApiError::bad_request("`dataset_snapshot_name` is required"))?;
+    if !body["xact_id"].is_string() {
+        return Err(ApiError::bad_request("`xact_id` is required"));
+    }
+    let fields = json!({"dataset_id": dataset_id, "name": name,
+        "description": body["description"], "xact_id": body["xact_id"]});
+    let _guard = db.write_lock().await;
+    let (snapshot, found_existing) = match db.object_by_name_of(SNAPSHOT, dataset_id, name).await? {
+        Some(existing) if body["update"] == true => {
+            let data = build(SNAPSHOT, &fields, Some(&existing.data));
+            db.update_object(&data, false).await?;
+            (data, true)
+        }
+        Some(existing) => (existing.data, true),
+        None => {
+            let data = build(SNAPSHOT, &fields, None);
+            (
+                db.insert_object_of(SNAPSHOT, dataset_id, data).await?.data,
+                false,
+            )
+        }
+    };
+    Ok(Json(
+        json!({"dataset_snapshot": snapshot, "found_existing": found_existing}),
+    ))
+}
+
+/// `POST /api/dataset_snapshot/get {dataset_id, name?, xact_id?}`: matching
+/// snapshots, newest first.
+pub async fn snapshot_get(
+    State(db): State<Db>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let matches = |o: &Value, key: &str| body[key].is_null() || o[key] == body[key];
+    let snapshots: Vec<Value> = db
+        .objects_of(SNAPSHOT)
+        .await?
+        .into_iter()
+        .map(|o| o.data)
+        .filter(|o| matches(o, "dataset_id") && matches(o, "name") && matches(o, "xact_id"))
+        .collect();
+    Ok(Json(Value::Array(snapshots)))
+}
+
+/// `POST /api/dataset_snapshot/patch_id {id, name?, description?}`.
+pub async fn snapshot_patch(
+    State(db): State<Db>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let id = body["id"].as_str().unwrap_or_default();
+    let _guard = db.write_lock().await;
+    let mut data = find(&db, SNAPSHOT, id).await?.data;
+    for key in ["name", "description"] {
+        if let Some(value) = body.get(key).filter(|v| v.is_string()) {
+            data[key] = value.clone();
+        }
+    }
+    db.update_object(&data, false).await?;
+    Ok(Json(data))
+}
+
+/// `POST /api/dataset_snapshot/delete_id {id}`.
+pub async fn snapshot_delete(
+    State(db): State<Db>,
+    JsonBody(body): JsonBody,
+) -> ApiResult<Json<Value>> {
+    let id = body["id"].as_str().unwrap_or_default();
+    let data = find(&db, SNAPSHOT, id).await?.data;
+    remove(&db, data).await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn restores_are_limited_to_20000_rows() {
+        assert!(within_limit(MAX_RESTORE_ROWS, 1).is_ok());
+        let err = within_limit(MAX_RESTORE_ROWS + 1, 7).unwrap_err();
+        assert!(
+            err.body["error"]
+                .as_str()
+                .unwrap()
+                .contains("since version 7")
+        );
+    }
+}

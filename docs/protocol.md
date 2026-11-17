@@ -480,7 +480,8 @@ Suggested build order:
 - Whether the server applies a `tags` set-union on merge (the client does, py:util.py:77-90).
 - 403 vs 404 for missing projects/datasets (only the experiment 403 is recorded).
 - `/v1/.../feedback` response body and `/ping` response body (no SDK flow reads either).
-- How the real server renders a prompt for invoke beyond the variables documented in §16 (e.g. `strict`, `mode: parallel`), and whether it logs a span when `parent` is given (the emulator does not).
+- How the real server renders a prompt for invoke beyond the variables documented in §16 (e.g. `strict`, `mode: parallel`), and the exact shape of the span it logs under `parent`.
+- What `/insert-functions` does when `if_exists` is omitted (the emulator treats it as `error`, the CLI default), and the status of that error.
 - Whether `GET /v1/prompt` lists only `function_data.type == "prompt"` (the emulator's choice) or every function, and what the real API answers for a non-numeric `version`.
 
 ---
@@ -498,7 +499,12 @@ Prompts are functions with `function_data: {"type": "prompt"}`. Both endpoints s
 - **`version`** is an `_xact_id`, or its 16-hex display form (`xact * 205891132094649 mod 2^64`, py:xact_ids.py). Reads return the latest version at or before it.
 - **Delete** writes a tombstone and returns the last version with `_object_delete: true` and a fresh `created`.
 - **Missing id** → 400 `{"Code":"BadRequestError","Message":"Prompt does not exist or you do not have access"}` (`go:prompt/testdata/cassettes/TestLoadWithClient_HTTPError.yaml`). `/v1/function` says "Function".
-- Not implemented: `environment` lookups, `/insert-functions` and `/function/sandbox-list` (used by `braintrust push` and sandbox registration).
+- **Environments** (spec: `CreatePrompt.environment_slugs`, the `PromptEnvironment` parameter, `/environment`):
+  - Writing a prompt with `environment_slugs` points each named environment at the version just written. Every slug must exist, or nothing is written (400).
+  - `?environment=<slug>` on `GET /v1/prompt|function[/{id}]` returns the assigned version: lists include only assigned functions, and a by-id read of an unassigned one is the usual missing-function 400.
+  - An unknown environment, or `environment` together with `version`, is 400.
+  - Environments are managed at `/environment` (§18), identified by `slug`.
+- `/insert-functions` and `/function/code` (`braintrust push`) are §21. Not implemented: `/function/sandbox-list` (sandbox registration runs the eval file in a remote sandbox).
 
 ## 16. Invoking functions (`POST /v1/function/{id}/invoke`, `POST /function/invoke`)
 
@@ -508,8 +514,16 @@ The Go and Ruby SDKs call `/v1/function/{id}/invoke` with `{input[, version, mes
   - Template variables are `{metadata, input, ...input}`: an object input's fields are also top-level variables, so a scorer called with `{input, output, expected}` can use `{{output}}`. Templates are mustache without HTML escaping, and non-string values render as compact JSON (as py:logger.py `_create_custom_render` does).
   - The request is `options.params` (minus `use_cache`), `model: options.model`, the rendered messages (a `completion` prompt becomes one user message), then the invoke's extra `messages`. `prompt.tools` (a JSON string) is rendered and sent as `tools`.
   - Output: with `response_format` `json_object` or `json_schema`, the reply is parsed as JSON (falling back to the text); tool calls return their parsed arguments (an array when there are several); otherwise the text.
+  - A prompt with `tool_functions` is refused with 400. Running attached tools needs the server's tool-call loop, whose behaviour is not public, and calling the model without the tools would silently change the answer.
   - An `llm_classifier` parser (`prompt_data.parser`) forces a `select_choice` tool (`choice` enum from `choice_scores`, plus `reasoning` when `use_cot`) and returns `{"name": <function name>, "score": choice_scores[choice], "metadata": {"choice", "rationale"?}}`. Recorded: `go:eval/testdata/cassettes/TestScorerAPI_OutputParsing.yaml`, `ruby:test/fixtures/vcr_cassettes/eval_functions/scorer_parses_structured_response.yml`.
 - **Inline code functions** (`function_data.data.type == "inline"`, runtime `node` or `python`) run in a local `node`/`python3` process only when the emulator is started with `--allow-code-execution`. A node handler gets `(input, {metadata})`; a Python handler gets an object input's fields as keyword arguments (only those it declares, unless it takes `**kwargs`), or a non-object input positionally. Async handlers are awaited. The default timeout is 60 s.
+- **Tracing:** `parent` is either the `{object_type, object_id, row_ids?, propagated_event?}` struct or a string from a span's `.export()`. That string is base64 SpanComponents: version byte (3 or 4), then object type (1 experiment, 2 project_logs, 3 playground_logs), then a count of binary fields, each `field_id` followed by bytes, then optional trailing JSON (py:span_identifier_v3.py, _v4.py).
+  - In v3, fields are 16-byte UUIDs.
+  - In v4, the span id (field 3) is 8 bytes and the root span id (field 4) is 16, both hex; v4 puts `object_id` and `row_id` in the JSON.
+  - A logger exported before login carries `compute_object_metadata_args: {project_name}` instead of an object id.
+  - The call is logged under the parent as a `function` span: `span_attributes.name` is the function's name, with input, output or error, `metadata`, `tags` and start/end metrics, nested under `row_ids` when given, and `propagated_event` merged in.
+  - The parent is resolved before the function runs: an undecodable parent is 400, a missing experiment or project is 403, and a project named by `project_name` is created.
+  - `playground_logs` parents and an empty parent are not logged. The span's exact shape is the emulator's choice; the recordings never fetch one back.
 - **Errors:** a missing function is the same 400 as `GET`. A function that cannot run here (no model configured, code execution disabled, bundled code, other function types) is 400 `{"error": ...}`. A model or code failure (non-2xx, invalid reply, exception, timeout) is 500; the Python SDK raises `BraintrustInvokeError` with the body.
 
 ## 17. OTLP trace ingest (`POST /otel/v1/traces`)
@@ -533,7 +547,7 @@ The Go SDK traces only through OpenTelemetry: a batch span processor exports to 
 
 ## 18. Named resources (`/v1/project_automation`, `/v1/project_score`, `/v1/role`, …)
 
-The spec's other named `/v1` objects share one set of conventions, which the emulator implements once (`src/api/resources.rs`), driven by each kind's response schema in the spec: `ai_secret`, `dataset_snapshot`, `env_var`, `group`, `mcp_server`, `project_automation`, `project_group`, `project_score`, `project_tag`, `role`, `span_iframe` and `view`. They are stored, never acted on: automations do not fire, AI secrets are not used by invoke, and so on.
+The spec's other named `/v1` objects share one set of conventions, which the emulator implements once (`src/api/resources.rs`), driven by each kind's response schema in the spec: `ai_secret`, `dataset_snapshot`, `env_var`, `environment` (at `/environment`, unique by `slug` rather than `name`), `group`, `mcp_server`, `project_automation`, `project_group`, `project_score`, `project_tag`, `role`, `span_iframe` and `view`. They are stored, never acted on: automations do not fire, AI secrets are not used by invoke, and so on.
 - **Scope:** names are unique within the project (`project_id`), dataset (`dataset_id`), object (`object_type` + `object_id`, for views and env vars) or else the org. A write naming a missing project or dataset is the plain-text 400 of §11.
 - **`POST`** creates, or returns the existing resource of that name unmodified. **`PUT`** creates, or replaces it, keeping its `id` and `created`. Both follow the spec's operation descriptions.
 - **Representation:** the request's fields that the response schema has, plus server fields: `id`, `created`, `user_id` and `org_id` when the schema has them, and `updated_at`, refreshed on every write. Unset nullable fields are `null`, and unset required lists, objects and flags start empty or `false`. Write-only input such as an AI secret's `secret` is not returned.
@@ -554,3 +568,36 @@ How the emulator serves this:
 - The signed URLs point back at the emulator: `/attachment/blob/{key}?token=…`. The token is random per key and replaces the API key on those URLs, since the SDKs send no `Authorization` header to object storage.
 - Content is stored base64-encoded in the database. Asking for the same key again returns the same URL.
 - An unknown key is 404 on `GET /attachment` and 400 on `/attachment/status`. A wrong token is 403.
+
+## 20. AI proxy (`/v1/proxy/*`, `/v1/chat/completions`, `/v1/completions`, `/v1/embeddings`, `/v1/responses`)
+
+Code that points an OpenAI client at Braintrust (`base_url=<api_url>/v1/proxy`, or `<api_url>/v1`) gets the model configured with `--llm-base-url`.
+- **Forwarding:** the request is sent unchanged (method, path after `/v1/proxy/` or `/v1/`, query, body, `Content-Type`, `Accept`) to `{llm-base-url}/{path}`. The caller's Braintrust key is replaced by `--llm-api-key`, or dropped.
+- **Response:** the status, content type and body stream back unchanged, so SSE streaming works.
+- **Errors:** with no model configured it is 400; an unreachable model is 502.
+- **Not emulated:** the proxy's response cache, translation between provider formats (the model must speak the OpenAI format), `x-bt-parent` logging, and `/v1/proxy/credentials`.
+
+## 21. Pushing functions (`POST /function/code`, `POST /insert-functions`)
+
+`braintrust push` (both CLIs) and the JS `project.publish()` send these:
+- **`POST /function/code {org_id, runtime_context}`** → `{"url", "bundleId"}` (py:cli/push.py `_upload_bundle`, js cli `pathInfoSchema`). The CLI `PUT`s the zipped or gzipped bundle to `url`. The emulator's URL is a signed `/attachment/blob/{bundleId}` URL (§19), and the bundle is stored.
+- **`POST /insert-functions {functions: [CreateFunction & {if_exists?}]}`** → `{"functions": [{id, project_id, slug, found_existing}], "status": "success", "xact_id"}` (`py:src/braintrust/cassettes/test_register_sandbox_single_evaluator.yaml`).
+  - Each definition is checked against the spec's `CreateFunction` schema before anything is written.
+  - `if_exists` decides what happens to an existing slug: `replace` appends a version, `ignore` keeps it (`found_existing: true`), and `error` (the CLI default, and the emulator's default when it is absent) fails with 400.
+- **Running pushed code:** prompts and parameters run as usual. Bundled code functions (`function_data.data.type: "bundle"`) are stored but cannot be invoked: running them needs the hosted code runtime.
+
+## 22. Dataset versions: restore, snapshots, `GET /xact-id`
+
+- **`POST /v1/dataset/{id}/restore {version}`** → `{xact_id, rows_restored, rows_deleted}`, following the spec's description:
+  - Rows that changed since `version` (including rows deleted since) are written back as they were at `version`.
+  - Rows created since are deleted.
+  - Everything is written in one new transaction, so history stays readable at every version. `xact_id` is `null` when nothing changed.
+  - More than 20,000 changed rows is a 400.
+- **`POST /v1/dataset/{id}/restore/preview {version}`** → `{rows_to_restore, rows_to_delete}`, without writing.
+- **`GET /xact-id`** returns the newest transaction id as text. The JS SDK pins a snapshot to it.
+- **JS snapshot endpoints** (all on the app URL):
+  - `POST /api/dataset_snapshot/register {dataset_id, dataset_snapshot_name, description, xact_id, update}` → `{dataset_snapshot, found_existing}`. An existing name is returned unchanged, or moved to the new `xact_id`/`description` when `update` is true.
+  - `POST /api/dataset_snapshot/get {dataset_id, name?, xact_id?}` → the matching snapshots.
+  - `POST /api/dataset_snapshot/patch_id {id, name?, description?}` and `POST /api/dataset_snapshot/delete_id {id}` → the snapshot.
+
+  They share storage with `/v1/dataset_snapshot` (§18). Shapes are from the JS SDK (`datasetSnapshotRegisterResponseSchema`, `DatasetSnapshot`, `datasetRestore*ResultSchema`).

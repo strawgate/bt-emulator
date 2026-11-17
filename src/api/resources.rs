@@ -16,13 +16,14 @@ use super::extract::{JsonBody, Params};
 use super::objects::{check_uuid, new_id, paginate, require_parent};
 use super::{ApiError, ApiResult, ORG_ID, USER_ID};
 use crate::db::Db;
-use crate::db::objects::{Kind, Object};
+use crate::db::objects::{Kind, Object, identity};
 
 /// Each resource kind and the spec schema of its API representation.
-pub const KINDS: [(&str, &str); 12] = [
+pub const KINDS: [(&str, &str); 13] = [
     ("ai_secret", "AISecret"),
     ("dataset_snapshot", "DatasetSnapshot"),
     ("env_var", "EnvVar"),
+    ("environment", "Environment"),
     ("group", "Group"),
     ("mcp_server", "MCPServer"),
     ("project_automation", "ProjectAutomation"),
@@ -39,11 +40,25 @@ const SERVER_FIELDS: [&str; 5] = ["id", "created", "user_id", "org_id", "updated
 
 /// The resource kind a request addresses (`/v1/<kind>[/<id>]`).
 fn kind_of(uri: &Uri) -> &'static str {
-    let segment = uri.path().split('/').nth(2).unwrap_or_default();
+    // `/v1/<kind>[/<id>]`, or `/environment[/<id>]`.
+    let mut segments = uri.path().split('/').skip(1);
+    let segment = match segments.next() {
+        Some("v1") => segments.next().unwrap_or_default(),
+        other => other.unwrap_or_default(),
+    };
     KINDS
         .iter()
         .find(|(kind, _)| *kind == segment)
         .map_or("", |(kind, _)| kind)
+}
+
+/// The route prefix of a kind.
+pub fn path(kind: &str) -> String {
+    if kind == "environment" {
+        "/environment".into()
+    } else {
+        format!("/v1/{kind}")
+    }
 }
 
 fn schema(kind: &str) -> &'static Value {
@@ -97,7 +112,7 @@ async fn scope(db: &Db, body: &Value) -> ApiResult<String> {
 
 /// The stored representation of `body`: the fields the resource's schema has, plus
 /// the server's, with `null` for every unset nullable field.
-fn build(kind: &str, body: &Value, keep: Option<&Value>) -> Value {
+pub(super) fn build(kind: &str, body: &Value, keep: Option<&Value>) -> Value {
     let props = properties(kind);
     let required = schema(kind)["required"]
         .as_array()
@@ -134,7 +149,7 @@ pub async fn create(
 ) -> ApiResult<Json<Value>> {
     let kind = kind_of(&uri);
     let scope = scope(&db, &body).await?;
-    let name = body["name"].as_str().unwrap_or_default();
+    let name = body[identity(kind)].as_str().unwrap_or_default();
     let _guard = db.write_lock().await;
     let data = match db.object_by_name_of(kind, &scope, name).await? {
         Some(existing) if method == Method::POST => existing.data,
@@ -151,7 +166,7 @@ pub async fn create(
     Ok(Json(data))
 }
 
-async fn find(db: &Db, kind: &str, id: &str) -> ApiResult<Object> {
+pub(super) async fn find(db: &Db, kind: &str, id: &str) -> ApiResult<Object> {
     check_uuid(id)?;
     db.object_of(kind, id)
         .await?
@@ -170,7 +185,12 @@ pub async fn list(
     let kind = kind_of(&uri);
     let params = Params::parse(query.as_deref());
     let ids: Vec<&str> = params.all("ids").collect();
-    let name = params.get(&format!("{kind}_name"));
+    let name_param = if kind == "environment" {
+        "name".into()
+    } else {
+        format!("{kind}_name")
+    };
+    let name = params.get(&name_param);
     let project_id = match (params.get("project_id"), params.get("project_name")) {
         (Some(id), _) => Some(id.to_owned()),
         (None, Some(name)) => match db.object_by_name(Kind::Project, ORG_ID, name).await? {
@@ -208,7 +228,7 @@ pub async fn patch(
     let mut data = find(&db, kind, &id).await?.data;
     let props = properties(kind);
     let fields = body.as_object().cloned().unwrap_or_default();
-    if let Some(name) = fields.get("name").and_then(Value::as_str) {
+    if let Some(name) = fields.get(identity(kind)).and_then(Value::as_str) {
         let taken = db.object_by_name_of(kind, &scope_key(&data), name).await?;
         if taken.is_some_and(|o| o.id() != id) {
             return Err(ApiError::new(
@@ -274,7 +294,7 @@ pub async fn delete_by_name(
     remove(&db, object.data).await
 }
 
-async fn remove(db: &Db, mut data: Value) -> ApiResult<Json<Value>> {
+pub(super) async fn remove(db: &Db, mut data: Value) -> ApiResult<Json<Value>> {
     if data.get("deleted_at").is_some() {
         data["deleted_at"] = json!(crate::time::now_iso());
     }

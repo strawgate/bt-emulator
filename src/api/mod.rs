@@ -2,6 +2,7 @@
 //! the "api" URL; their paths do not collide.
 
 mod attachments;
+mod datasets;
 mod error;
 mod extract;
 mod functions;
@@ -10,6 +11,8 @@ mod legacy;
 mod meta;
 mod objects;
 mod otel;
+mod proxy;
+mod push;
 mod resources;
 mod rows;
 mod summary;
@@ -95,7 +98,14 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/v1/function/{id}", functions_item())
         .route("/v1/function/{id}/invoke", post(invoke::by_id))
         .route("/function/invoke", post(invoke::by_ref))
+        .route("/function/code", post(push::code))
+        .route("/insert-functions", post(push::insert_functions))
         .route("/v1/prompt/{id}", functions_item())
+        .route("/v1/proxy/{*path}", axum::routing::any(proxy::proxied))
+        .route("/v1/chat/completions", post(proxy::openai))
+        .route("/v1/completions", post(proxy::openai))
+        .route("/v1/embeddings", post(proxy::openai))
+        .route("/v1/responses", post(proxy::openai))
         .merge(resource_routes())
         .route("/v1/{kind}", get(objects::list).post(objects::create))
         .route(
@@ -112,6 +122,25 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/v1/{kind}/{id}/feedback", post(rows::feedback))
         .route("/v1/experiment/{id}/summarize", get(summary::experiment))
         .route("/v1/dataset/{id}/summarize", get(summary::dataset))
+        .route("/v1/dataset/{id}/restore", post(datasets::restore))
+        .route(
+            "/v1/dataset/{id}/restore/preview",
+            post(datasets::restore_preview),
+        )
+        .route("/xact-id", get(datasets::xact_id))
+        .route(
+            "/api/dataset_snapshot/register",
+            post(datasets::snapshot_register),
+        )
+        .route("/api/dataset_snapshot/get", post(datasets::snapshot_get))
+        .route(
+            "/api/dataset_snapshot/patch_id",
+            post(datasets::snapshot_patch),
+        )
+        .route(
+            "/api/dataset_snapshot/delete_id",
+            post(datasets::snapshot_delete),
+        )
         .fallback(not_found)
         .layer(axum::middleware::from_fn(validate::middleware))
         .layer(axum::middleware::from_fn_with_state(
@@ -121,20 +150,25 @@ pub fn app(db: Db, config: Config) -> Router {
         .layer(axum::Extension(runtime))
         .layer(axum::Extension(org))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
+        // A bug in one handler answers 500 instead of dropping the connection.
+        .layer(tower_http::catch_panic::CatchPanicLayer::new())
         .with_state(db)
 }
 
 fn resource_routes() -> Router<Db> {
     let mut router = Router::new();
     for (kind, _) in resources::KINDS {
-        let mut root = get(resources::list)
-            .post(resources::create)
-            .put(resources::create);
+        let mut root = get(resources::list).post(resources::create);
+        // The spec has no create-or-replace for environments.
+        if kind != "environment" {
+            root = root.put(resources::create);
+        }
         if kind == "ai_secret" {
             root = root.delete(resources::delete_by_name);
         }
-        router = router.route(&format!("/v1/{kind}"), root).route(
-            &format!("/v1/{kind}/{{id}}"),
+        let base = resources::path(kind);
+        router = router.route(&base, root).route(
+            &format!("{base}/{{id}}"),
             get(resources::get)
                 .patch(resources::patch)
                 .delete(resources::delete),

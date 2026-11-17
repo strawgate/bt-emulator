@@ -18,12 +18,13 @@ form_urlencoded = "1.2.2"
 hex = "0.4"
 jsonschema = { version = "0.61", default-features = false }
 prost = "0.14"
-reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "stream"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sqlx = { version = "0.9", default-features = false, features = ["any", "sqlite", "postgres", "runtime-tokio", "migrate", "macros", "tls-none"] }
 thiserror = "2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal", "sync", "process", "time", "io-util"] }
+tower-http = { version = "0.6", features = ["catch-panic"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1", features = ["v4"] }
