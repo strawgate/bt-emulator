@@ -28,10 +28,9 @@ cov:
     #!/usr/bin/env bash
     set -euo pipefail
     cargo llvm-cov --no-report
-    cargo llvm-cov report --lcov --output-path target/lcov.info
     if ! cargo llvm-cov report --fail-under-lines 100 --fail-under-functions 100; then
         echo "Uncovered lines:"
-        awk -F'[:,]' '/^SF:/{f=$2} /^DA:/ && $3=="0"{print f":"$2}' target/lcov.info
+        cargo llvm-cov report --text | awk '/^\/.*\.rs:$/{f=$0} /^ *[0-9]+\| *0\|/{print f, $0}'
         exit 1
     fi
 
