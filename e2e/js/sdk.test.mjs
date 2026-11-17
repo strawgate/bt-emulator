@@ -80,3 +80,26 @@ test("Eval with dataset end to end", async () => {
   assert.equal(result.summary.scores.exact.score, 0.8);
   assert.equal(result.results.length, 5);
 });
+
+test("loadPrompt reads the latest and a pinned version", async () => {
+  const project = projectName();
+  const { id: projectId } = await rest.request("POST", "/v1/project", { name: project });
+  const save = (greeting) =>
+    rest.request("PUT", "/v1/prompt", {
+      project_id: projectId,
+      name: "Greeter",
+      slug: "greeter",
+      prompt_data: {
+        options: { model: "gpt-4o-mini" },
+        prompt: { type: "chat", messages: [{ role: "user", content: `${greeting} {{name}}` }] },
+      },
+    });
+  const v1 = await save("Hello");
+  await save("Howdy");
+
+  const latest = await braintrust.loadPrompt({ projectName: project, slug: "greeter", noTrace: true });
+  assert.deepEqual(latest.build({ name: "Ada" }).messages, [{ role: "user", content: "Howdy Ada" }]);
+
+  const pinned = await braintrust.loadPrompt({ projectName: project, slug: "greeter", version: v1._xact_id, noTrace: true });
+  assert.equal(pinned.build({ name: "Ada" }).messages[0].content, "Hello Ada");
+});

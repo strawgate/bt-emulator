@@ -1,4 +1,4 @@
-//! Row versions for experiments, datasets and project logs.
+//! Row versions for experiments, datasets, project logs and functions.
 
 use serde_json::{Map, Value};
 use sqlx::{AnyConnection, Row};
@@ -71,6 +71,7 @@ impl Db {
     }
 
     /// One page of current rows, newest first, strictly after `after`, as of `version`.
+    /// An empty `object_id` reads every object of the type.
     pub async fn rows_page(
         &self,
         object_type: &str,
@@ -82,7 +83,7 @@ impl Db {
         let (after_xact, after_seq) = after.unwrap_or((i64::MAX, i64::MAX));
         let rows = sqlx::query(
             "SELECT e.xact_id, e.seq, e.data FROM events e \
-             WHERE e.object_type = $1 AND e.object_id = $2 AND e.deleted = 0 AND e.xact_id <= $3 \
+             WHERE e.object_type = $1 AND ($2 = '' OR e.object_id = $2) AND e.deleted = 0 AND e.xact_id <= $3 \
                AND (e.xact_id < $4 OR (e.xact_id = $4 AND e.seq < $5)) \
                AND NOT EXISTS (SELECT 1 FROM events w WHERE w.object_type = e.object_type \
                    AND w.object_id = e.object_id AND w.row_id = e.row_id \
@@ -107,6 +108,37 @@ impl Db {
                 })
             })
             .collect()
+    }
+
+    /// A row by id within any object of the type, as of `version`, with its object id.
+    /// `None` when it never existed or its latest version is a deletion.
+    pub async fn row_at(
+        &self,
+        object_type: &str,
+        row_id: &str,
+        version: Option<i64>,
+    ) -> Result<Option<(String, Event)>, Error> {
+        let row = sqlx::query(
+            "SELECT object_id, xact_id, seq, deleted, data FROM events \
+             WHERE object_type = $1 AND row_id = $2 AND xact_id <= $3 \
+             ORDER BY xact_id DESC LIMIT 1",
+        )
+        .bind(object_type)
+        .bind(row_id)
+        .bind(version.unwrap_or(i64::MAX))
+        .fetch_optional(self.pool())
+        .await?;
+        let Some(row) = row else { return Ok(None) };
+        if row.try_get::<i64, _>("deleted")? != 0 {
+            return Ok(None);
+        }
+        let data: String = row.try_get("data")?;
+        let event = Event {
+            xact_id: row.try_get("xact_id")?,
+            seq: row.try_get("seq")?,
+            data: serde_json::from_str(&data)?,
+        };
+        Ok(Some((row.try_get("object_id")?, event)))
     }
 
     /// Every current row of an object, newest first.

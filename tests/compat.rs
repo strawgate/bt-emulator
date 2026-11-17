@@ -229,29 +229,62 @@ async fn send(
 /// cassette can replay. Only names and parents are seeded, never rows.
 async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
     let path = it["path"].as_str().unwrap();
-    let Some(kind) = ["project", "experiment", "dataset"]
-        .into_iter()
-        .find(|k| path.starts_with(&format!("/v1/{k}?")))
-    else {
-        return;
-    };
-    if it["method"] != "GET" {
+    let response = &it["response"]["body"];
+    if it["method"] != "GET" || it["response"]["status"] != 200 {
         return;
     }
-    // Lists are newest first; create oldest first so the order matches.
-    for obj in it["response"]["body"]["objects"]
-        .as_array()
+    let list = ["project", "experiment", "dataset", "function", "prompt"]
         .into_iter()
-        .flatten()
-        .rev()
-    {
+        .find(|k| path.starts_with(&format!("/v1/{k}?")));
+    // A function fetched by id may also predate the recording.
+    let single = ["function", "prompt"].into_iter().find(|k| {
+        path.strip_prefix(&format!("/v1/{k}/"))
+            .is_some_and(|rest| !rest.split('?').next().unwrap().contains('/'))
+    });
+    let (kind, objects) = match (list, single) {
+        (Some(kind), _) => (
+            kind,
+            response["objects"].as_array().cloned().unwrap_or_default(),
+        ),
+        (None, Some(kind)) => (kind, vec![response.clone()]),
+        (None, None) => return,
+    };
+    // Functions and prompts are both created as functions, by slug.
+    let (method, create_path) = match kind {
+        "function" | "prompt" => ("PUT", "/v1/function".to_owned()),
+        kind => ("POST", format!("/v1/{kind}")),
+    };
+    // Lists are newest first; create oldest first so the order matches.
+    for obj in objects.iter().rev() {
         let id = obj["id"].as_str().unwrap_or_default();
         if st.ids.contains_key(id) {
             continue;
         }
         let mut body = st.substitute_value(obj);
-        for key in ["id", "created", "user_id", "org_id", "deleted_at"] {
-            body.as_object_mut().unwrap().remove(key);
+        let fields = body.as_object_mut().unwrap();
+        for key in [
+            "id",
+            "created",
+            "user_id",
+            "org_id",
+            "deleted_at",
+            "_xact_id",
+            "log_id",
+        ] {
+            fields.remove(key);
+        }
+        fields.retain(|_, v| !v.is_null());
+        let recorded_pid = obj["project_id"].as_str().unwrap_or_default();
+        let known = kind == "project" || st.ids.contains_key(recorded_pid);
+        if let (false, Some(name)) = (known, query_param(path, "project_name")) {
+            // Listed by project name before the project was ever fetched.
+            let (_, project) =
+                send(router, "POST", "/v1/project", Some(json!({"name": name}))).await;
+            st.learn(
+                None,
+                &json!({"project_id": recorded_pid}),
+                &json!({"project_id": project["id"]}),
+            );
         }
         if kind != "project" {
             let Some(pid) = obj["project_id"].as_str().and_then(|p| st.ids.get(p)) else {
@@ -259,7 +292,7 @@ async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
             };
             body["project_id"] = json!(pid);
         }
-        let (status, created) = send(router, "POST", &format!("/v1/{kind}"), Some(body)).await;
+        let (status, created) = send(router, method, &create_path, Some(body)).await;
         if status == 200 {
             st.learn(None, obj, &created);
         }
@@ -352,6 +385,14 @@ async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String>
         }
     }
     Ok(())
+}
+
+fn query_param(path: &str, key: &str) -> Option<String> {
+    let query = path.split_once('?')?.1;
+    query
+        .split('&')
+        .find_map(|pair| pair.strip_prefix(&format!("{key}=")))
+        .map(percent_decode)
 }
 
 fn percent_decode(s: &str) -> String {

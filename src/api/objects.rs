@@ -37,7 +37,7 @@ pub async fn require(db: &Db, kind: Kind, id: &str) -> ApiResult<Object> {
         .ok_or_else(|| ApiError::missing(kind, id))
 }
 
-fn new_id() -> String {
+pub fn new_id() -> String {
     uuid::Uuid::new_v4().to_string()
 }
 
@@ -225,7 +225,7 @@ pub async fn list(
             None => return Ok(Json(json!({"objects": []}))),
         },
     };
-    let mut objects: Vec<Object> = db
+    let objects: Vec<Value> = db
         .objects(kind)
         .await?
         .into_iter()
@@ -236,16 +236,20 @@ pub async fn list(
                 .as_deref()
                 .is_none_or(|p| o.data["project_id"] == p)
         })
+        .map(|o| o.data)
         .collect();
+    Ok(Json(json!({"objects": paginate(objects, &params)})))
+}
+
+/// Apply `starting_after`, `ending_before` and `limit` to a newest-first list.
+pub fn paginate(mut objects: Vec<Value>, params: &Params) -> Vec<Value> {
+    let position = |objects: &[Value], id: &str| objects.iter().position(|o| o["id"] == id);
     if let Some(after) = params.get("starting_after") {
-        let at = objects
-            .iter()
-            .position(|o| o.id() == after)
-            .map_or(objects.len(), |i| i + 1);
+        let at = position(&objects, after).map_or(objects.len(), |i| i + 1);
         objects.drain(..at);
     }
     if let Some(before) = params.get("ending_before") {
-        let at = objects.iter().position(|o| o.id() == before).unwrap_or(0);
+        let at = position(&objects, before).unwrap_or(0);
         objects.truncate(at);
         if let Some(limit) = params.number("limit") {
             objects.drain(..objects.len().saturating_sub(limit));
@@ -254,9 +258,7 @@ pub async fn list(
     if let Some(limit) = params.number("limit") {
         objects.truncate(limit);
     }
-    Ok(Json(
-        json!({"objects": objects.into_iter().map(|o| o.data).collect::<Vec<_>>()}),
-    ))
+    objects
 }
 
 /// Fields that are never null in API responses.

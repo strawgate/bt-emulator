@@ -131,12 +131,14 @@ fn decode_cursor(cursor: &str) -> ApiResult<Position> {
     }
 }
 
-fn parse_version(v: &Value) -> ApiResult<Option<i64>> {
+pub fn parse_version(v: &Value) -> ApiResult<Option<i64>> {
     match v {
         Value::Null => Ok(None),
         Value::String(s) if s.is_empty() => Ok(None),
         Value::Number(n) if n.is_i64() => Ok(n.as_i64()),
-        Value::String(s) if s.parse::<i64>().is_ok() => Ok(s.parse().ok()),
+        Value::String(s) if crate::xact::parse_version(s).is_some() => {
+            Ok(crate::xact::parse_version(s))
+        }
         other => Err(ApiError::bad_request(format!("invalid version {other}"))),
     }
 }

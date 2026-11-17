@@ -213,7 +213,7 @@ async fn project_crud() {
             StatusCode::BAD_REQUEST
         );
         assert_eq!(
-            app.status("GET", "/v1/function", None).await,
+            app.status("GET", "/v1/role", None).await,
             StatusCode::NOT_FOUND
         );
         assert_eq!(
@@ -1172,6 +1172,184 @@ async fn database_failures_are_500s() {
         assert_eq!(
             app.status("POST", "/logs3", Some(rows)).await,
             StatusCode::INTERNAL_SERVER_ERROR
+        );
+    }
+}
+
+#[tokio::test]
+async fn functions_and_prompts_are_versioned_by_slug() {
+    for app in apps().await {
+        let pid = app.project("fp").await;
+        let prompt = json!({"project_id": pid, "name": "Greeter", "slug": "greet", "description": null,
+            "prompt_data": {"prompt": {"type": "chat", "messages": [{"role": "user", "content": "Hi {{name}}"}]}}});
+        let v1 = app.ok("POST", "/v1/prompt", Some(prompt.clone())).await;
+        let id = v1["id"].as_str().unwrap().to_owned();
+        assert_eq!(v1["function_data"], json!({"type": "prompt"}));
+        assert_eq!(v1["log_id"], "p");
+        assert!(
+            v1.get("description").is_none(),
+            "nulls are not stored: {v1}"
+        );
+
+        // Same slug: same id, new version; the old version stays readable.
+        let mut replaced = prompt.clone();
+        replaced["description"] = json!("v2");
+        let v2 = app.ok("PUT", "/v1/prompt", Some(replaced)).await;
+        assert_eq!(v2["id"], id.as_str());
+        assert!(v2["_xact_id"].as_str() > v1["_xact_id"].as_str());
+        let old = app
+            .ok(
+                "GET",
+                &format!(
+                    "/v1/prompt/{id}?version={}",
+                    v1["_xact_id"].as_str().unwrap()
+                ),
+                None,
+            )
+            .await;
+        assert_eq!(old["description"], Value::Null);
+        assert_eq!(old["function_type"], Value::Null);
+        assert!(old.get("origin").is_none(), "prompt shape: {old}");
+        let current = app.ok("GET", &format!("/v1/function/{id}"), None).await;
+        assert_eq!(current["description"], "v2");
+        assert_eq!(current["origin"], Value::Null);
+
+        // PATCH deep-merges objects and ignores nulls and immutable fields.
+        let patched = app
+            .ok(
+                "PATCH",
+                &format!("/v1/prompt/{id}"),
+                Some(json!({
+                "prompt_data": {"options": {"model": "m"}}, "description": null, "tags": ["t"]})),
+            )
+            .await;
+        assert_eq!(patched["prompt_data"]["options"]["model"], "m");
+        assert_eq!(patched["prompt_data"]["prompt"]["type"], "chat");
+        assert_eq!(
+            (patched["description"].as_str(), patched["tags"].clone()),
+            (Some("v2"), json!(["t"]))
+        );
+
+        // A non-prompt function is not listed as a prompt, but readable by id.
+        let params = app
+            .ok("POST", "/v1/function", Some(json!({"project_id": pid, "name": "Params", "slug": "params",
+                "function_type": "parameters", "function_data": {"type": "parameters", "data": {}, "__schema": {"type": "object", "properties": {}}}})))
+            .await;
+        let params_id = params["id"].as_str().unwrap();
+        let read = app
+            .ok("GET", &format!("/v1/prompt/{params_id}"), None)
+            .await;
+        assert_eq!(read["function_type"], "parameters");
+        let (status, body) = app
+            .call(
+                "GET",
+                "/v1/prompt/00000000-0000-0000-0000-000000000000",
+                None,
+            )
+            .await;
+        assert_eq!(
+            (status, body["Code"].as_str()),
+            (StatusCode::BAD_REQUEST, Some("BadRequestError"))
+        );
+        assert_eq!(
+            body["Message"],
+            "Prompt does not exist or you do not have access"
+        );
+        // A `function_data` of another type replaces rather than merges.
+        let retyped = app
+            .ok(
+                "PATCH",
+                &format!("/v1/function/{params_id}"),
+                Some(json!({"function_data": {"type": "prompt"}})),
+            )
+            .await;
+        assert_eq!(retyped["function_data"], json!({"type": "prompt"}));
+        let retyped = app
+            .ok("PATCH", &format!("/v1/function/{params_id}"), Some(json!({"function_data": {
+                "type": "parameters", "data": {}, "__schema": {"type": "object", "properties": {}}}})))
+            .await;
+        assert_eq!(retyped["function_data"]["type"], "parameters");
+        let ids = |v: Value| -> Vec<String> {
+            v["objects"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|o| o["id"].as_str().unwrap().to_owned())
+                .collect()
+        };
+        let all = app.ok("GET", "/v1/function", None).await;
+        assert_eq!(ids(all), vec![params_id.to_owned(), id.clone()]);
+        let prompts = app
+            .ok("GET", "/v1/prompt?project_name=fp&slug=greet", None)
+            .await;
+        assert_eq!(ids(prompts), vec![id.clone()]);
+        let by_name = app
+            .ok(
+                "GET",
+                &format!("/v1/function?project_id={pid}&function_name=Params"),
+                None,
+            )
+            .await;
+        assert_eq!(ids(by_name), vec![params_id.to_owned()]);
+        let by_id = app
+            .ok("GET", &format!("/v1/function?ids={id}&limit=5"), None)
+            .await;
+        assert_eq!(ids(by_id), vec![id.clone()]);
+        let before = app
+            .ok(
+                "GET",
+                &format!("/v1/prompt?version={}", v1["_xact_id"].as_str().unwrap()),
+                None,
+            )
+            .await;
+        assert_eq!(before["objects"][0]["description"], Value::Null);
+        let none = app.ok("GET", "/v1/prompt?project_name=nope", None).await;
+        assert_eq!(none, json!({"objects": []}));
+
+        // Delete writes a tombstone.
+        let deleted = app.ok("DELETE", &format!("/v1/prompt/{id}"), None).await;
+        assert_eq!(
+            (deleted["_object_delete"].clone(), deleted["name"].clone()),
+            (json!(true), json!("Greeter"))
+        );
+        let (status, body) = app.call("GET", &format!("/v1/function/{id}"), None).await;
+        assert_eq!(
+            (status, body["Message"].as_str()),
+            (
+                StatusCode::BAD_REQUEST,
+                Some("Function does not exist or you do not have access")
+            )
+        );
+        assert_eq!(
+            app.status("DELETE", &format!("/v1/function/{id}"), None)
+                .await,
+            StatusCode::BAD_REQUEST
+        );
+        assert_eq!(
+            app.status("PATCH", &format!("/v1/function/{id}"), Some(json!({})))
+                .await,
+            StatusCode::BAD_REQUEST
+        );
+        assert_eq!(
+            ids(app.ok("GET", "/v1/prompt", None).await),
+            Vec::<String>::new()
+        );
+
+        // Errors.
+        assert_eq!(
+            app.status("GET", "/v1/function/not-a-uuid", None).await,
+            StatusCode::BAD_REQUEST
+        );
+        assert_eq!(
+            app.status("GET", &format!("/v1/function/{params_id}?version=zz"), None)
+                .await,
+            StatusCode::BAD_REQUEST
+        );
+        let orphan =
+            json!({"project_id": "00000000-0000-0000-0000-000000000000", "name": "x", "slug": "x"});
+        assert_eq!(
+            app.status("POST", "/v1/prompt", Some(orphan)).await,
+            StatusCode::FORBIDDEN
         );
     }
 }

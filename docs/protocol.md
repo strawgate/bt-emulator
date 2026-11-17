@@ -480,3 +480,21 @@ Suggested build order:
 - Whether the server applies a `tags` set-union on merge (the client does, py:util.py:77-90).
 - 403 vs 404 for missing projects/datasets (only the experiment 403 is recorded).
 - `/v1/.../feedback` response body and `/ping` response body (no SDK flow reads either).
+- Whether `GET /v1/prompt` lists only `function_data.type == "prompt"` (the emulator's choice) or every function, and what the real API answers for a non-numeric `version`.
+
+---
+
+## 15. Functions and prompts (`/v1/function`, `/v1/prompt`)
+
+Prompts are functions with `function_data: {"type": "prompt"}`. Both endpoints share one store: a function created through `/v1/function` with that `function_data` is readable as a prompt, and the reverse.
+- **Writes append versions.** `POST` and `PUT` behave the same: create the function, or append a new version of the one with the same `slug` in the project (same `id`, new `_xact_id`, `created` = now). `PATCH` deep-merges object fields into the current version and ignores `null`. The emulator replaces an object whose `type` changes (a tagged-union variant), at any depth.
+  - Recorded examples: `ruby:test/fixtures/vcr_cassettes/functions/*.yml`, `py:src/braintrust/api/cassettes/test_{functions,prompts}_end_to_end_with_real_backend.yaml`.
+- **Write responses** carry only the stored fields plus `_xact_id`, `log_id: "p"` and `org_id`. A `POST /v1/prompt` without `function_data` stores `{"type": "prompt"}`.
+- **Reads** add `null` for unset optional fields:
+  - Prompts: `description`, `function_data`, `function_type`, `metadata`, `prompt_data`, `tags`.
+  - Functions: those plus `function_schema` and `origin`.
+- **List** returns the current version of each function, newest write first. It filters on `project_id` or `project_name` (unknown name → `{"objects": []}`), `slug`, `function_name`/`prompt_name`, `ids`, `version`, and pages with `limit`/`starting_after`/`ending_before`. The SDKs load a prompt with `?project_name|project_id&slug[&version]&limit=1`, then `GET /v1/prompt/{id}[?version=]`.
+- **`version`** is an `_xact_id`, or its 16-hex display form (`xact * 205891132094649 mod 2^64`, py:xact_ids.py). Reads return the latest version at or before it.
+- **Delete** writes a tombstone and returns the last version with `_object_delete: true` and a fresh `created`.
+- **Missing id** → 400 `{"Code":"BadRequestError","Message":"Prompt does not exist or you do not have access"}` (`go:prompt/testdata/cassettes/TestLoadWithClient_HTTPError.yaml`). `/v1/function` says "Function".
+- Not implemented: `/v1/function/{id}/invoke` (needs an LLM or a code sandbox), `environment` lookups, `/insert-functions` and `/function/sandbox-list` (used by `braintrust push` and sandbox registration).

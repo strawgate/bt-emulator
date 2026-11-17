@@ -106,8 +106,8 @@ fuzz *args:
     url="$(sed -n 's/^listening on //p' "$log")"
     cd compat/openapi && uv run -q schemathesis run spec.json --url "$url" \
         -H "Authorization: Bearer fuzz-key" \
-        --include-path-regex '^/v1/(project|experiment|dataset)(/|$)|^/v1/project_logs/' \
-        --exclude-path-regex '/restore' \
+        --include-path-regex '^/v1/(project|experiment|dataset|function|prompt)(/|$)|^/v1/project_logs/' \
+        --exclude-path-regex '/restore|/invoke' \
         --generation-deterministic --warnings off \
         --max-examples 25 --baseline baseline.json \
         {{args}}

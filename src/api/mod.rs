@@ -3,6 +3,7 @@
 
 mod error;
 mod extract;
+mod functions;
 mod legacy;
 mod meta;
 mod objects;
@@ -64,6 +65,10 @@ pub fn app(db: Db, config: Config) -> Router {
             get(summary::experiment_comparison),
         )
         .route("/dataset-summary", get(summary::dataset_summary))
+        .route("/v1/function", functions_root())
+        .route("/v1/prompt", functions_root())
+        .route("/v1/function/{id}", functions_item())
+        .route("/v1/prompt/{id}", functions_item())
         .route("/v1/{kind}", get(objects::list).post(objects::create))
         .route(
             "/v1/{kind}/{id}",
@@ -87,6 +92,18 @@ pub fn app(db: Db, config: Config) -> Router {
         ))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
         .with_state(db)
+}
+
+fn functions_root() -> axum::routing::MethodRouter<Db> {
+    get(functions::list)
+        .post(functions::create)
+        .put(functions::create)
+}
+
+fn functions_item() -> axum::routing::MethodRouter<Db> {
+    get(functions::get)
+        .patch(functions::patch)
+        .delete(functions::delete)
 }
 
 async fn root() -> &'static str {

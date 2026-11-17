@@ -94,3 +94,33 @@ def test_eval_with_dataset_end_to_end(project_name):
     assert result.summary.experiment_name == "doubling"
     assert result.summary.scores["exact"].score == 0.8
     assert len(result.results) == 5
+
+
+def test_load_prompt_latest_and_pinned_version(project_name, api):
+    api.request("POST", "/v1/project", {"name": project_name})
+    pid = api.project_id(project_name)
+
+    def save(greeting):
+        return api.request(
+            "PUT",
+            "/v1/prompt",
+            {
+                "project_id": pid,
+                "name": "Greeter",
+                "slug": "greeter",
+                "prompt_data": {
+                    "options": {"model": "gpt-4o-mini"},
+                    "prompt": {"type": "chat", "messages": [{"role": "user", "content": greeting + " {{name}}"}]},
+                },
+            },
+        )
+
+    v1 = save("Hello")
+    save("Howdy")
+
+    latest = braintrust.load_prompt(project=project_name, slug="greeter", no_trace=True)
+    assert latest.build(name="Ada")["messages"] == [{"role": "user", "content": "Howdy Ada"}]
+    assert latest.build(name="Ada")["model"] == "gpt-4o-mini"
+
+    pinned = braintrust.load_prompt(project=project_name, slug="greeter", version=v1["_xact_id"], no_trace=True)
+    assert pinned.build(name="Ada")["messages"][0]["content"] == "Hello Ada"

@@ -3,13 +3,31 @@
   "schemathesis_version": "4.33.4",
   "entries": [
     {
+      "id": "6ebdb6",
+      "operation": "DELETE /v1/function/{function_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "452041",
+      "operation": "DELETE /v1/prompt/{prompt_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
       "id": "197a72",
       "operation": "GET /v1/dataset/{dataset_id}/fetch",
       "check": "positive_data_acceptance",
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "322b80",
@@ -18,7 +36,25 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "7c9adb",
+      "operation": "GET /v1/function",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "873116",
+      "operation": "GET /v1/function/{function_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
     },
     {
       "id": "e5b0e7",
@@ -27,7 +63,25 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "98dfe4",
+      "operation": "GET /v1/prompt",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "3309a0",
+      "operation": "GET /v1/prompt/{prompt_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
     },
     {
       "id": "eb35d3",
@@ -36,7 +90,7 @@
       "failure": "UndefinedStatusCode",
       "signature": "409",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "dcba99",
@@ -45,7 +99,25 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "c31d17",
+      "operation": "PATCH /v1/experiment/{experiment_id}",
+      "check": "status_code_conformance",
+      "failure": "UndefinedStatusCode",
+      "signature": "409",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "9eb346",
+      "operation": "PATCH /v1/function/{function_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
     },
     {
       "id": "2deef8",
@@ -54,7 +126,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "ac537d",
@@ -63,7 +135,16 @@
       "failure": "UndefinedStatusCode",
       "signature": "409",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
+    },
+    {
+      "id": "1d0736",
+      "operation": "PATCH /v1/prompt/{prompt_id}",
+      "check": "positive_data_acceptance",
+      "failure": "RejectedPositiveData",
+      "signature": "400",
+      "first_seen": "2026-11-17",
+      "last_seen": "2026-11-17"
     },
     {
       "id": "8b1eff",
@@ -72,7 +153,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "8025fd",
@@ -81,7 +162,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "2e1a7b",
@@ -90,7 +171,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "844d6d",
@@ -99,7 +180,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "15c616",
@@ -108,7 +189,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "4df497",
@@ -117,7 +198,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     },
     {
       "id": "0b4ccf",
@@ -126,7 +207,7 @@
       "failure": "RejectedPositiveData",
       "signature": "400",
       "first_seen": "2026-11-16",
-      "last_seen": "2026-11-16"
+      "last_seen": "2026-11-17"
     }
   ]
 }

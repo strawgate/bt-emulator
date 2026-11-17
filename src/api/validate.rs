@@ -18,9 +18,23 @@ use serde_json::{Value, json};
 use super::{ApiError, MAX_BODY_BYTES};
 
 static SPEC: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!("../../compat/openapi/spec.json"))
-        .expect("vendored OpenAPI spec is valid JSON")
+    let mut spec = serde_json::from_str(include_str!("../../compat/openapi/spec.json"))
+        .expect("vendored OpenAPI spec is valid JSON");
+    correct(&mut spec);
+    spec
 });
+
+/// Where recorded traffic shows the real API accepts more than the spec says
+/// (compat/openapi/README.md, "Spec corrections").
+fn correct(spec: &mut Value) {
+    // The Go SDK creates prompts with `function_type: "prompt"`.
+    for name in ["FunctionTypeEnum", "FunctionTypeEnumNullish"] {
+        let values = spec["components"]["schemas"][name]["enum"]
+            .as_array_mut()
+            .expect("function type enum");
+        values.insert(0, json!("prompt"));
+    }
+}
 
 struct Param {
     name: String,

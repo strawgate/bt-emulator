@@ -5,7 +5,8 @@ An offline emulator for the [Braintrust](https://www.braintrust.dev) API, writte
 Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no account, no network, no API key. That covers logging, experiments, datasets, summaries, and fetching data back.
 
 > **Status:** early development. The official Python and JS SDKs can log, run experiments and
-> evals, and read datasets back. Prompts, functions, attachments and OTLP ingest are not implemented yet.
+> evals, read datasets back, and store and load versioned prompts and functions. Invoking
+> functions, attachments and OTLP ingest are not implemented yet.
 
 ## Why
 
@@ -20,6 +21,7 @@ Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no accou
   - Project, experiment, and dataset registration
   - Span and event ingestion (`/logs3`)
   - The REST API (`/v1/project`, `/v1/experiment`, `/v1/dataset`, `/v1/project_logs`, …), including `insert`, `fetch`, `feedback`, and `summarize`
+  - Versioned prompts and functions (`/v1/prompt`, `/v1/function`), as loaded by `load_prompt`/`loadPrompt`
 - Storage backends:
   - **SQLite:** zero-setup default
   - **PostgreSQL:** for shared or long-lived instances
