@@ -2,8 +2,14 @@
 //! driver; the backend is chosen at runtime from the database URL. All SQL in
 //! this crate must be portable between the two (use `$N` placeholders).
 
-use sqlx::AnyPool;
+pub mod events;
+pub mod objects;
+
+use std::sync::Arc;
+
 use sqlx::any::{AnyPoolOptions, install_default_drivers};
+use sqlx::{AnyConnection, AnyPool, Row};
+use tokio::sync::{Mutex, MutexGuard};
 
 use crate::error::Error;
 
@@ -38,6 +44,8 @@ impl Backend {
 pub struct Db {
     pool: AnyPool,
     backend: Backend,
+    /// Serializes writers: row merges are read-modify-write, and SQLite allows one writer.
+    write_lock: Arc<Mutex<()>>,
 }
 
 impl Db {
@@ -69,7 +77,11 @@ impl Db {
             Backend::Postgres => (url.to_owned(), AnyPoolOptions::new().max_connections(16)),
         };
         let pool = opts.connect(&url).await?;
-        Ok(Self { pool, backend })
+        Ok(Self {
+            pool,
+            backend,
+            write_lock: Arc::default(),
+        })
     }
 
     pub async fn migrate(&self) -> Result<(), Error> {
@@ -91,6 +103,37 @@ impl Db {
 
     pub fn pool(&self) -> &AnyPool {
         &self.pool
+    }
+
+    pub async fn write_lock(&self) -> MutexGuard<'_, ()> {
+        self.write_lock.lock().await
+    }
+
+    pub async fn begin(&self) -> Result<sqlx::Transaction<'static, sqlx::Any>, Error> {
+        Ok(self.pool.begin().await?)
+    }
+
+    pub async fn next_counter(&self, name: &str) -> Result<i64, Error> {
+        let row =
+            sqlx::query("UPDATE counters SET value = value + 1 WHERE name = $1 RETURNING value")
+                .bind(name)
+                .fetch_one(&self.pool)
+                .await?;
+        Ok(row.try_get("value")?)
+    }
+
+    /// Allocate the next transaction id: strictly increasing, and never below the
+    /// Braintrust encoding of the current second.
+    pub async fn next_xact(conn: &mut AnyConnection) -> Result<i64, Error> {
+        let floor = crate::xact::floor_at(crate::time::unix_secs());
+        let row = sqlx::query(
+            "UPDATE counters SET value = CASE WHEN value + 1 > $1 THEN value + 1 ELSE $1 END \
+             WHERE name = 'xact' RETURNING value",
+        )
+        .bind(floor)
+        .fetch_one(conn)
+        .await?;
+        Ok(row.try_get("value")?)
     }
 }
 

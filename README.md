@@ -4,7 +4,8 @@ An offline emulator for the [Braintrust](https://www.braintrust.dev) API, writte
 
 Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no account, no network, no API key. That covers logging, experiments, datasets, summaries, and fetching data back.
 
-> **Status:** early development. Not usable yet.
+> **Status:** early development. The official Python and JS SDKs can log, run experiments and
+> evals, and read datasets back. Prompts, functions, attachments and OTLP ingest are not implemented yet.
 
 ## Why
 
@@ -23,10 +24,11 @@ Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no accou
   - **SQLite:** zero-setup default
   - **PostgreSQL:** for shared or long-lived instances
 
-## Usage (planned)
+## Usage
 
 ```bash
-bt-emulator serve --port 8000 --database sqlite://bt.db
+cargo run -- serve --listen 127.0.0.1:8000 --database-url sqlite://bt.db
+# or: --database-url postgres://user@localhost/bt
 ```
 
 ```bash
@@ -36,6 +38,21 @@ export BRAINTRUST_API_KEY=local
 ```
 
 Then use the Braintrust SDK as usual.
+
+## Testing
+
+Development is test-first, and CI enforces 100% line and function coverage of the Rust code.
+
+| Layer | What it checks | Command |
+|---|---|---|
+| Unit + API tests | Merge semantics, BTQL filters, summaries, every endpoint, on SQLite and Postgres | `just test-all` |
+| Recorded traffic replay | Cassettes harvested from the official SDK repos (`compat/`), replayed against the emulator | `cargo test --test compat` |
+| SDK end-to-end | The real Python and JS SDKs against the binary, fully offline | `just e2e`, `just e2e-pg` |
+| Everything CI runs | fmt, clippy, coverage gate on both backends | `just ci` |
+
+Known-incompatible cassettes are listed in `compat/expected-failures.txt`; regenerate with
+`just compat-bless`. The wire protocol the emulator implements is documented in
+[`docs/protocol.md`](docs/protocol.md).
 
 ## Non-goals
 

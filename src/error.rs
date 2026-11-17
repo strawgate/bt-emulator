@@ -5,6 +5,8 @@ pub enum Error {
     UnsupportedUrl(String),
     #[error("database error: {0}")]
     Database(#[from] sqlx::Error),
+    #[error("invalid stored JSON: {0}")]
+    Json(#[from] serde_json::Error),
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
     #[error("migration error: {0}")]

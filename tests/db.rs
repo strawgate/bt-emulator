@@ -8,7 +8,7 @@ async fn migrations_apply_on_every_backend() {
         assert_eq!(db.backend().as_str(), name);
         // Migrations are idempotent.
         db.migrate().await.unwrap();
-        db.execute_raw("SELECT id FROM projects").await.unwrap();
+        db.execute_raw("SELECT id FROM objects").await.unwrap();
     }
 }
 
