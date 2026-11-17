@@ -107,9 +107,18 @@ fn traces(rows: &[Value]) -> Vec<Trace> {
     out
 }
 
-fn mean(values: impl Iterator<Item = f64>) -> Option<f64> {
-    let (sum, n) = values.fold((0.0, 0usize), |(s, n), v| (s + v, n + 1));
-    (n > 0).then(|| sum / n as f64)
+/// The value a trace reports for a score or metric. Helpers take `&dyn Fn` rather
+/// than generics so each is compiled (and coverage-counted) exactly once.
+type Getter<'a> = &'a dyn Fn(&Trace) -> Option<f64>;
+
+/// Mean of `value` over the traces that report it.
+fn mean(traces: &[Trace], value: Getter) -> Option<f64> {
+    let values: Vec<f64> = traces.iter().filter_map(value).collect();
+    if values.is_empty() {
+        None
+    } else {
+        Some(values.iter().sum::<f64>() / values.len() as f64)
+    }
 }
 
 fn unit(metric: &str) -> &'static str {
@@ -122,11 +131,7 @@ fn unit(metric: &str) -> &'static str {
 }
 
 /// Count matched traces where the value went up / down.
-fn changes<'a>(
-    current: &'a [Trace],
-    baseline: &HashMap<&str, &'a Trace>,
-    value: impl Fn(&Trace) -> Option<f64>,
-) -> (u64, u64) {
+fn changes(current: &[Trace], baseline: &HashMap<&str, &Trace>, value: Getter) -> (u64, u64) {
     let (mut up, mut down) = (0, 0);
     for t in current {
         if let (Some(cur), Some(base)) = (
@@ -160,11 +165,10 @@ pub fn summarize(
         current.iter().flat_map(|t| t.scores.keys()).collect();
     for name in names {
         let get = |t: &Trace| t.scores.get(name).copied();
-        let score = mean(current.iter().filter_map(get)).unwrap();
-        let (up, down) = changes(&current, &baseline, get);
+        let score = mean(&current, &get).unwrap();
+        let (up, down) = changes(&current, &baseline, &get);
         let mut s = json!({"name": name, "score": score, "improvements": up, "regressions": down});
-        if let Some(base) = mean(baseline_traces.iter().filter_map(get)).filter(|_| has_comparison)
-        {
+        if let Some(base) = mean(&baseline_traces, &get).filter(|_| has_comparison) {
             s["diff"] = json!(score - base);
         }
         scores.insert(name.clone(), s);
@@ -177,12 +181,11 @@ pub fn summarize(
         .collect();
     for name in names {
         let get = |t: &Trace| t.metrics.get(name).copied();
-        let metric = mean(current.iter().filter_map(get)).unwrap_or(0.0);
+        let metric = mean(&current, &get).unwrap_or(0.0);
         // Lower is better for every metric (latency, tokens, cost, errors).
-        let (up, down) = changes(&current, &baseline, get);
+        let (up, down) = changes(&current, &baseline, &get);
         let mut m = json!({"name": name, "metric": metric, "unit": unit(name), "improvements": down, "regressions": up});
-        if let Some(base) = mean(baseline_traces.iter().filter_map(get)).filter(|_| has_comparison)
-        {
+        if let Some(base) = mean(&baseline_traces, &get).filter(|_| has_comparison) {
             m["diff"] = json!(metric - base);
         }
         metrics.insert(name.to_owned(), m);
