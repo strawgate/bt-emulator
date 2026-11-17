@@ -7,9 +7,10 @@ use crate::db::Db;
 pub async fn serve(
     listener: TcpListener,
     db: Db,
+    config: crate::api::Config,
     shutdown: impl Future<Output = ()> + Send + 'static,
 ) -> std::io::Result<()> {
-    axum::serve(listener, crate::api::router(db))
+    axum::serve(listener, crate::api::app(db, config))
         .with_graceful_shutdown(shutdown)
         .await
 }

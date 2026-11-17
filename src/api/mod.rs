@@ -8,6 +8,7 @@ mod meta;
 mod objects;
 mod rows;
 mod summary;
+mod validate;
 
 use axum::Router;
 use axum::extract::DefaultBodyLimit;
@@ -24,7 +25,20 @@ pub const API_KEY_ID: &str = "7e5a3a7c-2a5c-4d0b-9a8e-0b7e3e3f0003";
 /// Maximum request body; also advertised as `logs3_payload_max_bytes`.
 pub const MAX_BODY_BYTES: usize = 256 * 1024 * 1024;
 
+/// Server options beyond the database.
+#[derive(Debug, Clone, Default)]
+pub struct Config {
+    /// When set, only this API key is accepted; otherwise any bearer token is.
+    pub api_key: Option<String>,
+}
+
+/// The router with default options (any API key accepted).
 pub fn router(db: Db) -> Router {
+    app(db, Config::default())
+}
+
+pub fn app(db: Db, config: Config) -> Router {
+    let api_key: Option<std::sync::Arc<str>> = config.api_key.map(Into::into);
     Router::new()
         .route("/", get(root))
         // App URL
@@ -66,6 +80,11 @@ pub fn router(db: Db) -> Router {
         .route("/v1/experiment/{id}/summarize", get(summary::experiment))
         .route("/v1/dataset/{id}/summarize", get(summary::dataset))
         .fallback(not_found)
+        .layer(axum::middleware::from_fn(validate::middleware))
+        .layer(axum::middleware::from_fn_with_state(
+            api_key,
+            validate::require_auth,
+        ))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
         .with_state(db)
 }

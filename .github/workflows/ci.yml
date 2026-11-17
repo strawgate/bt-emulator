@@ -64,3 +64,17 @@ jobs:
       - if: matrix.backend == 'postgres'
         run: echo "BT_EMULATOR_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres" >> "$GITHUB_ENV"
       - run: just e2e
+
+  openapi-fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.100.0"
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
+      - uses: astral-sh/setup-uv@v6
+      - run: just fuzz

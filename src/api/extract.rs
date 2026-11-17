@@ -5,7 +5,7 @@ use axum::extract::{FromRequest, Request};
 use axum::http::{HeaderMap, header};
 use serde_json::Value;
 
-use super::{ApiError, ApiResult};
+use super::ApiError;
 
 /// A JSON body parsed regardless of Content-Type (Python posts `/logs3` without
 /// one). An empty body is `null`.
@@ -54,14 +54,10 @@ impl Params {
             .map(|(_, v)| v.as_str())
     }
 
-    pub fn number(&self, key: &str) -> ApiResult<Option<usize>> {
-        self.get(key)
-            .map(|v| {
-                v.parse().map_err(|_| {
-                    ApiError::bad_request(format!("`{key}` must be a non-negative integer"))
-                })
-            })
-            .transpose()
+    /// A numeric parameter. Values are already checked against the spec (see
+    /// `validate`), so anything unparseable, like the spec's `null`, means unset.
+    pub fn number(&self, key: &str) -> Option<usize> {
+        self.get(key).and_then(|v| v.parse().ok())
     }
 }
 

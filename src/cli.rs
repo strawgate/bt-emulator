@@ -28,6 +28,9 @@ pub struct ServeArgs {
         default_value = "sqlite://bt-emulator.db"
     )]
     pub database_url: String,
+    /// Only accept this API key (default: accept any bearer token).
+    #[arg(long, env = "BT_EMULATOR_API_KEY")]
+    pub api_key: Option<String>,
 }
 
 pub async fn main() -> ExitCode {
@@ -49,6 +52,14 @@ pub async fn run(cli: Cli) -> Result<(), crate::error::Error> {
     let db = crate::db::Db::connect(&args.database_url).await?;
     let listener = tokio::net::TcpListener::bind(args.listen).await?;
     println!("listening on http://{}", listener.local_addr()?);
-    crate::server::serve(listener, db, crate::server::shutdown_signal()).await?;
+    crate::server::serve(
+        listener,
+        db,
+        crate::api::Config {
+            api_key: args.api_key,
+        },
+        crate::server::shutdown_signal(),
+    )
+    .await?;
     Ok(())
 }

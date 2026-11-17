@@ -1,0 +1,8 @@
+[project]
+name = "bt-emulator-openapi-fuzz"
+version = "0"
+requires-python = ">=3.11"
+dependencies = ["schemathesis==4.33.4"]
+
+[tool.uv]
+package = false

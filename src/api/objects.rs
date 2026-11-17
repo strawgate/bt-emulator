@@ -45,8 +45,9 @@ fn str_field<'a>(body: &'a Value, key: &str) -> Option<&'a str> {
     body[key].as_str()
 }
 
-fn required<'a>(body: &'a Value, key: &str) -> ApiResult<&'a str> {
-    str_field(body, key).ok_or_else(|| ApiError::bad_request(format!("`{key}` is required")))
+/// A field the spec marks required; requests were already validated (see `validate`).
+fn required<'a>(body: &'a Value, key: &str) -> &'a str {
+    str_field(body, key).unwrap_or_default()
 }
 
 pub async fn get_or_create_project(db: &Db, name: &str, body: &Value) -> ApiResult<(Object, bool)> {
@@ -181,18 +182,18 @@ pub async fn create(
 ) -> ApiResult<Json<Value>> {
     let object = match parse_kind(&kind)? {
         Kind::Project => {
-            get_or_create_project(&db, required(&body, "name")?, &body)
+            get_or_create_project(&db, required(&body, "name"), &body)
                 .await?
                 .0
         }
         Kind::Experiment => {
-            let project = require(&db, Kind::Project, required(&body, "project_id")?).await?;
+            let project = require(&db, Kind::Project, required(&body, "project_id")).await?;
             let ensure_new = body["ensure_new"].as_bool().unwrap_or(false);
             create_experiment(&db, &project, str_field(&body, "name"), ensure_new, &body).await?
         }
         Kind::Dataset => {
-            let project = require(&db, Kind::Project, required(&body, "project_id")?).await?;
-            get_or_create_dataset(&db, &project, required(&body, "name")?, &body)
+            let project = require(&db, Kind::Project, required(&body, "project_id")).await?;
+            get_or_create_dataset(&db, &project, required(&body, "name"), &body)
                 .await?
                 .0
         }
@@ -246,17 +247,20 @@ pub async fn list(
     if let Some(before) = params.get("ending_before") {
         let at = objects.iter().position(|o| o.id() == before).unwrap_or(0);
         objects.truncate(at);
-        if let Some(limit) = params.number("limit")? {
+        if let Some(limit) = params.number("limit") {
             objects.drain(..objects.len().saturating_sub(limit));
         }
     }
-    if let Some(limit) = params.number("limit")? {
+    if let Some(limit) = params.number("limit") {
         objects.truncate(limit);
     }
     Ok(Json(
         json!({"objects": objects.into_iter().map(|o| o.data).collect::<Vec<_>>()}),
     ))
 }
+
+/// Fields that are never null in API responses.
+const NOT_NULL: [&str; 2] = ["name", "public"];
 
 /// Fields a PATCH may not change.
 const IMMUTABLE: [&str; 6] = [
@@ -275,9 +279,8 @@ pub async fn patch(
 ) -> ApiResult<Json<Value>> {
     let kind = parse_kind(&kind)?;
     let mut object = require(&db, kind, &id).await?;
-    let Value::Object(fields) = body else {
-        return Err(ApiError::bad_request("PATCH body must be a JSON object"));
-    };
+    // The body was validated against the spec (an object); an empty body is a no-op.
+    let fields = body.as_object().cloned().unwrap_or_default();
     let _guard = db.write_lock().await;
     if let Some(name) = fields.get("name").and_then(Value::as_str) {
         let parent = object.data["project_id"].as_str().unwrap_or(ORG_ID);
@@ -293,7 +296,9 @@ pub async fn patch(
         }
     }
     for (key, value) in fields {
-        if !IMMUTABLE.contains(&key.as_str()) {
+        // `null` cannot clear a field the API never returns as null.
+        let required = value.is_null() && NOT_NULL.contains(&key.as_str());
+        if !IMMUTABLE.contains(&key.as_str()) && !required {
             object.data[key] = value;
         }
     }

@@ -37,7 +37,8 @@ export BRAINTRUST_APP_URL=http://localhost:8000
 export BRAINTRUST_API_KEY=local
 ```
 
-Then use the Braintrust SDK as usual.
+Then use the Braintrust SDK as usual. Any API key is accepted unless you start the
+emulator with `--api-key <key>` (or `BT_EMULATOR_API_KEY`), which makes it reject others.
 
 ## Testing
 
@@ -47,6 +48,7 @@ Development is test-first, and CI enforces 100% line and function coverage of th
 |---|---|---|
 | Unit + API tests | Merge semantics, BTQL filters, summaries, every endpoint, on SQLite and Postgres | `just test-all` |
 | Recorded traffic replay | Cassettes harvested from the official SDK repos (`compat/`), replayed against the emulator | `cargo test --test compat` |
+| OpenAPI fuzzing | schemathesis generates valid and invalid requests from Braintrust's published spec and checks every response against it (`compat/openapi/`) | `just fuzz` |
 | SDK end-to-end | The real Python and JS SDKs against the binary, fully offline | `just e2e`, `just e2e-pg` |
 | Everything CI runs | fmt, clippy, coverage gate on both backends | `just ci` |
 

@@ -17,7 +17,8 @@ impl App {
         let req = Request::builder()
             .method(method)
             .uri(path)
-            .header("host", "emu.test");
+            .header("host", "emu.test")
+            .header("authorization", "Bearer t");
         let req = match body {
             Some(b) => req.body(Body::from(b.to_string())),
             None => req.body(Body::empty()),
@@ -87,6 +88,7 @@ impl App {
 /// POST and return the `x-bt-cursor` header and the raw body text.
 async fn raw(app: &App, path: &str, body: Value) -> (Option<String>, String) {
     let req = Request::builder()
+        .header("authorization", "Bearer t")
         .method("POST")
         .uri(path)
         .body(Body::from(body.to_string()))
@@ -392,6 +394,12 @@ async fn logs3_merge_replace_delete_and_fetch() {
             (Some(true), 2)
         );
         assert_eq!(by_id("new")["span_id"], "new");
+        let rooted = app
+            .logs3(json!([{"experiment_id": eid, "id": "lone", "span_id": "s9", "root_span_id": null}]))
+            .await;
+        assert_eq!(rooted["ids"][0], "lone");
+        let lone = app.fetch("experiment", &eid, json!({"limit": 1})).await;
+        assert_eq!(lone["events"][0]["root_span_id"], "s9");
         // A missing span_id defaults to the row id without touching a given root_span_id.
         let child = by_id("child");
         assert_eq!(
@@ -406,9 +414,6 @@ async fn logs3_merge_replace_delete_and_fetch() {
             .fetch("experiment", &eid, json!({"version": xact1.to_string()}))
             .await;
         assert_eq!(old["events"].as_array().unwrap().len(), 3);
-        let old = app
-            .fetch("experiment", &eid, json!({"version": xact1}))
-            .await;
         assert!(
             old["events"]
                 .as_array()
@@ -416,7 +421,160 @@ async fn logs3_merge_replace_delete_and_fetch() {
                 .iter()
                 .all(|e| e["output"].is_null())
         );
+        // The spec types `version` as a string, so a number is rejected on /v1 ...
+        let path = format!("/v1/experiment/{eid}/fetch");
+        let numeric = app
+            .call("POST", &path, Some(json!({"version": xact1})))
+            .await;
+        assert_eq!(numeric.0, StatusCode::BAD_REQUEST, "{}", numeric.1);
+        // ... while BTQL (not covered by the spec) accepts either.
+        let btql = json!({"version": xact1, "query": {
+            "from": {"op": "function", "name": {"name": ["experiment"]}, "args": [{"value": eid}]}}});
+        assert_eq!(
+            app.ok("POST", "/btql", Some(btql)).await["data"]
+                .as_array()
+                .unwrap()
+                .len(),
+            3
+        );
     }
+}
+
+#[tokio::test]
+async fn spec_validation_and_auth() {
+    for app in apps().await {
+        let pid = app.project("p").await;
+        let (status, body) = app
+            .call("POST", "/v1/project", Some(json!({"name": ""})))
+            .await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "{body}");
+        assert!(
+            body["error"].as_str().unwrap().starts_with("body/name"),
+            "{body}"
+        );
+        let (status, body) = app
+            .call("GET", "/v1/project?starting_after=not-a-uuid", None)
+            .await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "{body}");
+        assert!(
+            body["error"].as_str().unwrap().contains("`starting_after`"),
+            "{body}"
+        );
+        // Repeated keys form an array; scalars are read as numbers where the schema wants one.
+        app.ok(
+            "GET",
+            &format!("/v1/project?ids={pid}&ids={pid}&limit=5"),
+            None,
+        )
+        .await;
+        assert_eq!(
+            app.status("POST", "/v1/project", None).await,
+            StatusCode::BAD_REQUEST
+        );
+        assert_eq!(
+            app.status("POST", "/v1/project", Some(json!("x"))).await,
+            StatusCode::BAD_REQUEST
+        );
+        let bad_json = Request::builder()
+            .method("POST")
+            .uri("/v1/project")
+            .header("authorization", "Bearer t")
+            .body(Body::from("{nope"))
+            .unwrap();
+        let resp = bt_emulator::api::router(app.db.clone())
+            .oneshot(bad_json)
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+        let broken = futures_util::stream::once(async {
+            Err::<axum::body::Bytes, _>(std::io::Error::other("reset"))
+        });
+        let broken = Request::builder()
+            .method("POST")
+            .uri("/v1/project")
+            .header("authorization", "Bearer t")
+            .body(Body::from_stream(broken))
+            .unwrap();
+        let resp = bt_emulator::api::router(app.db.clone())
+            .oneshot(broken)
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+        // Required query parameters are enforced, even on endpoints the emulator lacks.
+        let (status, body) = app.call("GET", "/v1/acl?object_id=x", None).await;
+        assert_eq!(
+            (status, body["error"].as_str()),
+            (StatusCode::BAD_REQUEST, Some("object_type: is required"))
+        );
+        // Operations outside the spec pass straight through to their handlers.
+        assert_eq!(
+            app.status("GET", "/v1/nope/x/y/z/w", None).await,
+            StatusCode::NOT_FOUND
+        );
+
+        let anonymous = Request::builder()
+            .uri("/v1/project")
+            .body(Body::empty())
+            .unwrap();
+        let resp = bt_emulator::api::router(app.db.clone())
+            .oneshot(anonymous)
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+        let banner = Request::builder().uri("/").body(Body::empty()).unwrap();
+        let resp = bt_emulator::api::router(app.db.clone())
+            .oneshot(banner)
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+
+        // An empty PATCH is a no-op; PATCH null leaves never-null fields alone; an
+        // empty version means "latest".
+        let unchanged = app.ok("PATCH", &format!("/v1/project/{pid}"), None).await;
+        assert_eq!(unchanged["name"], "p");
+        let patched = app
+            .ok(
+                "PATCH",
+                &format!("/v1/project/{pid}"),
+                Some(json!({"name": null})),
+            )
+            .await;
+        assert_eq!(patched["name"], "p");
+        let did = app.dataset(&pid, "d").await;
+        app.ok("GET", &format!("/v1/dataset/{did}/fetch?version="), None)
+            .await;
+        let s = app
+            .ok("GET", &format!("/v1/dataset/{did}/summarize"), None)
+            .await;
+        assert_eq!(
+            s["dataset_url"],
+            "http://emu.test/app/bt-emulator/p/p/datasets/d"
+        );
+    }
+}
+
+#[tokio::test]
+async fn a_configured_api_key_is_enforced() {
+    let (_, db) = common::backends().await.remove(0);
+    let config = bt_emulator::api::Config {
+        api_key: Some("secret".into()),
+    };
+    let send = |auth: &'static str| {
+        let app = bt_emulator::api::app(db.clone(), config.clone());
+        async move {
+            let req = Request::builder()
+                .method("POST")
+                .uri("/api/apikey/login")
+                .header("authorization", auth);
+            app.oneshot(req.body(Body::empty()).unwrap())
+                .await
+                .unwrap()
+                .status()
+        }
+    };
+    assert_eq!(send("Bearer secret").await, StatusCode::OK);
+    assert_eq!(send("secret").await, StatusCode::OK);
+    assert_eq!(send("Bearer wrong").await, StatusCode::UNAUTHORIZED);
 }
 
 #[tokio::test]
@@ -518,6 +676,7 @@ async fn project_logs_rest_insert_and_feedback() {
             (row["scores"]["s"].as_i64(), row["log_id"].as_str()),
             (Some(1), Some("g"))
         );
+        assert_eq!(row["org_id"], bt_emulator::api::ORG_ID);
         assert_eq!(row["comments"][0]["comment"]["text"], "nice");
         assert_eq!(events.as_array().unwrap().len(), 3);
 
@@ -559,6 +718,7 @@ async fn logs3_rejects_malformed_payloads() {
             assert_eq!(status, StatusCode::BAD_REQUEST, "{body}: {resp}");
         }
         let empty = Request::builder()
+            .header("authorization", "Bearer t")
             .method("POST")
             .uri("/logs3")
             .body(Body::empty())
@@ -576,6 +736,7 @@ async fn logs3_rejects_malformed_payloads() {
             Err::<axum::body::Bytes, _>(std::io::Error::other("reset"))
         });
         let broken = Request::builder()
+            .header("authorization", "Bearer t")
             .method("POST")
             .uri("/logs3")
             .body(Body::from_stream(broken))
@@ -586,6 +747,7 @@ async fn logs3_rejects_malformed_payloads() {
             .unwrap();
         assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
         let garbage = Request::builder()
+            .header("authorization", "Bearer t")
             .method("POST")
             .uri("/logs3")
             .body(Body::from("{nope"))

@@ -96,6 +96,40 @@ fn serve_answers_requests_and_stops_on_sigint() {
 }
 
 #[test]
+fn serve_enforces_a_configured_api_key() {
+    let mut child = bin()
+        .args([
+            "serve",
+            "--listen",
+            "127.0.0.1:0",
+            "--database-url",
+            &tmp_db(),
+            "--api-key",
+            "k",
+        ])
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut line = String::new();
+    BufReader::new(child.stdout.as_mut().unwrap())
+        .read_line(&mut line)
+        .unwrap();
+    let addr = line
+        .trim()
+        .strip_prefix("listening on http://")
+        .unwrap()
+        .to_owned();
+    let mut stream = std::net::TcpStream::connect(&addr).unwrap();
+    let req = b"POST /api/apikey/login HTTP/1.1\r\nHost: x\r\nAuthorization: Bearer nope\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+    std::io::Write::write_all(&mut stream, req).unwrap();
+    let mut resp = String::new();
+    std::io::Read::read_to_string(&mut stream, &mut resp).unwrap();
+    assert!(resp.starts_with("HTTP/1.1 401"), "{resp}");
+    signal(&child, "-INT");
+    assert!(child.wait().unwrap().success());
+}
+
+#[test]
 fn serve_stops_on_sigterm() {
     let (mut child, _) = spawn_server();
     signal(&child, "-TERM");

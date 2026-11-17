@@ -90,3 +90,24 @@ compat-harvest *args:
 # Rewrite compat/expected-failures.txt from the current replay results.
 compat-bless:
     BT_COMPAT_BLESS=1 cargo test --test compat -- --nocapture
+
+# Fuzz the implemented /v1 endpoints against Braintrust's published OpenAPI spec
+# (compat/openapi/spec.json, Apache-2.0). Only ever targets a local emulator.
+# Accepted deviations live in compat/openapi/baseline.json (see compat/openapi/README.md).
+fuzz *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cargo build -q
+    log="$(mktemp)"
+    target/debug/bt-emulator serve --listen 127.0.0.1:0 --database-url sqlite::memory: --api-key fuzz-key >"$log" &
+    pid=$!
+    trap 'kill $pid 2>/dev/null || true; rm -f "$log"' EXIT
+    for _ in $(seq 50); do grep -q "listening on" "$log" && break; sleep 0.1; done
+    url="$(sed -n 's/^listening on //p' "$log")"
+    cd compat/openapi && uv run -q schemathesis run spec.json --url "$url" \
+        -H "Authorization: Bearer fuzz-key" \
+        --include-path-regex '^/v1/(project|experiment|dataset)(/|$)|^/v1/project_logs/' \
+        --exclude-path-regex '/restore' \
+        --generation-deterministic --warnings off \
+        --max-examples 25 --baseline baseline.json \
+        {{args}}

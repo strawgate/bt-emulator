@@ -97,7 +97,10 @@ fn shape(src: &Source, event: Event) -> Value {
     match ty {
         "experiment" => row.insert("experiment_id".into(), json!(src.target.object_id)),
         "dataset" => row.insert("dataset_id".into(), json!(src.target.object_id)),
-        _ => row.insert("log_id".into(), json!("g")),
+        _ => {
+            row.insert("org_id".into(), json!(super::ORG_ID));
+            row.insert("log_id".into(), json!("g"))
+        }
     };
     row.extend(event.data);
     let is_root = row
@@ -131,6 +134,7 @@ fn decode_cursor(cursor: &str) -> ApiResult<Position> {
 fn parse_version(v: &Value) -> ApiResult<Option<i64>> {
     match v {
         Value::Null => Ok(None),
+        Value::String(s) if s.is_empty() => Ok(None),
         Value::Number(n) if n.is_i64() => Ok(n.as_i64()),
         Value::String(s) if s.parse::<i64>().is_ok() => Ok(s.parse().ok()),
         other => Err(ApiError::bad_request(format!("invalid version {other}"))),
@@ -214,9 +218,8 @@ pub async fn insert(
     JsonBody(body): JsonBody,
 ) -> ApiResult<Json<Value>> {
     let src = source(&db, &ty, &id).await?;
-    let Value::Array(events) = body["events"].clone() else {
-        return Err(ApiError::bad_request("`events` must be an array"));
-    };
+    // `events` is required to be an array by the spec (see `validate`).
+    let events = body["events"].as_array().cloned().unwrap_or_default();
     let written = ingest::write(&db, events, Some(&src.target)).await?;
     Ok(Json(json!({"row_ids": written.ids})))
 }
@@ -227,14 +230,11 @@ pub async fn feedback(
     JsonBody(body): JsonBody,
 ) -> ApiResult<Json<Value>> {
     let src = source(&db, &ty, &id).await?;
-    let Value::Array(items) = body["feedback"].clone() else {
-        return Err(ApiError::bad_request("`feedback` must be an array"));
-    };
+    // The spec requires `feedback` to be an array of items that each have an `id`.
+    let items = body["feedback"].as_array().cloned().unwrap_or_default();
     let mut rows = Vec::new();
     for item in items {
-        let target_id = item["id"]
-            .as_str()
-            .ok_or_else(|| ApiError::bad_request("feedback `id` is required"))?;
+        let target_id = item["id"].as_str().unwrap_or_default();
         let source = item["source"].as_str().unwrap_or("external");
         let mut merge = json!({"id": target_id, "_is_merge": true, "_audit_source": source, "_audit_metadata": item["metadata"]});
         for key in ["scores", "expected", "tags", "metadata"] {
@@ -271,7 +271,7 @@ pub async fn fetch_get(
     let src = source(&db, &ty, &id).await?;
     let params = Params::parse(query.as_deref());
     let version = parse_version(&params.get("version").map_or(Value::Null, |v| json!(v)))?;
-    let limit = params.number("limit")?.unwrap_or(DEFAULT_LIMIT);
+    let limit = params.number("limit").unwrap_or(DEFAULT_LIMIT);
     let (events, cursor) = page(&db, &src, version, params.get("cursor"), limit, None).await?;
     Ok(with_cursor(json!({"events": events}), cursor))
 }

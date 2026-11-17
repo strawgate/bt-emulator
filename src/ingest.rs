@@ -192,9 +192,11 @@ async fn apply(
             id.to_owned()
         };
         data.insert("span_id".into(), json!(span));
-        if data.get("root_span_id").is_none_or(Value::is_null) {
-            data.insert("root_span_id".into(), json!(span));
-        }
+    }
+    if data.get("root_span_id").is_none_or(Value::is_null) {
+        // Without a root, a span is its own trace.
+        let span = data["span_id"].clone();
+        data.insert("root_span_id".into(), span);
     }
     if ty != "dataset" {
         // The real server stamps who wrote a span.

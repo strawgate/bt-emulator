@@ -52,8 +52,24 @@ async fn scores_and_metrics(
     Ok((Value::Object(scores), Value::Object(metrics)))
 }
 
+/// Percent-encode a name for use as one URL path segment (like `encodeURIComponent`).
+fn segment(name: &str) -> String {
+    name.bytes()
+        .map(|b| match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
+                (b as char).to_string()
+            }
+            _ => format!("%{b:02X}"),
+        })
+        .collect()
+}
+
 fn project_url(headers: &HeaderMap, project: &Object) -> String {
-    format!("{}/app/{ORG_NAME}/p/{}", base_url(headers), project.name())
+    format!(
+        "{}/app/{ORG_NAME}/p/{}",
+        base_url(headers),
+        segment(project.name())
+    )
 }
 
 pub async fn experiment(
@@ -76,7 +92,7 @@ pub async fn experiment(
         "project_name": project.name(),
         "project_url": project_url,
         "experiment_name": exp.name(),
-        "experiment_url": format!("{project_url}/experiments/{}", exp.name()),
+        "experiment_url": format!("{project_url}/experiments/{}", segment(exp.name())),
         "comparison_experiment_name": comparison.as_ref().map(Object::name),
     });
     if params.get("summarize_scores") != Some("false") {
@@ -123,7 +139,7 @@ pub async fn dataset(
         "project_name": project.name(),
         "project_url": project_url,
         "dataset_name": dataset.name(),
-        "dataset_url": format!("{project_url}/datasets/{}", dataset.name()),
+        "dataset_url": format!("{project_url}/datasets/{}", segment(dataset.name())),
         "data_summary": {"total_records": total_records(&db, &dataset).await?},
     })))
 }
@@ -141,4 +157,13 @@ pub async fn dataset_summary(
     Ok(Json(
         json!({"total_records": total_records(&db, &dataset).await?}),
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn url_segments_are_percent_encoded() {
+        assert_eq!(super::segment("my exp/1 ü"), "my%20exp%2F1%20%C3%BC");
+        assert_eq!(super::segment("a-b_c.d~e"), "a-b_c.d~e");
+    }
 }

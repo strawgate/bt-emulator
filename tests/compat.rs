@@ -209,7 +209,10 @@ async fn send(
     path: &str,
     body: Option<Value>,
 ) -> (u16, Value) {
-    let req = axum::http::Request::builder().method(method).uri(path);
+    let req = axum::http::Request::builder()
+        .method(method)
+        .uri(path)
+        .header("authorization", "Bearer bt-emulator-local");
     let body = body.map_or_else(Body::empty, |b| Body::from(b.to_string()));
     let resp = router
         .clone()
