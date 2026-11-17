@@ -1,0 +1,303 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/functions/get.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function/eaa1d7fa-ddfc-487e-bdf1-8c83c9e5e216",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196458014160880",
+     "created": "2026-01-09T15:06:49.196Z",
+     "description": null,
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": null,
+     "function_type": null,
+     "id": "eaa1d7fa-ddfc-487e-bdf1-8c83c9e5e216",
+     "log_id": "p",
+     "metadata": null,
+     "name": "test-ruby-sdk-get-func",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "origin": null,
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0.7
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant.",
+         "role": "system"
+        },
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-get-func",
+     "tags": null
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/eaa1d7fa-ddfc-487e-bdf1-8c83c9e5e216",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196458076954719",
+     "created": "2026-01-09T15:22:47.106Z",
+     "id": "eaa1d7fa-ddfc-487e-bdf1-8c83c9e5e216",
+     "log_id": "p",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "slug": "test-ruby-sdk-get-func"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": null,
+       "id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "is_universal_api": null,
+       "name": "matt-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T02:53:49.779Z",
+       "deleted_at": null,
+       "description": null,
+       "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "name": "ruby-sdk-test",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "settings": null,
+       "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-ruby-sdk-get-func",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0.7
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant.",
+         "role": "system"
+        },
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-get-func"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196458091495183",
+     "created": "2026-01-09T15:26:29.742Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "9c763edd-0474-4034-8869-8bbe307fcd32",
+     "log_id": "p",
+     "name": "test-ruby-sdk-get-func",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0.7
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant.",
+         "role": "system"
+        },
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-get-func"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function/9c763edd-0474-4034-8869-8bbe307fcd32",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196458091495183",
+     "created": "2026-01-09T15:26:29.742Z",
+     "description": null,
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": null,
+     "function_type": null,
+     "id": "9c763edd-0474-4034-8869-8bbe307fcd32",
+     "log_id": "p",
+     "metadata": null,
+     "name": "test-ruby-sdk-get-func",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "origin": null,
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0.7
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a helpful assistant.",
+         "role": "system"
+        },
+        {
+         "content": "Hello {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-get-func",
+     "tags": null
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/9c763edd-0474-4034-8869-8bbe307fcd32",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196458091561660",
+     "created": "2026-01-09T15:26:30.444Z",
+     "id": "9c763edd-0474-4034-8869-8bbe307fcd32",
+     "log_id": "p",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "slug": "test-ruby-sdk-get-func"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

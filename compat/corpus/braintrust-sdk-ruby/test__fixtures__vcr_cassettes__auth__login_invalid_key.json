@@ -1,0 +1,23 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/auth/login_invalid_key.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761317761.576] [request_id=iad1::2xjbd-1761317761539-9bb97daf7469]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

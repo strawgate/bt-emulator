@@ -1,0 +1,175 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/functions/create_scorer.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T03:32:12.324Z",
+       "deleted_at": null,
+       "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "name": "ruby-sdk-test",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "settings": null,
+       "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "name": "test-ruby-sdk-scorer-helper",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Return a score between 0 and 1.",
+         "role": "system"
+        },
+        {
+         "content": "Score this output: {{output}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-scorer-helper"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196291402408416",
+     "created": "2025-12-11T04:55:16.838Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_type": "scorer",
+     "id": "d3185824-261b-421d-b521-f1575891a1b3",
+     "log_id": "p",
+     "name": "test-ruby-sdk-scorer-helper",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Return a score between 0 and 1.",
+         "role": "system"
+        },
+        {
+         "content": "Score this output: {{output}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-scorer-helper"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/d3185824-261b-421d-b521-f1575891a1b3",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196291402474269",
+     "created": "2025-12-11T04:55:17.398Z",
+     "id": "d3185824-261b-421d-b521-f1575891a1b3",
+     "log_id": "p",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-ruby-sdk-scorer-helper"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

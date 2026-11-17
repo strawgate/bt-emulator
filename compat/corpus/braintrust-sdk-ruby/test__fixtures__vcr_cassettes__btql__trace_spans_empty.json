@@ -1,0 +1,316 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/btql/trace_spans_empty.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2025-10-22T03:32:12.324Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "name": "ruby-sdk-test",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "settings": null,
+     "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": false,
+     "name": "btql-empty-test",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-03-06T02:40:58.503Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "1740103d-f7d0-409b-8d53-c91abe4f5e90",
+     "metadata": null,
+     "name": "btql-empty-test",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": "SELECT * FROM experiment('1740103d-f7d0-409b-8d53-c91abe4f5e90') WHERE root_span_id = '0000000000000000ffffffffffffffff' AND span_attributes.type != 'score' LIMIT 1000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/experiment/1740103d-f7d0-409b-8d53-c91abe4f5e90",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-03-06T02:40:58.503Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": "2026-03-06T03:03:49.946Z",
+     "description": null,
+     "id": "1740103d-f7d0-409b-8d53-c91abe4f5e90",
+     "metadata": null,
+     "name": "btql-empty-test",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

@@ -17,3 +17,14 @@ commit = "31a87dafd05438bdf81aabdb8b548d58af21ee52"
 license = "Apache-2.0"
 format = "go-vcr"
 globs = ["**/testdata/cassettes/**/*.yaml"]
+
+[[source]]
+name = "braintrust-sdk-ruby"
+repo = "https://github.com/braintrustdata/braintrust-sdk-ruby"
+commit = "2e0dd552c9330437198e5ca5481fef49653d2b2e"
+license = "Apache-2.0"
+format = "ruby-vcr"
+globs = ["test/fixtures/vcr_cassettes/**/*.yml", "test/fixtures/vcr_cassettes/**/*.yaml"]
+
+# braintrust-sdk-java (MIT) records WireMock stubs whose scenarios only order repeated
+# calls to one endpoint, so they cannot be replayed as sequences. Not harvested yet.

@@ -34,10 +34,19 @@ BRAINTRUST_HOSTS = {
     "braintrust.dev",
     "api.braintrustdata.com",
     "www.braintrustdata.com",
+    "staging-api.braintrust.dev",
+    "staging.braintrust.dev",
 }
 # Headers worth keeping: content negotiation and Braintrust's own x-bt-* protocol headers.
 KEEP_HEADER = lambda h: h.lower() == "content-type" or h.lower().startswith("x-bt-")  # noqa: E731
 DROP_HEADER_VALUES = {"x-bt-internal-trace-id", "x-bt-api-duration-ms", "x-bt-brainstore-duration-ms"}
+
+
+class Loader(yaml.SafeLoader):
+    """SafeLoader that also understands Ruby VCR's local `!binary` tag."""
+
+
+Loader.add_constructor("!binary", lambda loader, node: base64.b64decode(loader.construct_scalar(node)))
 
 
 def fetch(src, cache):
@@ -90,13 +99,13 @@ def headers(h):
 
 
 def normalize(fmt, doc):
-    for it in doc.get("interactions") or []:
+    for it in doc.get("interactions") or doc.get("http_interactions") or []:
         req, resp = it["request"], it["response"]
-        url = req.get("uri") if fmt == "vcrpy" else req.get("url")
+        url = req.get("url") if fmt == "go-vcr" else req.get("uri")
         parsed = urllib.parse.urlsplit(url)
         if parsed.hostname not in BRAINTRUST_HOSTS:
             continue
-        if fmt == "vcrpy":
+        if fmt in ("vcrpy", "ruby-vcr"):
             status = resp["status"]["code"]
         else:
             status = resp.get("code") or int(str(resp.get("status", "0")).split()[0])
@@ -121,7 +130,7 @@ def harvest(src, cache):
     paths = sorted({p for g in src["globs"] for p in repo.glob(g) if p.is_file()})
     for path in paths:
         try:
-            doc = yaml.safe_load(path.read_bytes()) or {}
+            doc = yaml.load(path.read_bytes(), Loader=Loader) or {}
         except yaml.YAMLError as exc:
             print(f"  skip {path.relative_to(repo)}: {exc}", file=sys.stderr)
             continue

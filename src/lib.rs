@@ -1,5 +1,6 @@
 pub mod api;
 pub mod btql;
+pub mod btql_text;
 pub mod cli;
 pub mod db;
 pub mod error;

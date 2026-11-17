@@ -1,0 +1,121 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/datasets/create_idempotent.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": null,
+       "id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "is_universal_api": null,
+       "name": "matt-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/dataset/register",
+   "request": {
+    "body": {
+     "dataset_name": "test-ruby-sdk-idempotent",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "dataset": {
+      "created": "2025-10-24T14:47:47.367Z",
+      "deleted_at": null,
+      "description": null,
+      "id": "13c00811-557f-4433-963b-210ef82066f8",
+      "metadata": null,
+      "name": "test-ruby-sdk-idempotent",
+      "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+      "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+     },
+     "found_existing": true,
+     "project": {
+      "created": "2025-10-22T02:53:49.779Z",
+      "deleted_at": null,
+      "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+      "name": "ruby-sdk-test",
+      "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+      "settings": null,
+      "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+     }
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/dataset/register",
+   "request": {
+    "body": {
+     "dataset_name": "test-ruby-sdk-idempotent",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "dataset": {
+      "created": "2025-10-24T14:47:47.367Z",
+      "deleted_at": null,
+      "description": null,
+      "id": "13c00811-557f-4433-963b-210ef82066f8",
+      "metadata": null,
+      "name": "test-ruby-sdk-idempotent",
+      "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+      "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+     },
+     "found_existing": true,
+     "project": {
+      "created": "2025-10-22T02:53:49.779Z",
+      "deleted_at": null,
+      "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+      "name": "ruby-sdk-test",
+      "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+      "settings": null,
+      "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+     }
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

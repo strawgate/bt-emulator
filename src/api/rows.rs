@@ -3,6 +3,8 @@
 
 use axum::Json;
 use axum::extract::{Path, RawQuery, State};
+use axum::http::{HeaderValue, header};
+use axum::response::{IntoResponse, Response};
 use serde_json::{Map, Value, json};
 
 use super::extract::{JsonBody, Params};
@@ -173,11 +175,21 @@ async fn page(
     Ok((out, last.map(encode_cursor)))
 }
 
-fn with_cursor(mut body: Value, cursor: Option<String>) -> Json<Value> {
-    if let Some(cursor) = cursor {
-        body["cursor"] = json!(cursor);
-    }
-    Json(body)
+/// The real API returns the cursor both in the body and in an `x-bt-cursor` header.
+fn with_cursor(mut body: Value, cursor: Option<String>) -> Response {
+    let Some(cursor) = cursor else {
+        return Json(body).into_response();
+    };
+    body["cursor"] = json!(cursor);
+    cursor_header(Json(body).into_response(), &cursor)
+}
+
+fn cursor_header(mut resp: Response, cursor: &str) -> Response {
+    resp.headers_mut().insert(
+        "x-bt-cursor",
+        HeaderValue::from_str(cursor).expect("cursor is ASCII"),
+    );
+    resp
 }
 
 pub async fn logs3(State(db): State<Db>, JsonBody(body): JsonBody) -> ApiResult<Json<Value>> {
@@ -243,7 +255,7 @@ pub async fn fetch_post(
     State(db): State<Db>,
     Path((ty, id)): Path<(String, String)>,
     JsonBody(body): JsonBody,
-) -> ApiResult<Json<Value>> {
+) -> ApiResult<Response> {
     let src = source(&db, &ty, &id).await?;
     let limit = body["limit"].as_u64().map_or(DEFAULT_LIMIT, |l| l as usize);
     let version = parse_version(&body["version"])?;
@@ -255,7 +267,7 @@ pub async fn fetch_get(
     State(db): State<Db>,
     Path((ty, id)): Path<(String, String)>,
     RawQuery(query): RawQuery,
-) -> ApiResult<Json<Value>> {
+) -> ApiResult<Response> {
     let src = source(&db, &ty, &id).await?;
     let params = Params::parse(query.as_deref());
     let version = parse_version(&params.get("version").map_or(Value::Null, |v| json!(v)))?;
@@ -264,23 +276,49 @@ pub async fn fetch_get(
     Ok(with_cursor(json!({"events": events}), cursor))
 }
 
-pub async fn btql(State(db): State<Db>, JsonBody(body): JsonBody) -> ApiResult<Json<Value>> {
+pub async fn btql(State(db): State<Db>, JsonBody(body): JsonBody) -> ApiResult<Response> {
     let query = crate::btql::parse(&body).map_err(ApiError::bad_request)?;
-    let schema = json!({"type": "array", "items": {"type": "object", "properties": {}}});
-    if query.object_type == "project_prompts" {
-        return Ok(Json(json!({"data": [], "schema": schema})));
+    let (data, cursor) = if query.object_type == "project_prompts" {
+        (Vec::new(), None)
+    } else {
+        let src = source(&db, &query.object_type, &query.object_id).await?;
+        let version = parse_version(&body["version"])?;
+        let limit = query.limit.unwrap_or(DEFAULT_LIMIT);
+        page(
+            &db,
+            &src,
+            version,
+            query.cursor.as_deref(),
+            limit,
+            query.filter.as_ref(),
+        )
+        .await?
+    };
+    if body["fmt"] == "jsonl" {
+        // Rows one per line; the cursor moves to a header.
+        let lines: Vec<String> = data.iter().map(Value::to_string).collect();
+        let resp = (
+            [(header::CONTENT_TYPE, "application/json")],
+            lines.join("\n"),
+        )
+            .into_response();
+        return Ok(match cursor {
+            Some(cursor) => cursor_header(resp, &cursor),
+            None => resp,
+        });
     }
-    let src = source(&db, &query.object_type, &query.object_id).await?;
-    let version = parse_version(&body["version"])?;
-    let limit = query.limit.unwrap_or(DEFAULT_LIMIT);
-    let (data, cursor) = page(
-        &db,
-        &src,
-        version,
-        query.cursor.as_deref(),
-        limit,
-        query.filter.as_ref(),
-    )
-    .await?;
-    Ok(with_cursor(json!({"data": data, "schema": schema}), cursor))
+    let schema = json!({"type": "array", "items": {"type": "object", "properties": {}}});
+    // Reads are always fully fresh: everything written is immediately visible.
+    let latest = data
+        .iter()
+        .filter_map(|r| r["_xact_id"].as_str())
+        .max()
+        .unwrap_or("0")
+        .to_owned();
+    let body = json!({
+        "data": data, "schema": schema, "warnings": [],
+        "freshness_state": {"last_considered_xact_id": latest, "last_processed_xact_id": latest},
+        "realtime_state": {"type": "on", "minimum_xact_id": latest, "actual_xact_id": latest, "read_bytes": 0},
+    });
+    Ok(with_cursor(body, cursor))
 }

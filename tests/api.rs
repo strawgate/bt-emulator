@@ -84,6 +84,26 @@ impl App {
     }
 }
 
+/// POST and return the `x-bt-cursor` header and the raw body text.
+async fn raw(app: &App, path: &str, body: Value) -> (Option<String>, String) {
+    let req = Request::builder()
+        .method("POST")
+        .uri(path)
+        .body(Body::from(body.to_string()))
+        .unwrap();
+    let resp = bt_emulator::api::router(app.db.clone())
+        .oneshot(req)
+        .await
+        .unwrap();
+    assert_eq!(resp.status(), StatusCode::OK);
+    let cursor = resp
+        .headers()
+        .get("x-bt-cursor")
+        .map(|h| h.to_str().unwrap().to_owned());
+    let bytes = resp.into_body().collect().await.unwrap().to_bytes();
+    (cursor, String::from_utf8(bytes.to_vec()).unwrap())
+}
+
 async fn apps() -> Vec<App> {
     common::backends()
         .await
@@ -261,6 +281,13 @@ async fn experiment_create_semantics() {
         let first = app.experiment(&pid, "e").await;
         // Without ensure_new, an existing name is reused.
         assert_eq!(app.experiment(&pid, "e").await, first);
+        let first_obj = app
+            .ok("GET", &format!("/v1/experiment/{first}"), None)
+            .await;
+        assert_eq!(
+            (&first_obj["base_exp_id"], &first_obj["repo_info"]),
+            (&Value::Null, &json!({}))
+        );
         let body = json!({"project_id": pid, "name": "e", "ensure_new": true, "repo_info": {"commit": "abc"}, "public": true});
         let fresh = app.ok("POST", "/v1/experiment", Some(body)).await;
         let name = fresh["name"].as_str().unwrap();
@@ -340,7 +367,10 @@ async fn logs3_merge_replace_delete_and_fetch() {
             (Some(true), Some(pid.as_str()))
         );
         assert_eq!(a["audit_data"][1]["source"], "app");
-        assert_eq!(a["audit_data"][1]["metadata"], json!({"who": "me"}));
+        assert_eq!(
+            a["audit_data"][1]["metadata"],
+            json!({"who": "me", "user_id": bt_emulator::api::USER_ID})
+        );
         assert_eq!(
             a["span_attributes"]["created_by_user_id"],
             bt_emulator::api::USER_ID
@@ -619,6 +649,22 @@ async fn btql_object_queries() {
             .ok("POST", "/btql", Some(query(Value::Null, Value::Null, 10)))
             .await;
         assert_eq!(all["data"].as_array().unwrap().len(), 3);
+        assert_eq!(
+            all["freshness_state"]["last_processed_xact_id"],
+            all["data"][0]["_xact_id"]
+        );
+
+        // JSON Lines output (Ruby SDK), and the SQL text form.
+        let mut jsonl = query(Value::Null, Value::Null, 2);
+        jsonl["fmt"] = json!("jsonl");
+        let resp = raw(&app, "/btql", jsonl).await;
+        assert!(resp.0.is_some(), "jsonl pages carry x-bt-cursor");
+        assert_eq!(resp.1.lines().count(), 2);
+        let text = json!({"fmt": "jsonl", "query": format!("SELECT * FROM experiment('{eid}') WHERE span_attributes.type = 'llm'")});
+        let resp = raw(&app, "/btql", text).await;
+        assert_eq!(serde_json::from_str::<Value>(&resp.1).unwrap()["id"], "2");
+        let empty = json!({"fmt": "jsonl", "query": format!("SELECT * FROM experiment('{eid}') WHERE id = 'none'")});
+        assert_eq!(raw(&app, "/btql", empty).await, (None, String::new()));
 
         let prompts = json!({"query": {"from": {"op": "function", "name": {"name": ["project_prompts"]}, "args": [{"value": pid}]}}});
         assert_eq!(

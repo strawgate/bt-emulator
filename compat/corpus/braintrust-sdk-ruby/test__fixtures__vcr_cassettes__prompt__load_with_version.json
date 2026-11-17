@@ -1,0 +1,266 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/prompt/load_with_version.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T03:32:12.324Z",
+       "deleted_at": null,
+       "description": null,
+       "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "name": "ruby-sdk-test",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "settings": null,
+       "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-prompt-version",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Version test: {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-version"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196599891140962",
+     "created": "2026-02-03T16:27:59.956Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "688afbf1-2138-4b26-83c4-0ae9c5ff18f3",
+     "log_id": "p",
+     "name": "test-prompt-version",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Version test: {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-version"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=ruby-sdk-test&slug=test-prompt-version",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000196599891140962",
+       "created": "2026-02-03T16:27:59.956Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "688afbf1-2138-4b26-83c4-0ae9c5ff18f3",
+       "log_id": "p",
+       "metadata": null,
+       "name": "test-prompt-version",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "origin": null,
+       "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini"
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Version test: {{name}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "test-prompt-version",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function/688afbf1-2138-4b26-83c4-0ae9c5ff18f3?version=1000196599891140962",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196599891140962",
+     "created": "2026-02-03T16:27:59.956Z",
+     "description": null,
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": null,
+     "function_type": null,
+     "id": "688afbf1-2138-4b26-83c4-0ae9c5ff18f3",
+     "log_id": "p",
+     "metadata": null,
+     "name": "test-prompt-version",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "origin": null,
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Version test: {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-version",
+     "tags": null
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/688afbf1-2138-4b26-83c4-0ae9c5ff18f3",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196599891209069",
+     "created": "2026-02-03T16:28:01.929Z",
+     "id": "688afbf1-2138-4b26-83c4-0ae9c5ff18f3",
+     "log_id": "p",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-prompt-version"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

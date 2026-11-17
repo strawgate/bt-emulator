@@ -1,0 +1,254 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/prompt/load.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": null,
+       "id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "is_universal_api": null,
+       "name": "matt-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T02:53:49.779Z",
+       "deleted_at": null,
+       "description": null,
+       "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "name": "ruby-sdk-test",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "settings": null,
+       "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-prompt-load",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-load"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196458112984917",
+     "created": "2026-01-09T15:31:57.524Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+     "log_id": "p",
+     "name": "test-prompt-load",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-load"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=ruby-sdk-test&slug=test-prompt-load",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000196458112984917",
+       "created": "2026-01-09T15:31:57.524Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+       "log_id": "p",
+       "metadata": null,
+       "name": "test-prompt-load",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "origin": null,
+       "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini"
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Say hello to {{name}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "test-prompt-load",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function/2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196458112984917",
+     "created": "2026-01-09T15:31:57.524Z",
+     "description": null,
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": null,
+     "function_type": null,
+     "id": "2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+     "log_id": "p",
+     "metadata": null,
+     "name": "test-prompt-load",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "origin": null,
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{name}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-prompt-load",
+     "tags": null
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196458113118216",
+     "created": "2026-01-09T15:31:58.990Z",
+     "id": "2ee042ed-2971-47f4-a73c-7abe38ab1a38",
+     "log_id": "p",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "slug": "test-prompt-load"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

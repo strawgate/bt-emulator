@@ -1,0 +1,213 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/eval_functions/task_invoke.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": null,
+       "id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "is_universal_api": null,
+       "name": "matt-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T02:53:49.779Z",
+       "deleted_at": null,
+       "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "name": "ruby-sdk-test",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "settings": null,
+       "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-ruby-sdk-task-invoke",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-task-invoke"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196022027214782",
+     "created": "2025-10-24T15:09:36.442Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "c5f6b1eb-00cb-463a-aba7-71c6c9696fb0",
+     "log_id": "p",
+     "name": "test-ruby-sdk-task-invoke",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Say hello to {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-task-invoke"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=ruby-sdk-test&slug=test-ruby-sdk-task-invoke",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000196022027214782",
+       "created": "2025-10-24T15:09:36.442Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "c5f6b1eb-00cb-463a-aba7-71c6c9696fb0",
+       "log_id": "p",
+       "metadata": null,
+       "name": "test-ruby-sdk-task-invoke",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "origin": null,
+       "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "Say hello to {{input}}",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "test-ruby-sdk-task-invoke",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/c5f6b1eb-00cb-463a-aba7-71c6c9696fb0/invoke",
+   "request": {
+    "body": {
+     "input": "world"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "Hello, world! \ud83c\udf0d How can I assist you today?",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "HIT",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

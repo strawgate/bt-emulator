@@ -1,0 +1,277 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/eval/dataset_hash_id.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/dataset/register",
+   "request": {
+    "body": {
+     "dataset_name": "test-ruby-sdk-dataset-id",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "dataset": {
+      "created": "2025-12-11T18:38:01.718Z",
+      "deleted_at": null,
+      "description": null,
+      "id": "02c8546e-38f8-46c1-8b09-df9c08854341",
+      "metadata": null,
+      "name": "test-ruby-sdk-dataset-id",
+      "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+      "url_slug": "test-ruby-sdk-dataset-id-675d",
+      "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+     },
+     "found_existing": true,
+     "project": {
+      "created": "2025-10-22T03:32:12.324Z",
+      "deleted_at": null,
+      "description": null,
+      "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+      "name": "ruby-sdk-test",
+      "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+      "settings": null,
+      "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+     }
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/02c8546e-38f8-46c1-8b09-df9c08854341/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": "TEST",
+       "input": "test"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "968885fb-cbdc-4c37-ba5d-67704eaae05d"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": {
+      "from": {
+       "args": [
+        {
+         "op": "literal",
+         "value": "02c8546e-38f8-46c1-8b09-df9c08854341"
+        }
+       ],
+       "name": {
+        "name": [
+         "dataset"
+        ],
+        "op": "ident"
+       },
+       "op": "function"
+      },
+      "limit": 1000,
+      "select": [
+       {
+        "op": "star"
+       }
+      ]
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "{\"_pagination_key\":\"p07603117802490626048\",\"_xact_id\":\"1000196606623726311\",\"audit_data\":[{\"_xact_id\":\"1000196606623726311\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2026-02-04T21:00:11.263Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"968885fb-cbdc-4c37-ba5d-67704eaae05d\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"663e2ffd-fa36-40ed-bdc9-51e8de705162\",\"span_id\":\"663e2ffd-fa36-40ed-bdc9-51e8de705162\",\"tags\":null}\n{\"_pagination_key\":\"p07603072546923347968\",\"_xact_id\":\"1000196605933181156\",\"audit_data\":[{\"_xact_id\":\"1000196605933181156\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2026-02-04T18:04:34.272Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"1f7e18a5-fdeb-4304-93c8-83473c45c030\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"c1cc9ca1-b8c5-4223-8d24-053e79cce175\",\"span_id\":\"c1cc9ca1-b8c5-4223-8d24-053e79cce175\",\"tags\":null}\n{\"_pagination_key\":\"p07600490767317794816\",\"_xact_id\":\"1000196566538350749\",\"audit_data\":[{\"_xact_id\":\"1000196566538350749\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2026-01-28T19:05:57.752Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"3c35aee9-ebab-4ba0-9b24-db2d68a11e94\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"97b0b448-9f77-4fc3-a398-8fcfc5bd557d\",\"span_id\":\"97b0b448-9f77-4fc3-a398-8fcfc5bd557d\",\"tags\":null}\n{\"_pagination_key\":\"p07582675098489389056\",\"_xact_id\":\"1000196294692818089\",\"audit_data\":[{\"_xact_id\":\"1000196294692818089\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2025-12-11T18:52:03.010Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"eef9aa47-378d-4752-9f8c-72f8021ee763\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"3be90d25-5d85-4eaf-b573-c4c41a9c0f8a\",\"span_id\":\"3be90d25-5d85-4eaf-b573-c4c41a9c0f8a\",\"tags\":null}\n{\"_pagination_key\":\"p07582672561744052224\",\"_xact_id\":\"1000196294654110427\",\"audit_data\":[{\"_xact_id\":\"1000196294654110427\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2025-12-11T18:42:13.699Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"2787844c-196e-4446-b5a7-1d255bf2cc15\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"07f805a3-e68b-4990-a5a9-367ea21d3b28\",\"span_id\":\"07f805a3-e68b-4990-a5a9-367ea21d3b28\",\"tags\":null}\n{\"_pagination_key\":\"p07582671935010111488\",\"_xact_id\":\"1000196294644547226\",\"audit_data\":[{\"_xact_id\":\"1000196294644547226\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2025-12-11T18:39:47.354Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"77a419b5-c01a-45b5-b224-9a2843c1c3fa\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"a62f2dd8-6e60-46bc-904d-be55e49c18bf\",\"span_id\":\"a62f2dd8-6e60-46bc-904d-be55e49c18bf\",\"tags\":null}\n{\"_pagination_key\":\"p07582671486812225536\",\"_xact_id\":\"1000196294637708269\",\"audit_data\":[{\"_xact_id\":\"1000196294637708269\",\"audit_data\":{\"action\":\"upsert\"},\"metadata\":{},\"source\":\"api\"}],\"classifications\":null,\"comments\":null,\"created\":\"2025-12-11T18:38:01.811Z\",\"dataset_id\":\"02c8546e-38f8-46c1-8b09-df9c08854341\",\"expected\":\"TEST\",\"facets\":null,\"id\":\"a2832a5b-129e-454c-8d0d-6d2483948616\",\"input\":\"test\",\"is_root\":true,\"metadata\":null,\"origin\":null,\"project_id\":\"ac86d18e-af78-4caf-918d-b89ad108ec67\",\"root_span_id\":\"af66dac9-542f-4ea8-9b52-922234f4d3f0\",\"span_id\":\"af66dac9-542f-4ea8-9b52-922234f4d3f0\",\"tags\":null}\n",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aTsPiuPtAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": {
+      "cursor": "aTsPiuPtAAA",
+      "from": {
+       "args": [
+        {
+         "op": "literal",
+         "value": "02c8546e-38f8-46c1-8b09-df9c08854341"
+        }
+       ],
+       "name": {
+        "name": [
+         "dataset"
+        ],
+        "op": "ident"
+       },
+       "op": "function"
+      },
+      "limit": 1000,
+      "select": [
+       {
+        "op": "star"
+       }
+      ]
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2025-10-22T03:32:12.324Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "name": "ruby-sdk-test",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "settings": null,
+     "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-ruby-sdk-exp-id",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-02-04T21:00:12.730Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "352c8b58-caa6-41b3-8b14-fe4242f7cfa9",
+     "metadata": null,
+     "name": "test-ruby-sdk-exp-id-46a8c2b5",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

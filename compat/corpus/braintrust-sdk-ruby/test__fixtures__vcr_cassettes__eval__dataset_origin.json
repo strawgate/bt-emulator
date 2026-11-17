@@ -1,0 +1,336 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/eval/dataset_origin.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/dataset/register",
+   "request": {
+    "body": {
+     "dataset_name": "test-ruby-sdk-dataset-origin",
+     "description": "Test dataset for origin integration",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "dataset": {
+      "created": "2026-02-04T17:03:11.480Z",
+      "deleted_at": null,
+      "description": "Test dataset for origin integration",
+      "id": "4f9ef62b-44a4-40c4-9a83-7cdb791e2876",
+      "metadata": null,
+      "name": "test-ruby-sdk-dataset-origin",
+      "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+      "url_slug": "test-ruby-sdk-dataset-origin",
+      "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+     },
+     "found_existing": false,
+     "project": {
+      "created": "2025-10-22T03:32:12.324Z",
+      "deleted_at": null,
+      "description": null,
+      "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+      "name": "ruby-sdk-test",
+      "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+      "settings": null,
+      "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+     }
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/dataset/4f9ef62b-44a4-40c4-9a83-7cdb791e2876/insert",
+   "request": {
+    "body": {
+     "events": [
+      {
+       "expected": "ORIGIN-TEST",
+       "input": "origin-test"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "row_ids": [
+      "10cc8e51-4280-4f4b-8951-e2bfd0617e3c"
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/dataset?dataset_name=test-ruby-sdk-dataset-origin&project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2026-02-04T17:03:11.480Z",
+       "deleted_at": null,
+       "description": "Test dataset for origin integration",
+       "id": "4f9ef62b-44a4-40c4-9a83-7cdb791e2876",
+       "metadata": null,
+       "name": "test-ruby-sdk-dataset-origin",
+       "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "url_slug": "test-ruby-sdk-dataset-origin",
+       "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": {
+      "from": {
+       "args": [
+        {
+         "op": "literal",
+         "value": "4f9ef62b-44a4-40c4-9a83-7cdb791e2876"
+        }
+       ],
+       "name": {
+        "name": [
+         "dataset"
+        ],
+        "op": "ident"
+       },
+       "op": "function"
+      },
+      "limit": 1000,
+      "select": [
+       {
+        "op": "star"
+       }
+      ]
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_pagination_key": "p07603056728854888448",
+     "_xact_id": "1000196605691816586",
+     "audit_data": [
+      {
+       "_xact_id": "1000196605691816586",
+       "audit_data": {
+        "action": "upsert"
+       },
+       "metadata": {},
+       "source": "api"
+      }
+     ],
+     "classifications": null,
+     "comments": null,
+     "created": "2026-02-04T17:03:11.751Z",
+     "dataset_id": "4f9ef62b-44a4-40c4-9a83-7cdb791e2876",
+     "expected": "ORIGIN-TEST",
+     "facets": null,
+     "id": "10cc8e51-4280-4f4b-8951-e2bfd0617e3c",
+     "input": "origin-test",
+     "is_root": true,
+     "metadata": null,
+     "origin": null,
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "root_span_id": "a588c208-c631-4d0f-bed9-dc732b1fffb5",
+     "span_id": "a588c208-c631-4d0f-bed9-dc732b1fffb5",
+     "tags": null
+    },
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cursor": "aYN7z+qKAAA"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/btql",
+   "request": {
+    "body": {
+     "fmt": "jsonl",
+     "query": {
+      "cursor": "aYN7z+qKAAA",
+      "from": {
+       "args": [
+        {
+         "op": "literal",
+         "value": "4f9ef62b-44a4-40c4-9a83-7cdb791e2876"
+        }
+       ],
+       "name": {
+        "name": [
+         "dataset"
+        ],
+        "op": "ident"
+       },
+       "op": "function"
+      },
+      "limit": 1000,
+      "select": [
+       {
+        "op": "star"
+       }
+      ]
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": null,
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2025-10-22T03:32:12.324Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "name": "ruby-sdk-test",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "settings": null,
+     "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-ruby-sdk-exp-origin",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-02-04T17:03:12.838Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "d4663a0c-92ee-4801-8abe-8049f7dae7be",
+     "metadata": null,
+     "name": "test-ruby-sdk-exp-origin",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

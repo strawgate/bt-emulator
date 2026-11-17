@@ -139,6 +139,18 @@ pub async fn create_experiment(
     for key in EXPERIMENT_FIELDS {
         data[key] = body[key].clone();
     }
+    if data["repo_info"].is_null() {
+        data["repo_info"] = json!({});
+    }
+    if data["base_exp_id"].is_null() {
+        // Default comparison target: the project's most recent experiment.
+        let latest = db
+            .objects(Kind::Experiment)
+            .await?
+            .into_iter()
+            .find(|o| o.data["project_id"] == pid);
+        data["base_exp_id"] = latest.map_or(Value::Null, |o| json!(o.id()));
+    }
     Ok(db.insert_object(Kind::Experiment, pid, data).await?)
 }
 

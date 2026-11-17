@@ -19,7 +19,7 @@ use std::path::{Path, PathBuf};
 
 use axum::body::Body;
 use http_body_util::BodyExt;
-use serde_json::Value;
+use serde_json::{Value, json};
 use tower::ServiceExt;
 
 const LEDGER: &str = "compat/expected-failures.txt";
@@ -139,8 +139,20 @@ impl Replay {
                 Ok(())
             }
             (Value::Array(r), Value::Array(a)) => match (r.first(), a.first()) {
-                (Some(_), None) => Err(format!("{path}: expected non-empty array")),
-                (Some(rv), Some(av)) => self.compare(&format!("{path}[0]"), rv, av),
+                // Only data arrays must be non-empty; config lists may legitimately differ.
+                (Some(_), None) if is_data_array(path) => {
+                    Err(format!("{path}: expected non-empty array"))
+                }
+                (Some(_), None) => Ok(()),
+                (Some(rv), Some(av)) => {
+                    // Prefer the element with the same id: row order across concurrent
+                    // writes is not part of the contract.
+                    let rid = rv["id"].as_str().map(|id| self.substitute(id));
+                    let av = rid
+                        .and_then(|id| a.iter().find(|x| x["id"] == id.as_str()))
+                        .unwrap_or(av);
+                    self.compare(&format!("{path}[0]"), rv, av)
+                }
                 _ => Ok(()),
             },
             (Value::String(r), Value::String(a)) => {
@@ -157,6 +169,13 @@ impl Replay {
     }
 }
 
+fn is_data_array(path: &str) -> bool {
+    path == "$"
+        || ["objects", "events", "data", "ids", "row_ids"]
+            .iter()
+            .any(|k| path.ends_with(&format!(".{k}")))
+}
+
 fn kind(v: &Value) -> &'static str {
     match v {
         Value::Null => "null",
@@ -168,9 +187,86 @@ fn kind(v: &Value) -> &'static str {
     }
 }
 
+/// Parse a response body: JSON, else JSON Lines (BTQL `fmt: "jsonl"`), else text.
+fn parse_body(text: &str) -> Value {
+    if text.trim().is_empty() {
+        return Value::Null;
+    }
+    if let Ok(v) = serde_json::from_str(text) {
+        return v;
+    }
+    let rows: Result<Vec<Value>, _> = text
+        .lines()
+        .filter(|l| !l.trim().is_empty())
+        .map(serde_json::from_str)
+        .collect();
+    rows.map_or_else(|_| Value::String(text.to_owned()), Value::Array)
+}
+
+async fn send(
+    router: &axum::Router,
+    method: &str,
+    path: &str,
+    body: Option<Value>,
+) -> (u16, Value) {
+    let req = axum::http::Request::builder().method(method).uri(path);
+    let body = body.map_or_else(Body::empty, |b| Body::from(b.to_string()));
+    let resp = router
+        .clone()
+        .oneshot(req.body(body).unwrap())
+        .await
+        .unwrap();
+    let status = resp.status().as_u16();
+    let bytes = resp.into_body().collect().await.unwrap().to_bytes();
+    (status, parse_body(&String::from_utf8_lossy(&bytes)))
+}
+
+/// Recordings were made against a real org, so a list call may return objects created
+/// before the recording started. Seed them through the public API so the rest of the
+/// cassette can replay. Only names and parents are seeded, never rows.
+async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
+    let path = it["path"].as_str().unwrap();
+    let Some(kind) = ["project", "experiment", "dataset"]
+        .into_iter()
+        .find(|k| path.starts_with(&format!("/v1/{k}?")))
+    else {
+        return;
+    };
+    if it["method"] != "GET" {
+        return;
+    }
+    // Lists are newest first; create oldest first so the order matches.
+    for obj in it["response"]["body"]["objects"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .rev()
+    {
+        let id = obj["id"].as_str().unwrap_or_default();
+        if st.ids.contains_key(id) {
+            continue;
+        }
+        let mut body = st.substitute_value(obj);
+        for key in ["id", "created", "user_id", "org_id", "deleted_at"] {
+            body.as_object_mut().unwrap().remove(key);
+        }
+        if kind != "project" {
+            let Some(pid) = obj["project_id"].as_str().and_then(|p| st.ids.get(p)) else {
+                continue;
+            };
+            body["project_id"] = json!(pid);
+        }
+        let (status, created) = send(router, "POST", &format!("/v1/{kind}"), Some(body)).await;
+        if status == 200 {
+            st.learn(None, obj, &created);
+        }
+    }
+}
+
 async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String> {
     let mut st = Replay::default();
     for (n, it) in cassette.interactions.iter().enumerate() {
+        hydrate(&router, &mut st, it).await;
         let method = it["method"].as_str().unwrap();
         let path = st.substitute(it["path"].as_str().unwrap());
         let where_ = format!("#{n} {method} {}", it["path"].as_str().unwrap());
@@ -211,6 +307,10 @@ async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String>
             .await
             .unwrap();
         let status = resp.status().as_u16();
+        let cursor_header = resp
+            .headers()
+            .get("x-bt-cursor")
+            .map(|h| h.to_str().unwrap().to_owned());
         let bytes = resp.into_body().collect().await.unwrap().to_bytes();
         let expected_status = it["response"]["status"].as_u64().unwrap() as u16;
         if status != expected_status {
@@ -220,13 +320,32 @@ async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String>
                 body
             ));
         }
-        let recorded = &it["response"]["body"];
+        if let Some(recorded) = it["response"]["headers"]["x-bt-cursor"].as_str() {
+            let ours =
+                cursor_header.ok_or_else(|| format!("{where_}: missing x-bt-cursor header"))?;
+            st.ids.entry(recorded.to_owned()).or_insert(ours);
+        }
+        // BTQL JSON Lines: a single row parses as an object, so normalize to rows.
+        let jsonl = it["request"]["body"]["fmt"] == "jsonl";
+        let rows = |v: Value| {
+            if jsonl && v.is_object() {
+                Value::Array(vec![v])
+            } else {
+                v
+            }
+        };
+        let recorded = rows(match &it["response"]["body"] {
+            Value::String(text) => parse_body(text),
+            other => other.clone(),
+        });
         if recorded.is_object() || recorded.is_array() {
-            let actual: Value = serde_json::from_slice(&bytes)
-                .map_err(|e| format!("{where_}: response is not JSON ({e})"))?;
-            st.compare("$", recorded, &actual)
+            let actual = rows(parse_body(&String::from_utf8_lossy(&bytes)));
+            if !(actual.is_object() || actual.is_array()) {
+                return Err(format!("{where_}: response is not JSON: {actual:.200}"));
+            }
+            st.compare("$", &recorded, &actual)
                 .map_err(|e| format!("{where_}: {e}"))?;
-            st.learn(None, recorded, &actual);
+            st.learn(None, &recorded, &actual);
         }
     }
     Ok(())

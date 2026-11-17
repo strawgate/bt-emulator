@@ -1,0 +1,679 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/openai_responses_stream_partial.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.682] [request_id=iad1::hv6jc-1761327520645-c55ed7b23e75]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.688] [request_id=iad1::jwffc-1761327520644-044506bf1153]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.692] [request_id=iad1::4whbl-1761327520644-04a78a46c16c]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.694] [request_id=iad1::fxwqg-1761327520644-181c9fd2915d]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.7] [request_id=iad1::5pxth-1761327520644-fc2b8b72d80b]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.702] [request_id=iad1::6htrn-1761327520649-aa5f3475cb57]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.703] [request_id=iad1::fvbts-1761327520644-c6938daf4c8a]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.694] [request_id=iad1::6s7dr-1761327520642-8a96f7330965]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.912] [request_id=iad1::nm9tc-1761327520876-70550f8faa0b]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.915] [request_id=iad1::qpdbw-1761327520874-20cc7c2a65cc]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.917] [request_id=iad1::gw474-1761327520879-b12adac3e3fd]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.926] [request_id=iad1::gg8fx-1761327520878-549c03b6970c]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.928] [request_id=iad1::v8m6w-1761327520891-1a7b86ab139a]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.931] [request_id=iad1::kc8cf-1761327520891-eab99e1862a9]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.933] [request_id=iad1::pth6b-1761327520897-2c8d773649d1]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327520.968] [request_id=iad1::t9hgj-1761327520880-0bab788aee29]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.268] [request_id=iad1::c9jpm-1761327521235-69cdaa215ec1]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.268] [request_id=iad1::6kk68-1761327521231-7553891fc214]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.271] [request_id=iad1::r8xj7-1761327521241-eab5e76dce57]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.272] [request_id=iad1::9dmjc-1761327521226-9e9e1c5f58e9]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.275] [request_id=iad1::nm9tc-1761327521232-67ccc534b710]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.282] [request_id=iad1::87rdf-1761327521248-d687a3220f0d]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.287] [request_id=iad1::5lvqt-1761327521251-1213a6a27a3b]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.328] [request_id=iad1::qgthz-1761327521281-7b7ba6bdc0af]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.887] [request_id=iad1::2ks9w-1761327521855-008a324a5b54]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.89] [request_id=iad1::5h4nj-1761327521854-a6802add651b]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.893] [request_id=iad1::7n7qp-1761327521856-565182d6df64]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.897] [request_id=iad1::7s2nh-1761327521862-b949528a1398]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.902] [request_id=iad1::fwp7z-1761327521858-fec537462a53]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.912] [request_id=iad1::ks9vg-1761327521858-0e2eb224ab86]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.939] [request_id=iad1::w2blt-1761327521895-39457f7c25b6]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327521.937] [request_id=iad1::qx8th-1761327521853-0b510c00b906]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327522.904] [request_id=iad1::sbxmw-1761327520644-5a4960eaa375]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.015] [request_id=iad1::nn5xp-1761327522981-40a0ce53c34d]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.016] [request_id=iad1::55qkj-1761327522982-6bc1e2da5ac4]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.035] [request_id=iad1::m2gmw-1761327522980-71ed4acab6dd]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.043] [request_id=iad1::kc5g8-1761327522997-8c5fe3f8d2d2]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.04] [request_id=iad1::vgpjb-1761327522986-cead24c43f2e]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.054] [request_id=iad1::qpdbw-1761327523022-ca076f9bc735]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.062] [request_id=iad1::6v94q-1761327523024-bea8019e395a]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.117] [request_id=iad1::42m8r-1761327522975-c7c33f5b8ec6]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  },
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": "Failed to validate Cognito JWT: Error: JWT string does not consist of exactly 3 parts (header, payload, signature) [timestamp=1761327523.138] [request_id=iad1::6k79c-1761327523097-6a46229bb578]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 401
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

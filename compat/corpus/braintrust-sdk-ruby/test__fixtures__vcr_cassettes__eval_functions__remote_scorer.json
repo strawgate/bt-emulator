@@ -1,0 +1,350 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/eval_functions/remote_scorer.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://api.braintrust.dev",
+       "git_metadata": null,
+       "id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "is_universal_api": null,
+       "name": "matt-test-org",
+       "proxy_url": "https://api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T02:53:49.779Z",
+       "deleted_at": null,
+       "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "name": "ruby-sdk-test",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "settings": null,
+       "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "type": "prompt"
+     },
+     "name": "test-ruby-sdk-eval-scorer",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       },
+       "parser": {
+        "choice_scores": {
+         "correct": 1.0,
+         "incorrect": 0.0
+        },
+        "type": "llm_classifier",
+        "use_cot": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate if the output matches the expected value.",
+         "role": "system"
+        },
+        {
+         "content": "Does '{{output}}' match '{{expected}}'? Answer 'correct' or 'incorrect'.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-eval-scorer"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196022027545774",
+     "created": "2025-10-24T15:09:41.468Z",
+     "function_data": {
+      "type": "prompt"
+     },
+     "id": "d7669acd-3a20-4698-b553-f20cb020108f",
+     "log_id": "p",
+     "name": "test-ruby-sdk-eval-scorer",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini",
+       "params": {
+        "temperature": 0
+       },
+       "parser": {
+        "choice_scores": {
+         "correct": 1,
+         "incorrect": 0
+        },
+        "type": "llm_classifier",
+        "use_cot": true
+       }
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "You are a scorer. Evaluate if the output matches the expected value.",
+         "role": "system"
+        },
+        {
+         "content": "Does '{{output}}' match '{{expected}}'? Answer 'correct' or 'incorrect'.",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-eval-scorer"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=ruby-sdk-test&slug=test-ruby-sdk-eval-scorer",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000196022027545774",
+       "created": "2025-10-24T15:09:41.468Z",
+       "description": null,
+       "function_data": {
+        "type": "prompt"
+       },
+       "function_schema": null,
+       "function_type": null,
+       "id": "d7669acd-3a20-4698-b553-f20cb020108f",
+       "log_id": "p",
+       "metadata": null,
+       "name": "test-ruby-sdk-eval-scorer",
+       "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+       "origin": null,
+       "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+       "prompt_data": {
+        "options": {
+         "model": "gpt-4o-mini",
+         "params": {
+          "temperature": 0
+         },
+         "parser": {
+          "choice_scores": {
+           "correct": 1,
+           "incorrect": 0
+          },
+          "type": "llm_classifier",
+          "use_cot": true
+         }
+        },
+        "prompt": {
+         "messages": [
+          {
+           "content": "You are a scorer. Evaluate if the output matches the expected value.",
+           "role": "system"
+          },
+          {
+           "content": "Does '{{output}}' match '{{expected}}'? Answer 'correct' or 'incorrect'.",
+           "role": "user"
+          }
+         ],
+         "type": "chat"
+        }
+       },
+       "slug": "test-ruby-sdk-eval-scorer",
+       "tags": null
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2025-10-22T02:53:49.779Z",
+     "deleted_at": null,
+     "id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "name": "ruby-sdk-test",
+     "org_id": "5ba6d482-b475-4c66-8cd2-5815694764e3",
+     "settings": null,
+     "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-found-existing": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-ruby-sdk-remote-scorer-eval",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2025-10-24T15:09:42.408Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "845bf1f9-4c97-4d8d-8dc9-72e4acc8125b",
+     "metadata": null,
+     "name": "test-ruby-sdk-remote-scorer-eval-a0947db1",
+     "project_id": "c532bc50-7094-4bbb-8704-42344c9728b9",
+     "public": false,
+     "repo_info": {},
+     "tags": null,
+     "user_id": "855483c6-68f0-4df4-a147-df9b4ea32e0c"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/d7669acd-3a20-4698-b553-f20cb020108f/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": "HELLO",
+      "input": "hello",
+      "metadata": {},
+      "output": "HELLO"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "correct",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "HIT",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "MISS",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/d7669acd-3a20-4698-b553-f20cb020108f/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": "WORLD",
+      "input": "world",
+      "metadata": {},
+      "output": "WORLD"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "correct",
+    "headers": {
+     "content-type": "application/json",
+     "x-bt-cached": "HIT",
+     "x-bt-function-creds-cached": "HIT",
+     "x-bt-function-meta-cached": "HIT",
+     "x-bt-used-endpoint": "OPENAI_API_KEY"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

@@ -1,0 +1,318 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/eval/scorer_slug.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T03:32:12.324Z",
+       "deleted_at": null,
+       "description": null,
+       "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "name": "ruby-sdk-test",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "settings": null,
+       "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "function_data": {
+      "data": {
+       "code": "function handler({ output, expected }) { return { score: output === expected ? 1.0 : 0.0 }; }",
+       "runtime_context": {
+        "runtime": "node",
+        "version": "18"
+       },
+       "type": "inline"
+      },
+      "type": "code"
+     },
+     "name": "test-ruby-sdk-scorer-slug-abc12345",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-ruby-sdk-scorer-slug-abc12345"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196704873126900",
+     "created": "2026-03-10T17:00:00.000Z",
+     "function_data": {
+      "data": {
+       "code": "function handler({ output, expected }) { return { score: output === expected ? 1.0 : 0.0 }; }",
+       "runtime_context": {
+        "runtime": "node",
+        "version": "18"
+       },
+       "type": "inline"
+      },
+      "type": "code"
+     },
+     "id": "bb112233-4455-6677-8899-aabbccddeeff",
+     "log_id": "p",
+     "name": "test-ruby-sdk-scorer-slug-abc12345",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-ruby-sdk-scorer-slug-abc12345"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/function?project_name=ruby-sdk-test&slug=test-ruby-sdk-scorer-slug-abc12345",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "_xact_id": "1000196704873126900",
+       "created": "2026-03-10T17:00:00.000Z",
+       "description": null,
+       "function_data": {
+        "data": {
+         "code": "function handler({ output, expected }) { return { score: output === expected ? 1.0 : 0.0 }; }",
+         "runtime_context": {
+          "runtime": "node",
+          "version": "18"
+         },
+         "type": "inline"
+        },
+        "type": "code"
+       },
+       "function_schema": null,
+       "id": "bb112233-4455-6677-8899-aabbccddeeff",
+       "log_id": "p",
+       "name": "test-ruby-sdk-scorer-slug-abc12345",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "origin": null,
+       "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "slug": "test-ruby-sdk-scorer-slug-abc12345"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/project",
+   "request": {
+    "body": {
+     "name": "ruby-sdk-test"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "created": "2025-10-22T03:32:12.324Z",
+     "deleted_at": null,
+     "description": null,
+     "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "name": "ruby-sdk-test",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "settings": null,
+     "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "test-ruby-sdk-exp-scorer-slug-abc12345",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "base_exp_id": null,
+     "commit": null,
+     "created": "2026-03-10T17:00:01.000Z",
+     "dataset_id": null,
+     "dataset_version": null,
+     "deleted_at": null,
+     "description": null,
+     "id": "ee998877-6655-4433-2211-ffeeddccbbaa",
+     "metadata": null,
+     "name": "test-ruby-sdk-exp-scorer-slug-abc12345",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "public": false,
+     "repo_info": null,
+     "tags": null,
+     "user_id": "c755328d-f64a-4737-a984-e83c088cd9f7"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/bb112233-4455-6677-8899-aabbccddeeff/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": "HELLO",
+      "input": "hello",
+      "metadata": {},
+      "output": "HELLO"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "score": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function/bb112233-4455-6677-8899-aabbccddeeff/invoke",
+   "request": {
+    "body": {
+     "input": {
+      "expected": "WORLD",
+      "input": "world",
+      "metadata": {},
+      "output": "WORLD"
+     }
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "score": 1
+    },
+    "headers": {
+     "content-type": "application/json"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/bb112233-4455-6677-8899-aabbccddeeff",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196704873200000",
+     "created": "2026-03-10T17:00:03.000Z",
+     "id": "bb112233-4455-6677-8899-aabbccddeeff",
+     "log_id": "p",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-ruby-sdk-scorer-slug-abc12345"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

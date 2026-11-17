@@ -132,10 +132,11 @@ async fn apply(
         Some(Value::String(s)) => s,
         _ => "api".to_owned(),
     };
-    let metadata = match row.remove("_audit_metadata") {
+    let mut metadata = match row.remove("_audit_metadata") {
         Some(m @ Value::Object(_)) => m,
         _ => json!({}),
     };
+    metadata["user_id"] = json!(crate::api::USER_ID);
     for key in STRIP {
         row.remove(key);
     }
@@ -174,6 +175,7 @@ async fn apply(
             }
             (row, "upsert")
         }
+        None if is_merge => (row, "merge"),
         None => (row, "upsert"),
     };
     data.insert("id".into(), json!(id));

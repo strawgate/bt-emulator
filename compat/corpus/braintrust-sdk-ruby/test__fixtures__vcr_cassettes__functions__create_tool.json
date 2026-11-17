@@ -1,0 +1,195 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/functions/create_tool.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "GET",
+   "path": "/v1/project?project_name=ruby-sdk-test",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "objects": [
+      {
+       "created": "2025-10-22T03:32:12.324Z",
+       "deleted_at": null,
+       "id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+       "name": "ruby-sdk-test",
+       "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "settings": null,
+       "user_id": "f2ddc4e6-a51a-4a60-9734-9af4ea05c6ef"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/function",
+   "request": {
+    "body": {
+     "description": "A test tool that echoes input",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": {
+      "parameters": {
+       "properties": {
+        "input": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "returns": {
+       "type": "string"
+      }
+     },
+     "function_type": "tool",
+     "name": "test-ruby-sdk-tool-helper",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Echo: {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-tool-helper"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": {
+     "_xact_id": "1000196291403334775",
+     "created": "2025-12-11T04:55:30.037Z",
+     "description": "A test tool that echoes input",
+     "function_data": {
+      "type": "prompt"
+     },
+     "function_schema": {
+      "parameters": {
+       "properties": {
+        "input": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      },
+      "returns": {
+       "type": "string"
+      }
+     },
+     "function_type": "tool",
+     "id": "7872a93e-3e19-4250-811e-3bc888ed5323",
+     "log_id": "p",
+     "name": "test-ruby-sdk-tool-helper",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "prompt_data": {
+      "options": {
+       "model": "gpt-4o-mini"
+      },
+      "prompt": {
+       "messages": [
+        {
+         "content": "Echo: {{input}}",
+         "role": "user"
+        }
+       ],
+       "type": "chat"
+      }
+     },
+     "slug": "test-ruby-sdk-tool-helper"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "DELETE",
+   "path": "/v1/function/7872a93e-3e19-4250-811e-3bc888ed5323",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "_object_delete": true,
+     "_xact_id": "1000196291403335077",
+     "created": "2025-12-11T04:55:30.683Z",
+     "id": "7872a93e-3e19-4250-811e-3bc888ed5323",
+     "log_id": "p",
+     "org_id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+     "project_id": "ac86d18e-af78-4caf-918d-b89ad108ec67",
+     "slug": "test-ruby-sdk-tool-helper"
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8"
+    },
+    "status": 200
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}

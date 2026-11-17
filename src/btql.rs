@@ -17,8 +17,8 @@ pub struct Query {
 
 pub fn parse(body: &Value) -> Result<Query, String> {
     let query = &body["query"];
-    if query.is_string() {
-        return Err("BTQL text queries are not supported; send the structured query form".into());
+    if let Some(text) = query.as_str() {
+        return crate::btql_text::parse(text);
     }
     let from = &query["from"];
     if from["op"] != "function" {
@@ -70,6 +70,8 @@ pub fn matches(expr: &Value, row: &Value) -> Result<bool, String> {
             false
         }
         "not" => !matches(&expr["expr"], row)?,
+        // A bare field or literal used as a condition.
+        "ident" | "literal" => eval(expr, row)? == Value::Bool(true),
         "isnull" => eval(&expr["expr"], row)?.is_null(),
         "isnotnull" => !eval(&expr["expr"], row)?.is_null(),
         "eq" => eval(&expr["left"], row)? == eval(&expr["right"], row)?,
@@ -171,7 +173,13 @@ mod tests {
         assert!(
             parse(&json!({"query": "select: *"}))
                 .unwrap_err()
-                .contains("text queries")
+                .contains("unexpected character")
+        );
+        assert_eq!(
+            parse(&json!({"query": "SELECT * FROM dataset('d')"}))
+                .unwrap()
+                .object_id,
+            "d"
         );
         assert!(
             parse(&json!({"query": {"from": {"op": "ident"}}}))

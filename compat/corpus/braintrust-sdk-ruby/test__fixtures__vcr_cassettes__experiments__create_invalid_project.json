@@ -1,0 +1,70 @@
+{
+ "cassette": "test/fixtures/vcr_cassettes/experiments/create_invalid_project.yml",
+ "commit": "2e0dd552c9330437198e5ca5481fef49653d2b2e",
+ "interactions": [
+  {
+   "host": "www.braintrust.dev",
+   "method": "POST",
+   "path": "/api/apikey/login",
+   "request": {
+    "body": null,
+    "headers": {}
+   },
+   "response": {
+    "body": {
+     "org_info": [
+      {
+       "api_url": "https://staging-api.braintrust.dev",
+       "git_metadata": {
+        "collect": "some",
+        "fields": [
+         "commit",
+         "branch",
+         "tag",
+         "author_name",
+         "author_email",
+         "commit_message",
+         "commit_time",
+         "dirty"
+        ]
+       },
+       "id": "5d7c97d7-fef1-4cb7-bda6-7e3756a0ca8e",
+       "is_universal_api": true,
+       "name": "braintrustdata.com",
+       "proxy_url": "https://staging-api.braintrust.dev",
+       "realtime_url": "wss://realtime.braintrustapi.com"
+      }
+     ]
+    },
+    "headers": {
+     "content-type": "application/json; charset=utf-8",
+     "x-bt-was-udf-cached": "true"
+    },
+    "status": 200
+   }
+  },
+  {
+   "host": "staging-api.braintrust.dev",
+   "method": "POST",
+   "path": "/v1/experiment",
+   "request": {
+    "body": {
+     "ensure_new": true,
+     "name": "bad",
+     "project_id": "00000000-0000-0000-0000-000000000000"
+    },
+    "headers": {
+     "content-type": "application/json"
+    }
+   },
+   "response": {
+    "body": "Missing read access to project id 00000000-0000-0000-0000-000000000000, or the project does not exist [user_email=david.elner@braintrustdata.com] [user_org=braintrustdata.com] [timestamp=1772766232.485] [request_id=iad1::l5cwq-1772766232405-a69aa87761fc]",
+    "headers": {
+     "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+   }
+  }
+ ],
+ "source": "braintrust-sdk-ruby"
+}
