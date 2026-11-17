@@ -61,6 +61,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: e2e/go/go.mod
+          cache-dependency-path: e2e/go/go.sum
       - if: matrix.backend == 'postgres'
         run: echo "BT_EMULATOR_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres" >> "$GITHUB_ENV"
       - run: just e2e

@@ -449,9 +449,9 @@ Attachments (only if rows contain `Attachment` objects):
 
 ## 12. Go SDK notes
 - REST CRUD is entirely `/v1/*` (Go cassette tally): `POST /v1/project` ×63, `POST /v1/experiment` ×25, `POST /v1/dataset/{id}/fetch` ×16, `POST /v1/dataset` ×13, `POST /v1/dataset/{id}/insert` ×10, `DELETE /v1/dataset/{id}` ×8, `GET /v1/dataset?…`, `GET /v1/project?…`, `GET /v1/experiment?limit&project_id`, `GET/DELETE /v1/experiment/{id}`, `/v1/experiment/{id}/insert|fetch`.
-  - Also `/v1/function` (list `?project_name&slug&limit`, `PUT` upsert, `/{id}/invoke`), `/v1/prompt`, and `/v1/project_automation` (out of scope here; invoke needs an LLM).
+  - Also `/v1/function` (list `?project_name&slug&limit`, `PUT` upsert, `/{id}/invoke`: §15-16), `/v1/prompt`, and `/v1/project_automation`.
 - Extra query params Go sends that are not in the Python spec: `org_id` (project list), `id` and `version` (dataset list) (go:api/projects/projects.go:98-99, go:api/datasets/datasets.go:143-147). Unknown params must be tolerated.
-- **Go span ingestion uses OTLP/HTTP `POST {api_url}/otel/v1/traces`** (protobuf, gzip, `Authorization: Bearer`, parent via the `x-bt-parent` header) (go:trace/trace.go:884-905; py:http_headers.py:4). It does not use `/logs3`. Go eval cassettes contain no OTLP calls, so this path has no recorded examples. It is required for Go tracing/eval results, but it is a separate workstream.
+- **Go span ingestion uses OTLP/HTTP `POST {api_url}/otel/v1/traces`** (protobuf, gzip, `Authorization: Bearer`, parent via the `braintrust.parent` span attribute) (go:trace/trace.go:884-905). It does not use `/logs3`. Go eval cassettes contain no OTLP calls, so this path has no recorded examples; `e2e/go` covers it with the real SDK. See §17.
 
 ---
 
@@ -480,6 +480,7 @@ Suggested build order:
 - Whether the server applies a `tags` set-union on merge (the client does, py:util.py:77-90).
 - 403 vs 404 for missing projects/datasets (only the experiment 403 is recorded).
 - `/v1/.../feedback` response body and `/ping` response body (no SDK flow reads either).
+- How the real server renders a prompt for invoke beyond the variables documented in §16 (e.g. `strict`, `mode: parallel`), and whether it logs a span when `parent` is given (the emulator does not).
 - Whether `GET /v1/prompt` lists only `function_data.type == "prompt"` (the emulator's choice) or every function, and what the real API answers for a non-numeric `version`.
 
 ---
@@ -497,4 +498,35 @@ Prompts are functions with `function_data: {"type": "prompt"}`. Both endpoints s
 - **`version`** is an `_xact_id`, or its 16-hex display form (`xact * 205891132094649 mod 2^64`, py:xact_ids.py). Reads return the latest version at or before it.
 - **Delete** writes a tombstone and returns the last version with `_object_delete: true` and a fresh `created`.
 - **Missing id** → 400 `{"Code":"BadRequestError","Message":"Prompt does not exist or you do not have access"}` (`go:prompt/testdata/cassettes/TestLoadWithClient_HTTPError.yaml`). `/v1/function` says "Function".
-- Not implemented: `/v1/function/{id}/invoke` (needs an LLM or a code sandbox), `environment` lookups, `/insert-functions` and `/function/sandbox-list` (used by `braintrust push` and sandbox registration).
+- Not implemented: `environment` lookups, `/insert-functions` and `/function/sandbox-list` (used by `braintrust push` and sandbox registration).
+
+## 16. Invoking functions (`POST /v1/function/{id}/invoke`, `POST /function/invoke`)
+
+The Go and Ruby SDKs call `/v1/function/{id}/invoke` with `{input[, version, messages, metadata, stream]}`. The Python and JS SDKs (`invoke`, `init_function`/`initFunction`) call `/function/invoke` on the proxy URL and name the function with `function_id`, or `project_name` and `slug` (plus optional `version`). The emulator also accepts `project_id` with `slug`. `global_function` (autoevals) is rejected with 400.
+- **Response:** the function's output as bare JSON (a string, number or object). With `stream: true`, the response is Braintrust's SSE format: `event: start`, then one `text_delta` (data is a JSON string) or `json_delta` (data is JSON text) carrying the whole output, then `event: done`.
+- **Prompt functions** run against the OpenAI-compatible API given by `--llm-base-url` (`POST {base}/chat/completions`, with `--llm-api-key` as a bearer token). Nothing is sent to Braintrust.
+  - Template variables are `{metadata, input, ...input}`: an object input's fields are also top-level variables, so a scorer called with `{input, output, expected}` can use `{{output}}`. Templates are mustache without HTML escaping, and non-string values render as compact JSON (as py:logger.py `_create_custom_render` does).
+  - The request is `options.params` (minus `use_cache`), `model: options.model`, the rendered messages (a `completion` prompt becomes one user message), then the invoke's extra `messages`. `prompt.tools` (a JSON string) is rendered and sent as `tools`.
+  - Output: with `response_format` `json_object` or `json_schema`, the reply is parsed as JSON (falling back to the text); tool calls return their parsed arguments (an array when there are several); otherwise the text.
+  - An `llm_classifier` parser (`prompt_data.parser`) forces a `select_choice` tool (`choice` enum from `choice_scores`, plus `reasoning` when `use_cot`) and returns `{"name": <function name>, "score": choice_scores[choice], "metadata": {"choice", "rationale"?}}`. Recorded: `go:eval/testdata/cassettes/TestScorerAPI_OutputParsing.yaml`, `ruby:test/fixtures/vcr_cassettes/eval_functions/scorer_parses_structured_response.yml`.
+- **Inline code functions** (`function_data.data.type == "inline"`, runtime `node` or `python`) run in a local `node`/`python3` process only when the emulator is started with `--allow-code-execution`. A node handler gets `(input, {metadata})`; a Python handler gets an object input's fields as keyword arguments (only those it declares, unless it takes `**kwargs`), or a non-object input positionally. Async handlers are awaited. The default timeout is 60 s.
+- **Errors:** a missing function is the same 400 as `GET`. A function that cannot run here (no model configured, code execution disabled, bundled code, other function types) is 400 `{"error": ...}`. A model or code failure (non-2xx, invalid reply, exception, timeout) is 500; the Python SDK raises `BraintrustInvokeError` with the body.
+
+## 17. OTLP trace ingest (`POST /otel/v1/traces`)
+
+The Go SDK traces only through OpenTelemetry: a batch span processor exports to `{api_url}/otel/v1/traces` as OTLP/HTTP protobuf, gzip-compressed, with `Authorization: Bearer` and no other Braintrust headers (go:trace/trace.go `getHTTPOtelOpts`). The Python `braintrust.otel` exporter posts to the same path with an `x-bt-parent` header. The Go SDK takes its API URL from the login response's `api_url`, which is why login answers with the emulator's own base URL.
+- **Encodings:** protobuf (`application/x-protobuf`, the default) or OTLP/JSON (`application/json`: lowerCamelCase fields, hex ids, 64-bit integers as strings or numbers), either one optionally `Content-Encoding: gzip`. The response is an empty `ExportTraceServiceResponse` (an empty protobuf body, or `{}` for JSON).
+- **Destination:** the span's `braintrust.parent` attribute, else the request's `x-bt-parent` header: `experiment_id:<id>`, `project_id:<id>` (project logs) or `project_name:<name>` (project logs; the project is created if missing, as the Go SDK's default project needs). A span with no parent, or another parent type (`playground_id`, an exported span slug), fails the whole request with 400, and an unknown experiment or project id is the usual 403.
+- **Ids:** `id` and `span_id` are the hex span id, `root_span_id` is the hex trace id, and `span_parents` is `[hex parent span id]` (omitted for a root span). `created` is the start time; `metrics.start`/`end` are the start/end times in float seconds.
+- **Fields:**
+  - `input`, `output`, `expected` and `context` come from `braintrust.<field>_json`, else `braintrust.<field>`. A string that is valid JSON is decoded (the Go SDK writes JSON text into `braintrust.expected` and `braintrust.output`); other strings are kept.
+  - `metadata`, `metrics`, `scores` and `span_attributes` come from `braintrust.<field>` (a JSON object, or a kvlist) merged with flattened `braintrust.<field>.<key>` attributes. `braintrust.tags` is a string array or a JSON array.
+  - `span_attributes.name` defaults to the OTel span name.
+  - GenAI conventions fill in what Braintrust attributes leave unset:
+    - Input from `gen_ai.input.messages`, `gen_ai.prompt_json` or `gen_ai.prompt`; output from `gen_ai.output.messages`, `gen_ai.completion_json` or `gen_ai.completion`.
+    - `metadata.model` from `gen_ai.request.model`.
+    - `metrics.prompt_tokens`, `completion_tokens` and `tokens` from `gen_ai.usage.*`.
+    - `span_attributes.type` is `llm` for a chat or completion `gen_ai.operation.name`, and `tool` for `execute_tool`.
+  - A span with error status gets `error`: the `exception` event's `exception.message`, else the status message, else `"error"`.
+- **Writes:** each export is one transaction, and every span replaces any row with the same id. Span events other than `exception` are not stored.
+- These mappings follow Braintrust's public OpenTelemetry attribute documentation and the Apache-2.0 SDKs. The server-side converter is not open source, so details such as decoding plain-string JSON are the emulator's choices.

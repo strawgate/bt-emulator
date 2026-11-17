@@ -4,9 +4,11 @@
 mod error;
 mod extract;
 mod functions;
+mod invoke;
 mod legacy;
 mod meta;
 mod objects;
+mod otel;
 mod rows;
 mod summary;
 mod validate;
@@ -31,6 +33,8 @@ pub const MAX_BODY_BYTES: usize = 256 * 1024 * 1024;
 pub struct Config {
     /// When set, only this API key is accepted; otherwise any bearer token is.
     pub api_key: Option<String>,
+    /// Where function invocations run.
+    pub runtime: crate::invoke::Runtime,
 }
 
 /// The router with default options (any API key accepted).
@@ -40,6 +44,7 @@ pub fn router(db: Db) -> Router {
 
 pub fn app(db: Db, config: Config) -> Router {
     let api_key: Option<std::sync::Arc<str>> = config.api_key.map(Into::into);
+    let runtime = std::sync::Arc::new(config.runtime);
     Router::new()
         .route("/", get(root))
         // App URL
@@ -60,6 +65,7 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/version", get(meta::version))
         .route("/logs3", post(rows::logs3))
         .route("/btql", post(rows::btql))
+        .route("/otel/v1/traces", post(otel::traces))
         .route(
             "/experiment-comparison2",
             get(summary::experiment_comparison),
@@ -68,6 +74,8 @@ pub fn app(db: Db, config: Config) -> Router {
         .route("/v1/function", functions_root())
         .route("/v1/prompt", functions_root())
         .route("/v1/function/{id}", functions_item())
+        .route("/v1/function/{id}/invoke", post(invoke::by_id))
+        .route("/function/invoke", post(invoke::by_ref))
         .route("/v1/prompt/{id}", functions_item())
         .route("/v1/{kind}", get(objects::list).post(objects::create))
         .route(
@@ -90,6 +98,7 @@ pub fn app(db: Db, config: Config) -> Router {
             api_key,
             validate::require_auth,
         ))
+        .layer(axum::Extension(runtime))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
         .with_state(db)
 }

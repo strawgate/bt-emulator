@@ -124,3 +124,73 @@ def test_load_prompt_latest_and_pinned_version(project_name, api):
 
     pinned = braintrust.load_prompt(project=project_name, slug="greeter", version=v1["_xact_id"], no_trace=True)
     assert pinned.build(name="Ada")["messages"][0]["content"] == "Hello Ada"
+
+
+def _create_function(api, pid, slug, **fields):
+    return api.request("PUT", "/v1/function", {"project_id": pid, "name": slug, "slug": slug, **fields})
+
+
+def test_invoke_prompt_and_inline_code(project_name, api):
+    api.request("POST", "/v1/project", {"name": project_name})
+    pid = api.project_id(project_name)
+    _create_function(
+        api,
+        pid,
+        "greet",
+        function_data={"type": "prompt"},
+        prompt_data={
+            "options": {"model": "stub"},
+            "prompt": {"type": "chat", "messages": [{"role": "user", "content": "Say hello to {{input}}"}]},
+        },
+    )
+    _create_function(
+        api,
+        pid,
+        "double",
+        function_data={
+            "type": "code",
+            "data": {
+                "type": "inline",
+                "runtime_context": {"runtime": "python", "version": "3.12"},
+                "code": "def handler(input):\n    return input * 2\n",
+            },
+        },
+    )
+
+    assert braintrust.invoke(project_name=project_name, slug="greet", input="world") == "echo: Say hello to world"
+    streamed = braintrust.invoke(project_name=project_name, slug="greet", input="Ada", stream=True)
+    assert streamed.final_value() == "echo: Say hello to Ada"
+    assert braintrust.invoke(project_name=project_name, slug="double", input=21) == 42
+
+
+def test_eval_with_a_remote_llm_classifier(project_name, api):
+    api.request("POST", "/v1/project", {"name": project_name})
+    pid = api.project_id(project_name)
+    _create_function(
+        api,
+        pid,
+        "judge",
+        function_type="scorer",
+        function_data={"type": "prompt"},
+        prompt_data={
+            "options": {"model": "stub"},
+            "parser": {"type": "llm_classifier", "use_cot": True, "choice_scores": {"correct": 1, "wrong": 0}},
+            "prompt": {
+                "type": "chat",
+                "messages": [{"role": "user", "content": "{{output}} vs {{expected}}: {{metadata.verdict}}"}],
+            },
+        },
+    )
+    # The stub model picks the choice its prompt names, here via the case metadata.
+    result = braintrust.Eval(
+        project_name,
+        data=[
+            {"input": "a", "expected": "A", "metadata": {"verdict": "correct"}},
+            {"input": "b", "expected": "X", "metadata": {"verdict": "wrong"}},
+        ],
+        task=lambda x: x.upper(),
+        scores=[braintrust.init_function(project_name=project_name, slug="judge")],
+        experiment_name="remote-judge",
+    )
+    assert sorted(r.scores["judge"] for r in result.results) == [0, 1]
+    assert result.summary.scores["judge"].score == 0.5

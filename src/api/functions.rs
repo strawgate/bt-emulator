@@ -17,7 +17,7 @@ use crate::db::events::Event;
 use crate::db::objects::Kind;
 use crate::error::Error;
 
-const OBJECT_TYPE: &str = "functions";
+pub(super) const OBJECT_TYPE: &str = "functions";
 
 /// Optional fields reported as `null` when unset, per endpoint.
 const PROMPT_FIELDS: [&str; 6] = [
@@ -53,7 +53,7 @@ const IMMUTABLE: [&str; 7] = [
 /// Which endpoint was called: `/v1/prompt` lists only prompts, though any function
 /// can be read, patched or deleted through either.
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum Flavor {
+pub(super) enum Flavor {
     Function,
     Prompt,
 }
@@ -116,7 +116,12 @@ async fn put(
 }
 
 /// A function's current version, or its version as of `version`.
-async fn current(db: &Db, flavor: Flavor, id: &str, version: Option<i64>) -> ApiResult<Event> {
+pub(super) async fn current(
+    db: &Db,
+    flavor: Flavor,
+    id: &str,
+    version: Option<i64>,
+) -> ApiResult<Event> {
     check_uuid(id)?;
     match db.row_at(OBJECT_TYPE, id, version).await? {
         Some((_, event)) => Ok(event),

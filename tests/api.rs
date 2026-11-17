@@ -558,6 +558,7 @@ async fn a_configured_api_key_is_enforced() {
     let (_, db) = common::backends().await.remove(0);
     let config = bt_emulator::api::Config {
         api_key: Some("secret".into()),
+        ..Default::default()
     };
     let send = |auth: &'static str| {
         let app = bt_emulator::api::app(db.clone(), config.clone());

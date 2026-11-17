@@ -103,3 +103,55 @@ test("loadPrompt reads the latest and a pinned version", async () => {
   const pinned = await braintrust.loadPrompt({ projectName: project, slug: "greeter", version: v1._xact_id, noTrace: true });
   assert.equal(pinned.build({ name: "Ada" }).messages[0].content, "Hello Ada");
 });
+
+test("invoke runs prompt and inline code functions", async () => {
+  const project = projectName();
+  const { id: projectId } = await rest.request("POST", "/v1/project", { name: project });
+  const create = (slug, fields) => rest.request("PUT", "/v1/function", { project_id: projectId, name: slug, slug, ...fields });
+  await create("greet", {
+    function_data: { type: "prompt" },
+    prompt_data: {
+      options: { model: "stub" },
+      prompt: { type: "chat", messages: [{ role: "user", content: "Say hello to {{input}}" }] },
+    },
+  });
+  await create("double", {
+    function_data: {
+      type: "code",
+      data: { type: "inline", runtime_context: { runtime: "node", version: "22" }, code: "function handler(x) { return x * 2; }" },
+    },
+  });
+
+  assert.equal(await braintrust.invoke({ projectName: project, slug: "greet", input: "world" }), "echo: Say hello to world");
+  const stream = await braintrust.invoke({ projectName: project, slug: "greet", input: "Ada", stream: true });
+  assert.equal(await stream.finalValue(), "echo: Say hello to Ada");
+  assert.equal(await braintrust.invoke({ projectName: project, slug: "double", input: 21 }), 42);
+});
+
+test("Eval with a remote LLM classifier", async () => {
+  const project = projectName();
+  const { id: projectId } = await rest.request("POST", "/v1/project", { name: project });
+  await rest.request("PUT", "/v1/function", {
+    project_id: projectId,
+    name: "judge",
+    slug: "judge",
+    function_type: "scorer",
+    function_data: { type: "prompt" },
+    prompt_data: {
+      options: { model: "stub" },
+      parser: { type: "llm_classifier", use_cot: true, choice_scores: { correct: 1, wrong: 0 } },
+      prompt: { type: "chat", messages: [{ role: "user", content: "{{output}} vs {{expected}}: {{metadata.verdict}}" }] },
+    },
+  });
+  // The stub model picks the choice its prompt names, here via the case metadata.
+  const result = await braintrust.Eval(project, {
+    experimentName: "remote-judge",
+    data: [
+      { input: "a", expected: "A", metadata: { verdict: "correct" } },
+      { input: "b", expected: "X", metadata: { verdict: "wrong" } },
+    ],
+    task: (input) => input.toUpperCase(),
+    scores: [braintrust.initFunction({ projectName: project, slug: "judge" })],
+  });
+  assert.deepEqual(result.results.map((r) => Object.values(r.scores)[0]).sort(), [0, 1]);
+});

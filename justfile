@@ -64,8 +64,8 @@ pg-stop:
 serve *args:
     cargo run -- serve {{args}}
 
-# Run the official Braintrust SDKs (Python + JS) against the emulator binary.
-e2e: e2e-py e2e-js
+# Run the official Braintrust SDKs (Python, JS, Go) against the emulator binary.
+e2e: e2e-py e2e-js e2e-go
 
 e2e-py:
     cargo build
@@ -74,6 +74,10 @@ e2e-py:
 e2e-js:
     cargo build
     cd e2e/js && npm ci --silent && npm test
+
+e2e-go:
+    cargo build
+    cd e2e/go && go test -count=1 ./...
 
 # e2e against a Postgres-backed emulator.
 e2e-pg: pg-start

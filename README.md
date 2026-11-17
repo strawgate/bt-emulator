@@ -4,9 +4,10 @@ An offline emulator for the [Braintrust](https://www.braintrust.dev) API, writte
 
 Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no account, no network, no API key. That covers logging, experiments, datasets, summaries, and fetching data back.
 
-> **Status:** early development. The official Python and JS SDKs can log, run experiments and
-> evals, read datasets back, and store and load versioned prompts and functions. Invoking
-> functions, attachments and OTLP ingest are not implemented yet.
+> **Status:** early development. The official Python, JS and Go SDKs can log and trace
+> (including OpenTelemetry/OTLP), run experiments and evals, read datasets back, store and
+> load versioned prompts and functions, and invoke them against a local model you configure.
+> Attachments are not implemented yet.
 
 ## Why
 
@@ -16,12 +17,13 @@ Point the Braintrust SDKs at `bt-emulator` and everything runs locally: no accou
 
 ## Goals
 
-- Wire compatibility with the official Braintrust SDKs (Python and TypeScript), including:
+- Wire compatibility with the official Braintrust SDKs (Python, TypeScript and Go), including:
   - Login and org discovery (`/api/apikey/login`)
   - Project, experiment, and dataset registration
-  - Span and event ingestion (`/logs3`)
+  - Span and event ingestion (`/logs3`), and OpenTelemetry traces (`/otel/v1/traces`, as the Go SDK and `braintrust.otel` export them)
   - The REST API (`/v1/project`, `/v1/experiment`, `/v1/dataset`, `/v1/project_logs`, …), including `insert`, `fetch`, `feedback`, and `summarize`
   - Versioned prompts and functions (`/v1/prompt`, `/v1/function`), as loaded by `load_prompt`/`loadPrompt`
+  - Function invocation (`invoke`, remote scorers and tasks): prompts run against any OpenAI-compatible API you point it at; inline code runs locally if you allow it
 - Storage backends:
   - **SQLite:** zero-setup default
   - **PostgreSQL:** for shared or long-lived instances
@@ -42,6 +44,22 @@ export BRAINTRUST_API_KEY=local
 Then use the Braintrust SDK as usual. Any API key is accepted unless you start the
 emulator with `--api-key <key>` (or `BT_EMULATOR_API_KEY`), which makes it reject others.
 
+### Invoking functions
+
+Invoking a prompt (`braintrust.invoke`, `init_function` scorers, the Go SDK's function
+tasks and scorers) needs a model. Point the emulator at any OpenAI-compatible API, such as
+Ollama, vLLM, LiteLLM or OpenAI itself:
+
+```bash
+bt-emulator serve --llm-base-url http://localhost:11434/v1   # Ollama
+bt-emulator serve --llm-base-url https://api.openai.com/v1 --llm-api-key "$OPENAI_API_KEY"
+```
+
+The prompt's own `model` is passed through. Inline code functions (Node or Python) run in
+local `node`/`python3` processes only with `--allow-code-execution`. Leave that off when
+others can reach the emulator, since it runs their code on your machine. See
+[`docs/protocol.md` §16](docs/protocol.md) for the details.
+
 ## Testing
 
 Development is test-first, and CI enforces 100% line and function coverage of the Rust code.
@@ -51,7 +69,7 @@ Development is test-first, and CI enforces 100% line and function coverage of th
 | Unit + API tests | Merge semantics, BTQL filters, summaries, every endpoint, on SQLite and Postgres | `just test-all` |
 | Recorded traffic replay | Cassettes harvested from the official SDK repos (`compat/`), replayed against the emulator | `cargo test --test compat` |
 | OpenAPI fuzzing | schemathesis generates valid and invalid requests from Braintrust's published spec and checks every response against it (`compat/openapi/`) | `just fuzz` |
-| SDK end-to-end | The real Python and JS SDKs against the binary, fully offline | `just e2e`, `just e2e-pg` |
+| SDK end-to-end | The real Python, JS and Go SDKs against the binary, fully offline (prompts run against a local stub model) | `just e2e`, `just e2e-pg` |
 | Everything CI runs | fmt, clippy, coverage gate on both backends | `just ci` |
 
 Known-incompatible cassettes are listed in `compat/expected-failures.txt`; regenerate with

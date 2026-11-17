@@ -299,10 +299,35 @@ async fn hydrate(router: &axum::Router, st: &mut Replay, it: &Value) {
     }
 }
 
-async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String> {
+/// The model reply that makes an invoke return what was recorded: a classifier's
+/// choice and rationale through `select_choice`, or the output as text.
+fn model_reply(recorded: &Value) -> String {
+    let reply = match recorded {
+        Value::Object(o)
+            if o.contains_key("score") && recorded["metadata"]["choice"].is_string() =>
+        {
+            common::tool_reply(json!({
+                "choice": recorded["metadata"]["choice"],
+                "reasoning": recorded["metadata"]["rationale"],
+            }))
+        }
+        Value::String(text) => common::text_reply(text),
+        other => common::text_reply(&other.to_string()),
+    };
+    reply.to_string()
+}
+
+async fn replay(
+    router: axum::Router,
+    llm: &common::Llm,
+    cassette: &Cassette,
+) -> Result<(), String> {
     let mut st = Replay::default();
     for (n, it) in cassette.interactions.iter().enumerate() {
         hydrate(&router, &mut st, it).await;
+        if it["path"].as_str().unwrap().ends_with("/invoke") {
+            *llm.sticky.lock().unwrap() = Some(model_reply(&it["response"]["body"]));
+        }
         let method = it["method"].as_str().unwrap();
         let path = st.substitute(it["path"].as_str().unwrap());
         let where_ = format!("#{n} {method} {}", it["path"].as_str().unwrap());
@@ -370,7 +395,10 @@ async fn replay(router: axum::Router, cassette: &Cassette) -> Result<(), String>
                 v
             }
         };
+        // The harvester decodes JSON bodies, so a string that is itself valid JSON
+        // was a JSON string literal (a function's text output); keep it a string.
         let recorded = rows(match &it["response"]["body"] {
+            Value::String(text) if serde_json::from_str::<Value>(text).is_ok() => json!(text),
             Value::String(text) => parse_body(text),
             other => other.clone(),
         });
@@ -431,11 +459,22 @@ async fn recorded_sdk_traffic_replays() {
         !corpus.is_empty(),
         "compat/corpus is empty; run `just compat-harvest`"
     );
+    // Invocations run against a stub model replaying the recorded outputs, and inline
+    // code runs locally, as it would for a user who enables it.
+    let llm = common::Llm::default();
+    let mut runtime = bt_emulator::invoke::Runtime::default();
+    runtime.llm_base_url = Some(llm.start().await);
+    runtime.allow_code = true;
+    let config = bt_emulator::api::Config {
+        runtime,
+        ..Default::default()
+    };
     let mut failures: BTreeMap<String, String> = BTreeMap::new();
     let mut per_backend: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
     for cassette in &corpus {
         for (backend, db) in common::backends().await {
-            if let Err(reason) = replay(bt_emulator::api::router(db), cassette).await {
+            let router = bt_emulator::api::app(db, config.clone());
+            if let Err(reason) = replay(router, &llm, cassette).await {
                 per_backend
                     .entry(backend)
                     .or_default()
