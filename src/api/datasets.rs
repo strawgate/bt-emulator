@@ -52,7 +52,7 @@ async fn plan(db: &Db, dataset_id: &str, body: &Value) -> ApiResult<(Rows, Vec<S
     let then = rows(db, dataset_id, Some(version)).await?;
     let now = rows(db, dataset_id, None).await?;
     let (restore, delete) = diff(then, &now);
-    within_limit(restore.len() + delete.len(), version)?;
+    within_limit(restore.len(), delete.len(), version)?;
     Ok((restore, delete))
 }
 
@@ -71,8 +71,9 @@ fn diff(then: Rows, now: &Rows) -> (Rows, Vec<String>) {
     (restore, delete)
 }
 
-fn within_limit(changed: usize, version: i64) -> ApiResult<()> {
-    if changed > MAX_RESTORE_ROWS {
+/// A restore may write back and delete at most [`MAX_RESTORE_ROWS`] rows in all.
+fn within_limit(restore: usize, delete: usize, version: i64) -> ApiResult<()> {
+    if restore + delete > MAX_RESTORE_ROWS {
         return Err(ApiError::bad_request(format!(
             "more than {MAX_RESTORE_ROWS} rows changed since version {version}"
         )));
@@ -266,8 +267,10 @@ mod tests {
 
     #[test]
     fn restores_are_limited_to_20000_rows() {
-        assert!(within_limit(MAX_RESTORE_ROWS, 1).is_ok());
-        let err = within_limit(MAX_RESTORE_ROWS + 1, 7).unwrap_err();
+        assert!(within_limit(MAX_RESTORE_ROWS, 0, 1).is_ok());
+        assert!(within_limit(MAX_RESTORE_ROWS / 2, MAX_RESTORE_ROWS / 2, 1).is_ok());
+        assert!(within_limit(MAX_RESTORE_ROWS, 1, 1).is_err());
+        let err = within_limit(1, MAX_RESTORE_ROWS, 7).unwrap_err();
         assert!(
             err.body["error"]
                 .as_str()

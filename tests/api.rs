@@ -181,6 +181,18 @@ async fn project_crud() {
                 .await,
             StatusCode::BAD_REQUEST
         );
+        // A rename takes effect; `null` clears a field that may be null.
+        let renamed = app
+            .ok(
+                "PATCH",
+                &format!("/v1/project/{id}"),
+                Some(json!({"name": "p3", "description": null})),
+            )
+            .await;
+        assert_eq!(
+            (renamed["name"].clone(), renamed["description"].clone()),
+            (json!("p3"), Value::Null)
+        );
         app.ok(
             "PATCH",
             &format!("/v1/project/{id}"),
@@ -373,6 +385,12 @@ async fn logs3_merge_replace_delete_and_fetch() {
         assert_eq!(
             (a["is_root"].as_bool(), a["project_id"].as_str()),
             (Some(true), Some(pid.as_str()))
+        );
+        // New rows are upserts unless written as merges; later merges say so.
+        let action = |row: &Value, i: usize| row["audit_data"][i]["audit_data"]["action"].clone();
+        assert_eq!(
+            (action(&a, 0), action(&a, 1), action(&by_id("new"), 0)),
+            (json!("upsert"), json!("merge"), json!("merge"))
         );
         assert_eq!(a["audit_data"][1]["source"], "app");
         assert_eq!(
@@ -660,10 +678,13 @@ async fn fetch_pagination_follows_the_cursor_rule() {
             let path = format!("/v1/dataset/{did}/fetch");
             async move { app.status("POST", &path, Some(body)).await }
         };
-        assert_eq!(
-            bad(json!({"cursor": "nope"})).await,
-            StatusCode::BAD_REQUEST
-        );
+        for cursor in ["nope", "1.x", "x.1"] {
+            assert_eq!(
+                bad(json!({"cursor": cursor})).await,
+                StatusCode::BAD_REQUEST,
+                "{cursor}"
+            );
+        }
         assert_eq!(bad(json!({"version": "v1"})).await, StatusCode::BAD_REQUEST);
         assert_eq!(
             app.status(
@@ -750,14 +771,19 @@ async fn logs3_rejects_malformed_payloads() {
     for app in apps().await {
         let pid = app.project("p").await;
         let did = app.dataset(&pid, "d").await;
-        for body in [
-            Value::Null,
-            json!({"rows": {"type": "logs3_overflow", "key": "k"}}),
-            json!({"rows": [1]}),
-            json!({"rows": [{"id": "no-target"}]}),
+        for (body, says) in [
+            (Value::Null, "must be an array"),
+            (
+                json!({"rows": {"type": "logs3_overflow", "key": "k"}}),
+                "overflow uploads are not supported",
+            ),
+            (json!({"rows": {"type": "other"}}), "must be an array"),
+            (json!({"rows": [1]}), ""),
+            (json!({"rows": [{"id": "no-target"}]}), ""),
         ] {
             let (status, resp) = app.call("POST", "/logs3", Some(body.clone())).await;
             assert_eq!(status, StatusCode::BAD_REQUEST, "{body}: {resp}");
+            assert!(resp.to_string().contains(says), "{body}: {resp}");
         }
         let empty = Request::builder()
             .header("authorization", "Bearer t")
@@ -1267,6 +1293,25 @@ async fn functions_and_prompts_are_versioned_by_slug() {
             .await;
         assert_eq!(patched["prompt_data"]["options"]["model"], "m");
         assert_eq!(patched["prompt_data"]["prompt"]["type"], "chat");
+        // An object of the same `type` merges too.
+        let chat = |content: &str, tools: Option<&str>| {
+            let mut prompt =
+                json!({"type": "chat", "messages": [{"role": "user", "content": content}]});
+            if let Some(tools) = tools {
+                prompt["tools"] = json!(tools);
+            }
+            Some(json!({"prompt_data": {"prompt": prompt}}))
+        };
+        let path = format!("/v1/prompt/{id}");
+        app.ok("PATCH", &path, chat("one", Some("[]"))).await;
+        let merged = app.ok("PATCH", &path, chat("two", None)).await;
+        assert_eq!(
+            (
+                merged["prompt_data"]["prompt"]["tools"].clone(),
+                merged["prompt_data"]["prompt"]["messages"][0]["content"].clone()
+            ),
+            (json!("[]"), json!("two"))
+        );
         assert_eq!(
             (patched["description"].as_str(), patched["tags"].clone()),
             (Some("v2"), json!(["t"]))

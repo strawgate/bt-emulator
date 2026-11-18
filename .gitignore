@@ -10,3 +10,4 @@ __pycache__/
 .pytest_cache/
 compat/openapi/.hypothesis/
 compat/openapi/.schemathesis/
+/mutants.out*/

@@ -2,6 +2,7 @@ set dotenv-load := false
 
 pg_dir := justfile_directory() / "target/pgdata"
 pg_port := "54329"
+mutants_jobs := env("MUTANTS_JOBS", "4")
 pg_url := "postgres://postgres@127.0.0.1:" + pg_port + "/postgres"
 
 default:
@@ -46,6 +47,22 @@ ci:
     just lint
     if [ -z "${BT_TEST_POSTGRES_URL:-}" ]; then just pg-start; export BT_TEST_POSTGRES_URL={{pg_url}}; fi
     BT_REQUIRE_POSTGRES=1 just cov
+
+# Results land in mutants.out/; missed.txt lists mutants no test caught.
+# Mutation testing (https://mutants.rs): change the code and check a test fails.
+mutants *args:
+    just _mutants {{args}}
+
+# Mutation-test only the lines changed since `base`.
+mutants-diff base="origin/main" *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p target
+    git diff "{{base}}" -- src > target/mutants.diff
+    just _mutants --in-diff target/mutants.diff {{args}}
+
+_mutants *args:
+    cargo mutants -j {{mutants_jobs}} {{args}}
 
 # Start a throwaway local Postgres cluster (uses local postgres binaries, no Docker).
 pg-start:

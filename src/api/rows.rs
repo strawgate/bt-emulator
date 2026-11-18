@@ -136,13 +136,11 @@ fn encode_cursor((xact, seq): Position) -> String {
 }
 
 fn decode_cursor(cursor: &str) -> ApiResult<Position> {
-    let parse = |s: &str| s.parse::<i64>().ok();
-    match cursor.split_once('.') {
-        Some((x, s)) if parse(x).is_some() && parse(s).is_some() => {
-            Ok((parse(x).unwrap(), parse(s).unwrap()))
-        }
-        _ => Err(ApiError::bad_request(format!("invalid cursor {cursor:?}"))),
-    }
+    let parse = |(x, s): (&str, &str)| Some((x.parse().ok()?, s.parse().ok()?));
+    cursor
+        .split_once('.')
+        .and_then(parse)
+        .ok_or_else(|| ApiError::bad_request(format!("invalid cursor {cursor:?}")))
 }
 
 pub fn parse_version(v: &Value) -> ApiResult<Option<i64>> {
@@ -337,4 +335,28 @@ pub async fn btql(State(db): State<Db>, JsonBody(body): JsonBody) -> ApiResult<R
         "realtime_state": {"type": "on", "minimum_xact_id": latest, "actual_xact_id": latest, "read_bytes": 0},
     });
     Ok(with_cursor(body, cursor))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn versions_are_xact_ids_as_integers_or_strings() {
+        assert_eq!(parse_version(&json!(5)).unwrap(), Some(5));
+        assert_eq!(parse_version(&json!("5")).unwrap(), Some(5));
+        assert_eq!(parse_version(&json!("")).unwrap(), None);
+        assert_eq!(parse_version(&Value::Null).unwrap(), None);
+        for bad in [json!(1.5), json!(-1.5), json!("x"), json!(true)] {
+            assert!(parse_version(&bad).is_err(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn cursors_are_two_integers() {
+        assert_eq!(decode_cursor(&encode_cursor((7, 3))).unwrap(), (7, 3));
+        for bad in ["", "7", "7.x", "x.3", "7.3.1"] {
+            assert!(decode_cursor(bad).is_err(), "{bad}");
+        }
+    }
 }

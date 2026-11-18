@@ -531,7 +531,14 @@ async fn invocations_are_logged_under_their_parent() {
             ),
             (json!("greet"), json!("function"), json!("scorer"))
         );
-        assert!(span["metrics"]["end"].as_f64() >= span["metrics"]["start"].as_f64());
+        // Unix seconds, around now.
+        let (start, end) = (
+            span["metrics"]["start"].as_f64().unwrap(),
+            span["metrics"]["end"].as_f64().unwrap(),
+        );
+        let now = chrono::Utc::now().timestamp() as f64;
+        assert!((now - 60.0..=now + 1.0).contains(&start), "{start}");
+        assert!((start..=now + 2.0).contains(&end), "{end}");
 
         // A logger exported before its project was known names the project; failures
         // are logged with their error.

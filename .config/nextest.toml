@@ -1,0 +1,11 @@
+# Used by cargo-mutants (`--profile mutants`, see .cargo/mutants.toml). A mutant that
+# makes a loop never end would otherwise run until cargo-mutants' own timeout and be
+# reported as a timeout; terminating the hung test fails it, so the mutant is caught.
+# Under parallel mutant builds tests run ~3x slower than alone, hence the headroom.
+[profile.mutants]
+slow-timeout = { period = "10s", terminate-after = 3 }
+
+# The compat replay takes ~9s alone and nearly 30s under load.
+[[profile.mutants.overrides]]
+filter = 'test(recorded_sdk_traffic_replays)'
+slow-timeout = { period = "30s", terminate-after = 3 }

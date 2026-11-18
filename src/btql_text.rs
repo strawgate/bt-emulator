@@ -315,7 +315,9 @@ mod tests {
 
     #[test]
     fn expression_grammar() {
-        let row = json!({"a": 1, "b": "it's", "c": null, "d": true, "n": -2.5});
+        // Fields named like keywords must not be read in place of the literals.
+        let row =
+            json!({"a": 1, "b": "it's", "c": null, "d": true, "n": -2.5, "null": 1, "false": true});
         let check = |sql: &str| {
             let q = parse(&format!("select * from dataset('d') where {sql}")).unwrap();
             matches(&q.filter.unwrap(), &row).unwrap()
@@ -341,6 +343,8 @@ mod tests {
             ("select * from dataset(d)", "quoted object id"),
             ("select * from dataset('d'", "expected `)`"),
             ("select * from dataset('d') limit x", "LIMIT"),
+            ("select * from dataset('d') limit 1.5", "LIMIT"),
+            ("select * from dataset('d') limit -1", "LIMIT"),
             (
                 "select * from dataset('d') order by id",
                 "unsupported BTQL clause",

@@ -307,8 +307,39 @@ mod tests {
             Some("/v1/project_logs/{project_id}/fetch")
         );
         assert_eq!(template("/v1/experiment/"), Some("/v1/experiment"));
+        // Both `/v1/acl/{acl_id}` and `/v1/acl/batch_update` fit; the literal wins.
+        assert_eq!(
+            template("/v1/acl/batch_update"),
+            Some("/v1/acl/batch_update")
+        );
         assert_eq!(template("/v1/nope/a/b/c/d"), None);
         assert_eq!(escape("/v1/a~b"), "~1v1~1a~0b");
+    }
+
+    #[test]
+    fn event_schemas_are_the_spec_row_schemas() {
+        for (object_type, name) in [
+            ("experiment", "ExperimentEvent"),
+            ("dataset", "DatasetEvent"),
+            ("project_logs", "ProjectLogsEvent"),
+        ] {
+            let got = event_schema(object_type);
+            assert_eq!(got["type"], "array");
+            assert_eq!(got["items"]["type"], "object");
+            assert_eq!(
+                got["items"]["properties"],
+                schema(name)["properties"],
+                "{object_type}"
+            );
+        }
+        assert_ne!(
+            schema("ExperimentEvent")["properties"],
+            schema("DatasetEvent")["properties"]
+        );
+        assert_ne!(
+            schema("DatasetEvent")["properties"],
+            schema("ProjectLogsEvent")["properties"]
+        );
     }
 
     #[test]

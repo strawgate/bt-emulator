@@ -78,7 +78,7 @@ fn properties(kind: &str) -> &'static Map<String, Value> {
 fn nullable(schema: &Value) -> bool {
     schema["type"]
         .as_array()
-        .is_some_and(|types| types.iter().any(|t| t == "null"))
+        .is_some_and(|types| types.contains(&json!("null")))
 }
 
 /// A list field: `type` is `array`, or a type list containing it (nullable lists).
@@ -123,10 +123,6 @@ async fn scope(db: &Db, body: &Value) -> ApiResult<String> {
 /// the server's, with `null` for every unset nullable field.
 pub(super) fn build(kind: &str, body: &Value, keep: Option<&Value>) -> Value {
     let props = properties(kind);
-    let required = schema(kind)["required"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
     let mut data = Map::new();
     for (key, schema) in props {
         let value = match (keep.map(|k| &k[key]), &body[key]) {
@@ -140,8 +136,9 @@ pub(super) fn build(kind: &str, body: &Value, keep: Option<&Value>) -> Value {
                 "user_id" => json!(USER_ID),
                 "org_id" => json!(ORG_ID),
                 _ if nullable(schema) => Value::Null,
-                // A required list the request may omit starts out empty.
-                _ if required.contains(&json!(key)) && schema["type"] == "array" => json!([]),
+                // A list the request may omit starts out empty. (Every non-null
+                // list in the spec's resource schemas is a required one.)
+                _ if schema["type"] == "array" => json!([]),
                 _ => continue,
             },
         };

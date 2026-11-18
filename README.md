@@ -70,7 +70,8 @@ others can reach the emulator, since it runs their code on your machine. See
 
 ## Testing
 
-Development is test-first, and CI enforces 100% line and function coverage of the Rust code.
+Development is test-first. CI enforces 100% line and function coverage of the Rust code,
+and mutation testing checks that the tests would notice if the code's behaviour changed.
 
 | Layer | What it checks | Command |
 |---|---|---|
@@ -78,11 +79,13 @@ Development is test-first, and CI enforces 100% line and function coverage of th
 | Recorded traffic replay | Cassettes harvested from the official SDK repos (`compat/`), replayed against the emulator | `cargo test --test compat` |
 | OpenAPI fuzzing | schemathesis generates valid and invalid requests from Braintrust's published spec and checks every response against it (`compat/openapi/`) | `just fuzz` |
 | SDK end-to-end | The real Python, JS and Go SDKs against the binary, fully offline (prompts run against a local stub model) | `just e2e`, `just e2e-pg` |
+| Mutation testing | cargo-mutants makes small changes to the code (flip a comparison, delete a match arm) and checks a test fails for each; pull requests check the lines they change, main checks everything | `just mutants-diff`, `just mutants` |
 | Everything CI runs | fmt, clippy, coverage gate on both backends | `just ci` |
 
 Known-incompatible cassettes are listed in `compat/expected-failures.txt` (why each cannot
 replay: [`compat/README.md`](compat/README.md)); regenerate with
-`just compat-bless`. The wire protocol the emulator implements is documented in
+`just compat-bless`. Mutants that cannot change behaviour are excluded, with the
+reason, in `.cargo/mutants.toml`. The wire protocol the emulator implements is documented in
 [`docs/protocol.md`](docs/protocol.md).
 
 ## Non-goals

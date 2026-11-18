@@ -266,6 +266,7 @@ mod tests {
         assert_eq!(metrics["tool_calls"]["metric"], 0.5);
         assert_eq!(metrics["errors"]["metric"], 1.5);
         assert_eq!(metrics["llm_errors"]["metric"], 0.5);
+        assert_eq!(metrics["tool_errors"]["metric"], 0.5);
         assert_eq!(metrics["tool_errors"]["unit"], "");
     }
 
@@ -305,6 +306,38 @@ mod tests {
     }
 
     #[test]
+    fn unchanged_traces_are_neither_improvements_nor_regressions() {
+        // Three up, one down, two unchanged.
+        let pairs = [
+            (0.0, 1.0),
+            (0.0, 1.0),
+            (0.5, 1.0),
+            (1.0, 0.0),
+            (0.5, 0.5),
+            (1.0, 1.0),
+        ];
+        let (base, cur): (Vec<_>, Vec<_>) = pairs
+            .iter()
+            .enumerate()
+            .map(|(i, (b, c))| {
+                let i = i as i64;
+                (
+                    root(i, json!({"acc": b}), 0.0, 1.0),
+                    root(i, json!({"acc": c}), 0.0, 1.0),
+                )
+            })
+            .unzip();
+        let (scores, _) = summarize(&cur, Some(&base));
+        assert_eq!(
+            (
+                scores["acc"]["improvements"].clone(),
+                scores["acc"]["regressions"].clone()
+            ),
+            (json!(3), json!(1))
+        );
+    }
+
+    #[test]
     fn scores_from_scorer_child_spans_count_toward_their_trace() {
         let mut scorer = child(1, "score", Value::Null, 0.0);
         scorer["scores"] = json!({"exact": 1.0, "fuzzy": 0.5});
@@ -319,6 +352,12 @@ mod tests {
         let (scores, _) = summarize(&rows, None);
         assert_eq!(scores["exact"]["score"], 0.5);
         assert_eq!(scores["fuzzy"]["score"], 0.75);
+    }
+
+    #[test]
+    fn duration_is_end_minus_start() {
+        let (_, metrics) = summarize(&[root(1, json!({}), 10.0, 12.5)], None);
+        assert_eq!(metrics["duration"]["metric"], 2.5);
     }
 
     #[test]

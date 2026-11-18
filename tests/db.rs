@@ -61,3 +61,26 @@ async fn sqlite_file_database_is_created() {
     assert!(path.exists());
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[tokio::test]
+async fn sqlite_files_use_wal_and_foreign_keys() {
+    let path = std::env::temp_dir().join(format!("bt-emu-db-{}.db", uuid::Uuid::new_v4()));
+    let db = Db::connect(&format!("sqlite://{}", path.display()))
+        .await
+        .unwrap();
+    let pragma = |name: &'static str| {
+        let db = db.clone();
+        async move {
+            let row = sqlx::query(sqlx::AssertSqlSafe(format!("PRAGMA {name}")))
+                .fetch_one(db.pool())
+                .await
+                .unwrap();
+            sqlx::Row::try_get::<String, _>(&row, 0)
+                .or_else(|_| sqlx::Row::try_get::<i64, _>(&row, 0).map(|n| n.to_string()))
+                .unwrap()
+        }
+    };
+    assert_eq!(pragma("journal_mode").await, "wal");
+    assert_eq!(pragma("foreign_keys").await, "1");
+    assert_eq!(pragma("busy_timeout").await, "5000");
+}

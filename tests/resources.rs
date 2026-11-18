@@ -345,3 +345,50 @@ async fn org_and_object_scoped_resources() {
         assert_eq!(status, StatusCode::BAD_REQUEST);
     }
 }
+
+#[tokio::test]
+async fn names_are_unique_only_within_their_parent() {
+    for app in apps().await {
+        let mut parents = Vec::new();
+        for name in ["p", "q"] {
+            let pid = app
+                .ok("POST", "/v1/project", Some(json!({"name": name})))
+                .await["id"]
+                .clone();
+            let did = app
+                .ok(
+                    "POST",
+                    "/v1/dataset",
+                    Some(json!({"project_id": pid, "name": "d"})),
+                )
+                .await["id"]
+                .clone();
+            parents.push((pid, did));
+        }
+        // The same name in two projects, or two datasets, is two resources.
+        let mut scores = Vec::new();
+        let mut snapshots = Vec::new();
+        for (pid, did) in &parents {
+            let score = app
+                .ok(
+                    "POST",
+                    "/v1/project_score",
+                    Some(json!({"project_id": pid, "name": "acc", "score_type": "slider"})),
+                )
+                .await;
+            assert_eq!(&score["project_id"], pid);
+            scores.push(score["id"].clone());
+            let snapshot = app
+                .ok(
+                    "POST",
+                    "/v1/dataset_snapshot",
+                    Some(json!({"dataset_id": did, "name": "s", "xact_id": "1"})),
+                )
+                .await;
+            assert_eq!(&snapshot["dataset_id"], did);
+            snapshots.push(snapshot["id"].clone());
+        }
+        assert_ne!(scores[0], scores[1]);
+        assert_ne!(snapshots[0], snapshots[1]);
+    }
+}

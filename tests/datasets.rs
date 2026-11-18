@@ -128,6 +128,24 @@ async fn datasets_restore_to_an_earlier_version() {
             again,
             json!({"xact_id": null, "rows_restored": 0, "rows_deleted": 0})
         );
+
+        // A restore that only deletes rows still writes.
+        insert(json!([{"id": "e", "input": 5}])).await;
+        let deleted = ok(
+            &db,
+            "POST",
+            &format!("/v1/dataset/{did}/restore"),
+            json!({"version": v1}),
+        )
+        .await;
+        assert_eq!(
+            (
+                deleted["rows_restored"].clone(),
+                deleted["rows_deleted"].clone()
+            ),
+            (json!(0), json!(1))
+        );
+        assert_eq!(contents(&db, &did).await, before);
         let pinned = restored["xact_id"].as_str().unwrap();
         let old = ok(
             &db,

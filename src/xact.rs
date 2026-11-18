@@ -45,5 +45,7 @@ mod tests {
         assert_eq!(parse_version("81cd05ee665fdfb3"), Some(xact));
         assert_eq!(parse_version("1000192656880881099"), Some(xact));
         assert_eq!(parse_version("nope"), None);
+        // Only exactly 16 hex digits are the pretty form; shorter hex is decimal.
+        assert_eq!(parse_version("100"), Some(100));
     }
 }

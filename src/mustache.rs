@@ -27,9 +27,7 @@ pub fn render(template: &str, data: &Value) -> Result<String, String> {
 fn parse(rest: &mut &str, open: Option<&str>) -> Result<Vec<Node>, String> {
     let mut nodes = Vec::new();
     while let Some(start) = rest.find("{{") {
-        if start > 0 {
-            nodes.push(Node::Text(rest[..start].to_owned()));
-        }
+        nodes.push(Node::Text(rest[..start].to_owned()));
         let triple = rest[start..].starts_with("{{{");
         let (open_len, close) = if triple { (3, "}}}") } else { (2, "}}") };
         let after = &rest[start + open_len..];
@@ -165,6 +163,8 @@ mod tests {
         );
         assert_eq!(r("{{n}}", json!({"n": null})), "");
         assert_eq!(r("no tags", json!({})), "no tags");
+        // A comment renders nothing, even when a key is spelled like it.
+        assert_eq!(r("a{{!note}}b", json!({"!note": "x"})), "ab");
     }
 
     #[test]
