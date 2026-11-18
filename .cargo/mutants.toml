@@ -1,11 +1,10 @@
 # cargo-mutants: https://mutants.rs. Run with `just mutants` (whole tree) or
 # `just mutants-diff` (only code changed since origin/main).
 test_tool = "nextest"
-# The compat replay takes ~9s alone but nearly 30s with several mutants building at
-# once, so allow 2 minutes. This is a backstop: the nextest `mutants` profile
-# (.config/nextest.toml) terminates hung tests sooner, which counts as caught.
+# A backstop above the nextest `mutants` profile's limits (.config/nextest.toml),
+# which terminate hung tests sooner; a terminated test counts as caught.
 timeout_multiplier = 3.0
-minimum_test_timeout = 120
+minimum_test_timeout = 300
 # Stop at the first failing test: once one fails the mutant is caught, and waiting
 # on the slow compat replay would turn that into a timeout.
 additional_cargo_test_args = ["--max-fail=1:immediate", "--profile", "mutants"]

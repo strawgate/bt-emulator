@@ -1,11 +1,12 @@
 # Used by cargo-mutants (`--profile mutants`, see .cargo/mutants.toml). A mutant that
 # makes a loop never end would otherwise run until cargo-mutants' own timeout and be
 # reported as a timeout; terminating the hung test fails it, so the mutant is caught.
-# Under parallel mutant builds tests run ~3x slower than alone, hence the headroom.
+# GitHub runners are several times slower than a laptop, and slower again with
+# mutants building in parallel, so the limits are generous.
 [profile.mutants]
-slow-timeout = { period = "10s", terminate-after = 3 }
+slow-timeout = { period = "30s", terminate-after = 2 }
 
-# The compat replay takes ~9s alone and nearly 30s under load.
+# The compat replay and the robustness sweep take ~10s locally, 30s+ on CI.
 [[profile.mutants.overrides]]
-filter = 'test(recorded_sdk_traffic_replays)'
-slow-timeout = { period = "30s", terminate-after = 3 }
+filter = 'test(recorded_sdk_traffic_replays) | test(malformed_requests_never_cause_server_errors)'
+slow-timeout = { period = "60s", terminate-after = 4 }

@@ -28,7 +28,7 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: just,cargo-mutants,cargo-nextest
-      - run: just mutants-diff "origin/${{ github.base_ref }}"
+      - run: MUTANTS_JOBS=2 just mutants-diff "origin/${{ github.base_ref }}"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -51,7 +51,8 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: just,cargo-mutants,cargo-nextest
-      - run: just mutants --shard ${{ matrix.shard }}/8
+      # Two at a time (also above): more on a 4-vCPU runner slows tests past their limits.
+      - run: MUTANTS_JOBS=2 just mutants --shard ${{ matrix.shard }}/8
       - if: always()
         uses: actions/upload-artifact@v4
         with:
